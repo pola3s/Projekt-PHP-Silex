@@ -1,0 +1,16 @@
+{% extends 'layout.twig' %}
+
+{% block title %}Formularz dodawania zdjêæ{% endblock %}
+
+{% block content %}
+    <h1>
+        Dodaj zdjêcie
+    </h1>
+   
+	<form enctype="multipart/form-data" action="addPhotoController.php" method="post">
+		<input type="file" name="plik">
+		<input type="submit" value="Wyœlij">
+		<input type="hidden" name="MAX_FILE_SIZE" value="30000" /> 
+	</form> 
+      
+{% endblock %}

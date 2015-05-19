@@ -1,0 +1,55 @@
+<div class="col-lg-12 text-center">
+                <ul class="pager">
+				
+				
+                    {% if paginator.page > 1 %}
+                        {% set previous = (paginator.page - 1) %}
+                        <li class="previous"><a href="{{ url('', {'page': previous}) }}">&larr; Poprzedni</a>
+                        </li>
+                    {% endif %}
+					
+					
+
+                    {% if paginator.page < paginator.pagesCount %}
+                        {% set next = (paginator.page + 1) %}
+                        <li class="next"><a href="{{ url('/', {'page': next}) }}">Następny &rarr;</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+			
+			
+			
+			 <div id="content">
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                <a href="#">Logout</a>
+            {% else %}
+                <a href="{{ app.request.baseUrl }}/auth/login">Login</a>
+            {% endif %}
+          
+			</div>
+			
+			
+			
+			
+			
+			<nav>   
+				<ul class="pagination">
+			
+				{% if paginator.page > 1 %}
+					{% set previous = (paginator.page - 1) %}
+					   <li class="previous">
+					   <a href="{{ url('files', {'page': previous}) }}">
+							<span aria-hidden="true">&larr;</span> Poprzednia strona</a>
+					   </li>
+				{% endif %}
+					
+				{% if paginator.page < paginator.pagesCount %}
+					{% set next = (paginator.page + 1) %}
+						<li class="next">
+							<a href="{{ url('files', {'page': next}) }}">Kolejna strona <span aria-hidden="true">&rarr;</span></a>
+						</li>
+				{% endif %}
+			   </ul>
+			</nav>
+			

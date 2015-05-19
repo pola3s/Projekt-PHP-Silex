@@ -1,0 +1,44 @@
+{% extends 'layout.twig' %}
+
+{% block title %}Index users{% endblock %}
+
+{% block content %}
+    <h1>
+        List of users
+    </h1>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Firstname</th>
+            <th>Lastname</th>
+            <th>Login</th>
+			<th>Role</th>
+            
+            <th colspan="2">&nbsp;</th>
+        </tr>
+        </thead>
+		
+        <tbody>
+			{% for user in users %}
+				<tr>
+					<td>{{ user.id_user|e }}</td>
+					<td>{{ user.firstname|e }}</td>
+					<td>{{ user.lastname|e }}</td>
+					<td>{{ user.login|e }}</td>
+					<td>{{ user.roles }}</td>
+           
+			
+					<td>
+						<p><a href="{{ url('/users/view', {'id': user.id_user}) }}" title="User's profile">See full profile</a></p>
+					</td>
+				</tr>
+				
+        {% endfor %}
+		
+        </tbody>
+    </table>
+  
+          
+{% endblock %}

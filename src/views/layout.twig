@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block pagetitle %}{% endblock %}</title>
+		
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="{{ app.request.baseUrl }}/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="{{ app.request.baseUrl }}/css/styl.css" />
+
+    </head>
+	
+
+    <body>
+	
+        <div id="outer-wrapper">
+		
+			<header>
+				<div class="menu btn-group">
+                        <a class="btn btn-inverse" href="{{ path('files') }}">Strona główna</a>
+						<a class="btn btn-inverse" href="{{ path('/register/') }}">Rejestracja</a>
+						<a class="btn btn-inverse" href="#">Moje konto</a>
+                 </div>
+				 
+	
+            </header>
+		
+         
+			<div id="inner-wrapper">
+				
+				{% block content %}{% endblock %}
+				
+			</div>
+			
+				
+			
+		</div>   
+        
+			
+		<footer>
+
+			<ul class="nav navbar-nav">
+				<a href="#">Admin</a>
+			</ul>
+		</footer>
+		
+	
+		<script src="/components/jquery/jquery.min.js"></script>
+		
+		<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+	</body>
+</html>

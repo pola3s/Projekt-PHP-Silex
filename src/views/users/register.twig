@@ -1,0 +1,18 @@
+{% extends 'layout.twig' %}
+
+{% block title %}Rejestracja{% endblock %}
+
+{% block content %}
+
+	{% block massage %}
+		 {% for flashMessage in app.session.getFlashBag.get('message') %}
+			{{ flashMessage.content }}
+		{% endfor %}
+	{% endblock %}
+	
+    <form action="" method="post" >
+        {{ form_widget(form) }}
+        <input class="btn btn-default" type="submit" name="Send">
+    </form>
+	
+{% endblock %}

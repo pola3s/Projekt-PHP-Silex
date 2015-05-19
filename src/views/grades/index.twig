@@ -1,0 +1,18 @@
+
+
+{% block grades %}
+
+	
+    <p>
+        <a href="{{ url('/grades/add', {'id_file': id_file|e}) }}" title="Add grade">
+            <button type="button" class="btn btn-success">Dodaj ocenę</button>
+        </a>
+    </p>
+
+	<p class="text-center">
+				<h3>Ocena:{{ averageGrade }}</h3>
+                <small>{{ averageGrade }}</small>
+   </p>
+   
+   
+ {% endblock %}

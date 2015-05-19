@@ -1,0 +1,40 @@
+{% block comments %}
+
+    <p>
+        <a href="{{ url('/comments/add', {'id_file': id_file|e}) }}" title="Add comment">
+            <button type="button" class="btn btn-success">Dodaj komentarz</button>
+        </a>
+    </p>
+    {% for comment in comments %}
+        <div class="col-lg-12 text-center">
+            <p>
+
+            <p class="text-center">
+                <small> {{ comment.published_date|e }}</small>
+            </p>
+            <p>
+                {{ comment.content|raw }}
+				
+            </p>
+            </p>
+
+          
+                    <p>
+                        <a href="{{ url('/comments/edit', {'id': comment.id_comment|e}) }}"
+                           title="Edit comment">
+                            <button type="button" class="btn btn-warning">Edytuj
+                                komentarz
+                            </button>
+                        </a>
+                        <a href="{{ url('/comments/delete', {'id': comment.id_comment|e}) }}"
+                           title="Delete comment">
+                            <button type="button" class="btn btn-danger">Usu�
+                                komentarz
+                            </button>
+                        </a>
+                   
+          
+            <hr>
+        </div>
+    {% endfor %}
+{% endblock %}

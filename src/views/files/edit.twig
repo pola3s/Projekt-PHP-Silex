@@ -1,0 +1,17 @@
+{% extends 'layout.twig' %}
+
+{% block title %}Edit file{% endblock %}
+
+{% block content %}
+    <h1>
+        Edit file
+    </h1>
+    {% for flashMessage in app.session.getFlashBag.get('message') %}
+        <div class="alert alert-{{ flashMessage.type }}">
+            {{ flashMessage.content }}
+        </div>
+    {% endfor %}
+    <form action="{{ url('edit', {'id': file.id_file})  }}" {{ form_enctype(form) }} method="post">
+        {{ form_widget(form) }}
+    </form>
+{% endblock %}
