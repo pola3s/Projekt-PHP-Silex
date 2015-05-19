@@ -2,8 +2,12 @@
 
 {% block content %}
 
-	{% for flashMessage in app.session.getFlashBag.get('message') %} 
-		{{ flashMessage.content }} 
-	{% endfor %}
-    <a href = {{ 'auth_login' }}>Teraz mo¿esz siê zalogowaæ!</a>
+	
+		{% for flashMessage in app.session.getFlashBag.get('message') %}
+        <div class="alert alert-{{ flashMessage.type }}">
+             {{ flashMessage.content }}
+        </div>
+    {% endfor %}
+	
+    <a href ="{{ url('auth_login') }}">Teraz mo¿esz siê zalogowaæ!</a>
 {% endblock %}

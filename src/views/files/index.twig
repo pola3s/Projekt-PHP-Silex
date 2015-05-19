@@ -2,7 +2,11 @@
 
 {% block content %}
 
-	
+	{% for flashMessage in app.session.getFlashBag.get('message') %}
+        <div class="alert alert-{{ flashMessage.type }}">
+            {{ flashMessage.content }}
+        </div>
+    {% endfor %}
 			{% for file in files %}
 			  <div class="row">
 				{% for file in files |slice(0, 3) %}

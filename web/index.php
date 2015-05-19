@@ -69,15 +69,6 @@ $app->register(
 );
 
 
-$app->error(
-    function (\Exception $e, $code) use ($app) {
-        if ($code == 404) {
-            return new Response(
-                $app['twig']->render('404.twig'), 404
-            );
-        }
-    }
-);
 
 $app->mount('/files/', new Controller\FilesController());
 $app->mount('/users/', new Controller\UsersController());
