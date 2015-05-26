@@ -126,6 +126,8 @@ class FilesModel
         }
     }
 	
+	
+	
 	 public function getUserByFile($id)
     {
         if (($id != '') && ctype_digit((string)$id)) {
@@ -152,14 +154,16 @@ class FilesModel
 	public function checkUserId($id)
     {
         $sql = 'SELECT id_user FROM files WHERE id_file=?';
-        return $this->_db->fetchAssoc($sql, array($id));
+        return $this->_db->fetchAssoc($sql, array((int)$id_user['id_user']));
     }
 	
-	public function getFileUploaderName($id_user)
+	 public function getFileUploaderName($id_user)
     {
-        $sql = 'SELECT login FROM users WHERE `id_user` = ? Limit 1';
-        return $this->_db->fetchAssoc($sql, array((int)$id_user));
+        $sql = 'SELECT login FROM users WHERE `id_user` = ?';
+		return $this->_db->fetchAssoc($sql, array((int)$id_user));
     }
+	
+	
 	
 	 public function getUserById($id)
     {

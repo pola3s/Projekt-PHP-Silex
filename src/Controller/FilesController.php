@@ -76,6 +76,8 @@
 	
 		var_dump($id_user);
 		
+		
+		
 		$user = $FilesModel -> getFileUploaderName($id_user);
 		
 		var_dump($user);
