@@ -71,15 +71,21 @@
 		var_dump($id);
 		
 		$FilesModel = new FilesModel($app);
+		$file = $FilesModel -> getFile($id);
+		
+		
+		$id_category = $FilesModel -> checkCategoryId($id);
+		$category = $FilesModel -> getCategory($id_category);
+		
+		var_dump($id_category);
+		var_dump($category);
+		
+		
+		
 		$id_user = $FilesModel-> checkUserId($id);
+		$user = $FilesModel -> getFileUploaderName($id_user['id_user']);
 		
-	
 		var_dump($id_user);
-		
-		
-		
-		$user = $FilesModel -> getFileUploaderName($id_user);
-		
 		var_dump($user);
 		
 		
@@ -88,6 +94,7 @@
 		return $app['twig']->render('files/view.twig', array(
 				'file' => $file,
 				'user' => $user,
+				'category' => $category,
 		));
 	}
 		
@@ -102,7 +109,8 @@
 			
    
 		$CategoriesModel = new CategoriesModel($app);
-		$categories = $CategoriesModel->getCategories();
+		$categories = $CategoriesModel->getCategoriesDict();
+		var_dump($categories);
 		
 		$form = $app['form.factory']->createBuilder('form', $data)
 		->add('title', 'text', array(
@@ -133,6 +141,8 @@
 			try {
 			$files = $request->files->get($form->getName());
 			$data = $form->getData();
+			
+			
 			
 			$path = dirname(dirname(dirname(__FILE__))).'/web/media';
 			$filesModel = new FilesModel($app);

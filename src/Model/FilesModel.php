@@ -154,14 +154,28 @@ class FilesModel
 	public function checkUserId($id)
     {
         $sql = 'SELECT id_user FROM files WHERE id_file=?';
-        return $this->_db->fetchAssoc($sql, array((int)$id_user['id_user']));
+        return $this->_db->fetchAssoc($sql, array((int)$id));
     }
 	
 	 public function getFileUploaderName($id_user)
     {
-        $sql = 'SELECT login FROM users WHERE `id_user` = ?';
-		return $this->_db->fetchAssoc($sql, array((int)$id_user));
+        $sql = 'SELECT login FROM users WHERE id_user=?';
+        return $this->_db->fetchAssoc($sql, array((int)$id_user));
     }
+	
+	public function checkCategoryId($id)
+    {
+        $sql = 'SELECT category FROM files WHERE id_file=?';
+        return $this->_db->fetchAssoc($sql, array((int)$id));
+    }
+	
+	public function getCategory($id_category)
+    {
+        $sql = 'SELECT name FROM categories WHERE id_category = ?';
+        return $this->_db->fetchAssoc($sql, array((int)$id_category));
+    }
+	
+	
 	
 	
 	
