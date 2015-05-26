@@ -7,28 +7,25 @@
             {{ flashMessage.content }}
         </div>
     {% endfor %}
-			{% for file in files %}
-			  <div class="row">
-				{% for file in files |slice(0, 3) %}
-					
-						<div class="col-sm-2 col-md-4">			 
-							  <div class="thumbnail">
-									<img src="{{ app.request.basepath }}/media/{{ file.name }}" alt="" size="50%">
-								  <div class="caption">
-									<h3>{{ file.title }}</h3>
-									<p>{{ file.description }}</p>
-									<p><a href=" {{ url('view', {'id': file.id_file}) }}" class="btn btn-primary" role="button">Zobacz</a></p>
-								  </div>
-							  </div>
-						  </div>
+			
+			  
+				{% for file in files  %}
+					<div class="row">
+						<div class="col-md-8 col-md-offset-2">
+			
+							<div class="thumbnail">
+								 <img src="{{ app.request.basepath }}/media/{{ file.name }}" alt="" size="40%" > 
+									  <div class="caption">
+											<h3>{{ file.title }}</h3>
+											<p>{{ file.description }}</p>
+											<p><a href=" {{ url('view', {'id': file.id_file}) }}" class="btn btn-primary" role="button">Zobacz</a></p>
+									  </div>
+							</div>
+								
+						 </div>
+					</div>
 					{% endfor %}
-				   </div>
-				{% endfor %}
-			
-	
-		
-			
-		
+			 
 			<nav>   
 				<ul class="pager">
 			

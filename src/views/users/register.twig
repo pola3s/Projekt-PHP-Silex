@@ -6,10 +6,10 @@
 
 	
 		{% for flashMessage in app.session.getFlashBag.get('message') %}
-        <div class="alert alert-{{ flashMessage.type }}">
-            {{ flashMessage.content }}
-        </div>
-    {% endfor %}
+			<div class="alert alert-{{ flashMessage.type }}">
+				{{ flashMessage.content }}     
+			</div>
+		{% endfor %}
 
 	
     <form action="" method="post" >

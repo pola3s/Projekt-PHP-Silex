@@ -34,8 +34,8 @@ $app->register(
                 'pattern' => '^.*$',
                 'form' => array(
                     'login_path' => '/auth/login',
-                    'check_path' => '/user/login_check',
-                    'default_target_path'=> '/',
+                    'check_path' => '/user_login_check',
+                    'default_target_path'=> 'files',
                     'username_parameter' => 'form[username]',
                     'password_parameter' => 'form[password]',
                 ),

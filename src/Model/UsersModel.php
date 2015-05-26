@@ -34,7 +34,7 @@ class UsersModel
             $query, array(
                 $data['login'],
                 $data['email'],
-				$password,
+                $password,
                 $data['firstname'],
                 $data['lastname']
             )
@@ -47,7 +47,114 @@ class UsersModel
         $queryThree = 'INSERT INTO users_roles (`id`,`id_user`, `id_role` )
                    VALUES (NULL, ?, ?)';
         $this->_db->executeQuery($queryThree, array($user['id_user'], $role));
+	}
 
+   
+    
+    public function loadUserByLogin($login)
+    {
+        $data = $this->getUserByLogin($login);
+
+        if (!$data) {
+            throw new UsernameNotFoundException(
+                sprintf(
+                    'Username "%s" does not exist.', $login
+                )
+            );
+        }
+
+        $roles = $this->getUserRoles($data['id_user']);
+
+        if (!$roles) {
+            throw new UsernameNotFoundException(
+                sprintf(
+                    'Username "%s" does not exist.', $login
+                )
+            );
+        }
+
+        $user = array(
+            'login' => $data['login'],
+            'password' => $data['password'],
+            'roles' => $roles
+        );
+
+        return $user;
+    }
+
+    public function getUserRoles($userId)
+    {
+        $sql = '
+                SELECT
+                    roles.role
+                FROM
+                    users_roles
+                INNER JOIN
+                    roles
+                ON users_roles.id_role=roles.id_role
+                WHERE
+                    users_roles.id_user = ?
+                ';
+
+        $result = $this->_db->fetchAll($sql, array((string) $userId));
+
+        $roles = array();
+        foreach ($result as $row) {
+            $roles[] = $row['role'];
+        }
+
+        return $roles;
+    }
+
+
+   
+    public function updateUser($id, $data, $password)
+    {
+        if (isset($id) && ctype_digit((string)$id)) {
+
+            $query = 'UPDATE `users`
+                  SET `login`= ?,
+                      `email`= ?,
+                      `password`= ?,
+                      `firstname`= ?,
+                      `lastname`= ?
+                  WHERE `id_user`= ?';
+
+        $this->_db->executeQuery(
+            $query, array(
+                $data['login'],
+                $data['email'],
+                $password,
+                $data['firstname'],
+                $data['lastname'],
+                $id
+            )
+        );
+        } else {
+
+        }
+
+    }
+
+
+    protected function getCurrentUsername($app)
+    {
+        $token = $app['security']->getToken();
+
+        if (null !== $token) {
+            $user = $token->getUser()->getUsername();
+        }
+
+        return $user;
+    }
+
+   
+    public function getCurrentUserInfo($app)
+    {
+        $login = $this->getCurrentUsername($app);
+        $info = $this->getUserByLogin($login);
+
+        return $info;
     }
 
 	 public function getUser($id)
@@ -83,36 +190,6 @@ class UsersModel
 	
 	
    
-    // public function register($data)
-    // {
-        // $check = $this->getUserByLogin($data['login']);
-
-        // if (!$check) {
-            // $users = "INSERT INTO `users` 
-                // (`firstname`, `lastname`, `login`, `password`)
-            // VALUES (?,?,?,?);";
-            // $this->_db
-                // ->executeQuery(
-                    // $users,
-                    // array(
-                        // $data['firstname'],
-                        // $data['lastname'],
-                        // $data['login'],
-                        // $data['password'])
-                // );
-
-            // $sql = "SELECT * 
-                    // FROM users 
-                    // WHERE login ='" . $data['login'] . "';";
-            // $user = $this->_db->fetchAssoc($sql);
-
-            // $addRole = 'INSERT INTO users_roles ( id_user, id_role ) 
-                // VALUES(?, ?)';
-            // $this->_db->executeQuery($addRole, array($user['id_user'], 2));
-        // }
-    // }
-
-    
       
 
 
@@ -124,32 +201,7 @@ class UsersModel
     }
 
     
-    public function loadUserByLogin($login)
-    {
-        $data = $this->getUserByLogin($login);
-
-        if (!$data) {
-            throw new UsernameNotFoundException(
-                sprintf('Username "%s" does not exist.', $login)
-            );
-        }
-
-        $roles = $this->getUserRoles($data['id_user']);
-
-        if (!$roles) {
-            throw new UsernameNotFoundException(
-                sprintf('Username "%s" does not exist.', $login)
-            );
-        }
-
-        $user = array(
-            'login' => $data['nickname'],
-            'password' => $data['password'],
-            'roles' => $roles
-        );
-
-        return $user;
-    }
+  
 
  
     public function getUserById($id)
@@ -186,37 +238,8 @@ class UsersModel
         return $this->_db->fetchAssoc($sql, array((string) $login));
     }
 
-    public function getUserRoles($userId)
-    {
-        $sql = '
-            SELECT
-                roles.role
-            FROM
-                users_roles
-            INNER JOIN
-                roles
-            ON users_roles.id_role=roles.id_role
-            WHERE
-                users_roles.id_user = ?
-            ';
-
-        $result = $this->_db->fetchAll($sql, array((string)$userId));
-
-        $roles = array();
-        foreach ($result as $row) {
-            $roles[] = $row['role'];
-        }
-
-        return $roles;
-    }
-
-   
-    public function addRole($iduser)
-    {
-        $sql = 'INSERT INTO `users_roles` (`id_user`, `id_role`) VALUES (?,?);';
-
-        $this->_db->executeQuery($sql, array($iduser, '2'));
-    }
+	
+  
 
    
     public function confirmUser($id)
@@ -270,6 +293,7 @@ class UsersModel
         return $user;
     }
 
+	
 
     public function _isLoggedIn(Application $app)
     {

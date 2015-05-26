@@ -12,7 +12,8 @@ namespace Controller;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Form\LoginForm;
+use Symfony\Component\Validator\Constraints as Assert;
+use Model\UsersModel;
 
 /**
  * Class AuthController.
@@ -40,9 +41,9 @@ class AuthController implements ControllerProviderInterface
     public function connect(Application $app)
     {
         $authController = $app['controllers_factory'];
-        $authController->match('login', array($this, 'loginAction'))
+        $authController->match('login', array($this, 'login'))
             ->bind('auth_login');
-        $authController->get('logout', array($this, 'logoutAction'))
+        $authController->match('logout', array($this, 'logout'))
             ->bind('auth_logout');
         return $authController;
     }
@@ -55,21 +56,39 @@ class AuthController implements ControllerProviderInterface
      * @param Symfony\Component\HttpFoundation\Request $request Request object
      * @return string Output
      */
-    public function loginAction(Application $app, Request $request)
+	public function login(Application $app, Request $request)
     {
-        $user = array(
-            'login' => $app['session']->get('_security.last_username')
-        );
+	
+		//$user = array(
+        //    'login' => $app['session']->get('_security.last_username')
+        //);
+		
+        $data = array();
 
-        $form = $app['form.factory']->createBuilder(new LoginForm(), $user)
+        $form = $app['form.factory']->createBuilder('form')
+            ->add(
+                'username', 'text', array(
+                    'label' => 'Login',
+                    'data' => $app['session']
+                            ->get(
+                                '_security.last_username'
+                            )
+                )
+            )
+            ->add(
+                'password', 'password', array(
+                    'label' => 'Hasło'
+                )
+            )
+            ->add('Zaloguj', 'submit')
             ->getForm();
 
-        $this->view = array(
-            'form' => $form->createView(),
-            'error' => $app['security.last_error']($request)
+        return $app['twig']->render(
+            'auth/login.twig', array(
+                'form' => $form->createView(),
+                'error' => $app['security.last_error']($request)
+            )
         );
-
-        return $app['twig']->render('auth/login.twig', $this->view);
     }
 
     /**
@@ -80,7 +99,7 @@ class AuthController implements ControllerProviderInterface
      * @param Symfony\Component\HttpFoundation\Request $request Request object
      * @return string Output
      */
-    public function logoutAction(Application $app, Request $request)
+    public function logout(Application $app, Request $request)
     {
         $app['session']->clear();
         return $app['twig']->render('auth/logout.twig', $this->view);

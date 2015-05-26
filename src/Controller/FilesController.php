@@ -43,7 +43,7 @@
 		public function index(Application $app, Request $request)
 		{
 
-			$pageLimit = 5;
+			$pageLimit = 6;
 			$page = (int)$request->get('page', 1);
 			$FilesModel = new FilesModel($app);
 			$pagesCount = $this->_model ->countFilesPages($pageLimit);

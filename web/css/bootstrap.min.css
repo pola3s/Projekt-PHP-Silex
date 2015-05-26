@@ -1069,11 +1069,11 @@ th {
 .glyphicon-menu-up:before {
   content: "\e260";
 }
-* {
+/** {
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
-}
+}*/
 *:before,
 *:after {
   -webkit-box-sizing: border-box;
@@ -4895,9 +4895,13 @@ a.badge:focus {
   }
 }
 .thumbnail {
-  display: block;
+  max-height: 150px;
+  max-width: 200px;
+  width: 120px;
+  height: 120px;
+ display: block;
   padding: 4px;
-  margin-bottom: 20px;
+  margin-bottom: 20px; 
   line-height: 1.42857143;
   background-color: #fff;
   border: 1px solid #ddd;
@@ -4911,6 +4915,8 @@ a.badge:focus {
   margin-right: auto;
   margin-left: auto;
 }
+
+
 a.thumbnail:hover,
 a.thumbnail:focus,
 a.thumbnail.active {

@@ -27,9 +27,6 @@
 					<td>{{ user.firstname|e }}</td>
 					<td>{{ user.lastname|e }}</td>
 					<td>{{ user.login|e }}</td>
-					<td>{{ user.roles }}</td>
-           
-			
 					<td>
 						<p><a href="{{ url('/users/view', {'id': user.id_user}) }}" title="User's profile">See full profile</a></p>
 					</td>
