@@ -290,7 +290,7 @@
                                 );
                                 return $app->redirect(
                                     $app['url_generator']->generate(
-                                        '/files/'
+                                        'files'
                                     ), 301
                                 );
                             } catch (\Exception $e) {
@@ -317,7 +317,7 @@
                 );
                 return $app->redirect(
                     $app['url_generator']->generate(
-                        '/files/manager'
+                        '/iles'
                     ), 301
                 );
             }
@@ -330,24 +330,14 @@
             );
             return $app->redirect(
                 $app['url_generator']->generate(
-                    '/files/manager'
+                    'files'
                 ), 301
             );
 
         }
     }
 	
-	public function manager(Application $app, Request $request)
-    {
-        $files = $this->_model->getFiles();
-
-        return $app['twig']->render(
-            'files/manager.twig', array(
-                'files' => $files
-            )
-        );
-
-    }
+	
 	
 	
 }	

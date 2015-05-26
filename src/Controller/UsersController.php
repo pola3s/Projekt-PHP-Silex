@@ -206,26 +206,29 @@ class UsersController implements ControllerProviderInterface
 	public function view(Application $app, Request $request)
 	{
 		
-		$id = (int) $request -> get('id', 0);  //id usera
-		var_dump($id);
+		$id_user = (int) $request -> get('id', 0);  //id usera
+		var_dump($id_user);
 	   
 		$UsersModel = new UsersModel($app);
-		$user = $UsersModel-> getUser($id);
+		$user = $UsersModel-> getUser($id_user);
+		
+		var_dump($user);
 
-		$files = $UsersModel -> getFileByUser($id);
-		$about = $UsersModel -> getAboutByUser($id);
-		var_dump($about);
+		$files = $UsersModel -> getFileByUser($id_user);
+		$about = $UsersModel -> getAboutByUser($id_user);
+		
 		
 		//var_dump($files);
 	
 	 
-		//var_dump($user);
+		var_dump($about);
 	   
 	   
 
 		return $app['twig']->render('users/view.twig', array( 
 			'files' => $files, 
 			'user' => $user,
+			'about' => $about
 			
 		));
 	

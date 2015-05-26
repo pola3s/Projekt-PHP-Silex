@@ -4,21 +4,38 @@
 
     <div class="col-lg-12 text-center">
 
-	
+	<div class="thumbnail">
 		
 		<h4>{{ user.firstname }} </h4>
 		<h4>{{ user.lastname }} </h4>
 		<h4>{{ user.login }} </h4>
 		
+		<p>{{ about.email }} </p>
+		<p>{{ about.phone }} </p>
+		<p>{{ about.description }} </p>
+		<p>{{ about.website }} </p>
+		<p>{{ about.city }} </p>
 		
+		<p><a href=" {{ url('/about/edit', {'id': about.id_about}) }}" class="btn btn-primary" role="button">Edytuj</a></p>
+		
+		
+	</div>
+	
 		{% for file in files %}
-            <div class="col-lg-12 text-center">
-
-				<img src="{{ app.request.basepath }}/media/{{ file.name }}"  height="50%" width="50%">
-				
-				<h4><a href="{{ url('view', {'id': file.id_file}) }}">Zobacz</a></h4>
-
-			</div>
+            <div class="row">
+						<div class="col-md-8 col-md-offset-2">
+			
+							<div class="thumbnail">
+								 <img src="{{ app.request.basepath }}/media/{{ file.name }}" alt="" size="40%" > 
+									  <div class="caption">
+											<h3>{{ file.title }}</h3>
+											<p>{{ file.description }}</p>
+											<p><a href=" {{ url('view', {'id': file.id_file}) }}" class="btn btn-primary" role="button">Zobacz</a></p>
+									  </div>
+							</div>
+								
+						 </div>
+					</div>
         {% endfor %}
 
 		

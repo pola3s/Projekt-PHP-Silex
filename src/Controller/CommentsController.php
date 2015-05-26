@@ -161,109 +161,99 @@ class CommentsController implements ControllerProviderInterface
     }
 	
 	public function edit(Application $app, Request $request)
-    {
+	{
+				
+	} 
+	
+	
+	// public function delete(Application $app, Request $request)
+    // {
+        // $name = (string)$request->get('name', 0);
+        // $check = $this->_model->checkFileName($name);
+        // if ($check) {
+            // $file = $this->_model->getFileByName($name);
+            // $path = dirname(dirname(dirname(__FILE__))) . '/web/media/' . $name;
 
-        $id = (int)$request->get('id', 0);
+            // if (count($file)) {
+                // $data = array();
+                // $form = $app['form.factory']->createBuilder('form', $data)
+                    // ->add(
+                        // 'name', 'hidden', array(
+                            // 'data' => $name,
+                        // )
+                    // )
+                    // ->add('Yes', 'submit')
+                    // ->add('No', 'submit')
+                    // ->getForm();
 
-        $check = $this->_model->checkCommentId($id);
+                // $form->handleRequest($request);
 
-        if ($check) {
+                // if ($form->isValid()) {
+                    // if ($form->get('Yes')->isClicked()) {
+                        // $data = $form->getData();
 
-            $idCurrentUser = $this->_user->getIdCurrentUser($app);
-            $comment = $this->_model->getComment($id);
+                        // try {
+                            // $model = unlink($path);
 
-            if (count($comment)) {
 
-                $data = array(
-                    'idcomment' => $id,
-                    'published_date' => date('Y-m-d'),
-                    'id_file' => $comment['id_file'],
-                    'id_user' => $comment['id_user'],
-                    'idCurrentUser' => $idCurrentUser,
-                    'content' => $comment['content'],
-                );
+                            // try {
+                                // $link = $this->_model->removeFile($name);
 
-                $form = $app['form.factory']->createBuilder('form', $data)
-                    ->add(
-                        'content', 'textarea', array(
-                            'required' => false
-                        ), array(
-                                'constraints' => array(
-                            new Assert\NotBlank(),
-                            new Assert\Length(
-                                array(
-                                    'min' => 5,
-                                    'minMessage' => 
-                                        'Minimalna ilo�� znak�w to 5',
-                                )
-                            ),
-                            new Assert\Type(
-                                array(
-                                    'type' => 'string',
-                                    'message' => 'Tekst nie poprawny.',
-                                )
-                            )
-                        )
-                    )
-                    )
-                    ->getForm();
+                                // $app['session']->getFlashBag()->add(
+                                    // 'message', array(
+                                        // 'type' => 'success',
+                                        // 'content' => 
+                                            // 'Zdjecie zostało usunięte'
+                                    // )
+                                // );
+                                // return $app->redirect(
+                                    // $app['url_generator']->generate(
+                                        // '/files/'
+                                    // ), 301
+                                // );
+                            // } catch (\Exception $e) {
+                                // $errors[] = 'Coś poszło niezgodnie z planem';
+                            // }
+                        // } catch (\Exception $e) {
+                            // $errors[] = 'Plik nie zstał usuniety';
+                        // }
+                    // }
+                // }
 
-                $form->handleRequest($request);
+                // return $app['twig']->render(
+                    // 'files/delete.twig', array(
+                        // 'form' => $form->createView()
+                    // )
+                // );
 
-                if ($form->isValid()) {
-                    $data = $form->getData();
+            // } else {
+                // $app['session']->getFlashBag()->add(
+                    // 'message', array(
+                        // 'type' => 'danger',
+                        // 'content' => 'Nie znaleziono zdjęcia'
+                    // )
+                // );
+                // return $app->redirect(
+                    // $app['url_generator']->generate(
+                        // '/files/manager'
+                    // ), 301
+                // );
+            // }
+        // } else {
+            // $app['session']->getFlashBag()->add(
+                // 'message', array(
+                    // 'type' => 'danger',
+                    // 'content' => 'Nie znaleziono zdjęcia'
+                // )
+            // );
+            // return $app->redirect(
+                // $app['url_generator']->generate(
+                    // '/files/manager'
+                // ), 301
+            // );
 
-                    try {
-                        $model = $this->_model->editComment($data);
-
-                        $app['session']->getFlashBag()->add(
-                            'message', array(
-                                'type' => 'success',
-                                'content' => 'Komanetarz zosta� zmieniony'
-                            )
-                        );
-                        return $app->redirect(
-                            $app['url_generator']->generate(
-                                'files'
-                            ), 301
-                        );
-                    } catch (Exception $e) {
-                        $errors[] = 'Co� posz�o niezgodnie z planem';
-                    }
-                }
-                return $app['twig']->render(
-                    'comments/edit.twig', array(
-                        'form' => $form->createView()
-                    )
-                );
-            } else {
-                $app['session']->getFlashBag()->add(
-                    'message', array(
-                        'type' => 'danger',
-                        'content' => 'Nie znaleziono komentarza'
-                    )
-                );
-                return $app->redirect(
-                    $app['url_generator']->generate(
-                        '/comments/add'
-                    ), 301
-                );
-            }
-        } else {
-            $app['session']->getFlashBag()->add(
-                'message', array(
-                    'type' => 'danger',
-                    'content' => 'Nie znaleziono komentarza'
-                )
-            );
-            return $app->redirect(
-                $app['url_generator']->generate(
-                    '/files/'
-                ), 301
-            );
-
-        }
-    }
+        // }
+    // }
 	
 	public function delete(Application $app, Request $request)
     {

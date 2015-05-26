@@ -182,10 +182,10 @@ class UsersModel
         return $this->_db->fetchAll($sql, array($id));
     }
 	
-	public function getAboutByUser($id)
+	public function getAboutByUser($id_user)
     {
         $sql = 'SELECT * FROM abouts WHERE id_user= ?';
-        return $this->_db->fetchAll($sql, array($id));
+        return $this->_db->fetchAssoc($sql, array($id_user));
     }
 	
 	

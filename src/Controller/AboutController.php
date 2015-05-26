@@ -31,6 +31,9 @@ class AboutController implements ControllerProviderInterface{
             $AboutController->get('view/{id_user}', array($this, 'index'))  // /projekt/web/about/view/1 
 				->value('page', 1)
 				->bind('/about/');
+			 $AboutController->get('edit/{id_user}', array($this, 'index'))  // /projekt/web/edit/1 
+				->value('page', 1)
+				->bind('/about/edit');
 			$AboutController->match('view/add/{id_user}', array($this, 'add'))		  // /projekt/web/about/view/add/1
 				->value('page', 1)
 				->bind('/about/add');
