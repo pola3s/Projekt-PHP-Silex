@@ -205,8 +205,9 @@
 			$file = $filesModel->getFile($id);
 			$filename = $filesModel -> getFile($id);
 			
+			
 			$CategoriesModel = new CategoriesModel($app);
-			$categories = $CategoriesModel->getCategories();
+			$categories = $CategoriesModel->getCategoriesDict();
 			
 			if (count($file)) {
 				$form = $app['form.factory']->createBuilder('form', $file)
