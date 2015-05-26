@@ -204,17 +204,17 @@ class UsersModel
   
 
  
-    public function getUserById($id)
+     public function getUserById($id_user)
     {
         $sql = 'SELECT * FROM users WHERE `id_user` = ? Limit 1';
-        $this->_db->executeQuery($sql, array($user));
+        return $this->_db->fetchAssoc($sql, array((int)$id_user));
     }
 	
 	
     public function getUserById2($id_user)
     {
-        $sql = 'SELECT * FROM users WHERE `id_user` = ?';
-        return $this->_db->fetchAssoc($sql, array((string)$name));
+        $sql = 'SELECT * FROM users WHERE `id_user` = ? Limit 1';
+        $this->_db->executeQuery($sql, array($id_user));
     }
 
 	public function login($data)

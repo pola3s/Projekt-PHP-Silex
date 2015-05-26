@@ -28,16 +28,16 @@ class FilesModel
 				));
     }
 	
-	public function saveFile2($data)
-{
+	public function saveFile2($name, $data)
+	{
     if (isset($data['id_file']) && ctype_digit((string)$data['id_file'])) {
-        $sql = 'UPDATE files SET title = ?, description = ?, category =?, id_user = ? WHERE id_file = ?';
-        $this->_db->executeQuery($sql, array($data['title'], $data['description'], $data['category'], $data['id_user'], $data['id_file']));
+       $sql = 'UPDATE files SET title = ?, description = ?, category =?, id_user = ? WHERE id_file = ?';
+       $this->_db->executeQuery($sql, array($data['title'], $data['description'], $data['category'], $data['id_user'], $data['id_file']));
     } else {
-        $sql = 'INSERT INTO `files` (`title`, `category`, `description`, `id_user`) VALUES (?,?,?,?)';
-        $this->_db->executeQuery($sql, array($data['title'], $data['description'], $data['category'], $data['id_user']));
+       $sql = 'INSERT INTO `files` (`title`, `category`, `description`, `id_user`) VALUES (?,?,?,?)';
+       $this->_db->executeQuery($sql, array($data['title'], $data['description'], $data['category'], $data['id_user']));
     }
-}
+	}
 
     public function createName($name)
     {
@@ -129,7 +129,7 @@ class FilesModel
 	 public function getUserByFile($id)
     {
         if (($id != '') && ctype_digit((string)$id)) {
-            $sql = 'SELECT id_user FROM files WHERE id_file = ?';
+            $sql = 'SELECT * FROM files WHERE id_file = ?';
             return $this->_db->fetchAssoc($sql, array((int) $id));
         } else {
             return array();
@@ -148,6 +148,21 @@ class FilesModel
             return false;
         }
     }
+	
+	public function checkUserId($id)
+    {
+        $sql = 'SELECT id_user FROM files WHERE id_file=?';
+        return $this->_db->fetchAssoc($sql, array($id));
+    }
+	
+	 public function getUserById($id_user)
+    {
+        $sql = 'SELECT * FROM users WHERE `id_user` = ? Limit 1';
+        return $this->_db->fetchAssoc($sql, array((int)$id_user));
+    }
+	
+	
+	
 	 public function getFileByName($name)
     {
         $sql = 'SELECT * FROM files WHERE name=?';

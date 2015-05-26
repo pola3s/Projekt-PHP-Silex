@@ -30,9 +30,10 @@ class RegistrationController implements ControllerProviderInterface
     {
         $data = array();
         $form = $app['form.factory']->createBuilder('form', $data)
+		
+			
             ->add(
                 'login', 'text', array(
-					'label' => 'Login',
                     'constraints' => array(
                         new Assert\NotBlank()
                     )
@@ -91,7 +92,8 @@ class RegistrationController implements ControllerProviderInterface
                     )
                 )
             )
-            ->getForm();
+            ->add('save', 'submit', array('label' => 'Zarejestruj'))
+			->getForm();
 
 
         $form->handleRequest($request);

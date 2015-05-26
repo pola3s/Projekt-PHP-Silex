@@ -67,16 +67,20 @@
 	{
 		$id = (int) $request -> get('id', 0); //id zdjêcia
 		
+		
+		var_dump($id);
+		
 		$FilesModel = new FilesModel($app);
-		$file = $FilesModel-> getFile($id);
+		$id_user = $FilesModel-> checkUserId($id);
+		
+	
+		var_dump($id_user);
+		
+		$user = $FilesModel -> getUserById($id_user);
+		
+		var_dump($user);
 		
 		
-		
-		$id_user = $FilesModel -> getUserByFile($id);
-		
-		
-		$UsersModel = new UsersModel($app);
-		$user = $UsersModel -> getUserById2($id_user);
 		
 		
 		return $app['twig']->render('files/view.twig', array(
@@ -93,7 +97,7 @@
 			// limit access
 		//	return $app->redirect('/auth/login');
 		//}
-   
+			
    
 		$CategoriesModel = new CategoriesModel($app);
 		$categories = $CategoriesModel->getCategories();
@@ -102,11 +106,9 @@
 		->add('title', 'text', array(
 			'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
 		))
-		->add(
-                'category', 'choice', array(
-                    'choices' => $categories,
-                    )
-            )
+		->add('category', 'choice', array(
+             'choices' => $categories,
+        ))
 		->add('description', 'text', array(
 			'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
 		))
@@ -145,6 +147,7 @@
 					'type' => 'success',
 					'content' => 'File successfully uploaded.'
 					)
+					
 				);
 		
 			return $app->redirect(

@@ -2,21 +2,32 @@
 
 {% block content %}
 
+		<div class="thumbnail">
 		
-		<div class="col-lg-12 text-center">
-		<img src="{{ app.request.basepath }}/media/{{ file.name }}">
-		
-		<h4>{{ file.title }}</h4>
-		<h5><em>{{ file.category }}</em></h5>
-		<h5><em>{{ file.description }}</em></h5>
-		<h5><em>{{ file.id_user }}</em></h5>
-		
-		
-        <h5><a href="{{ url('edit', {'id': file.id_file}) }}" title="Edit file">Edytuj zdjęcie</a></h5>
-        
-        
-        <h5><a href="{{ url('/files/delete', {'name': file.name}) }}" title="Delete file">Usuń zdjęcie</a></h5>
+			<div class="row">
+						
+				<div class="col-lg-12 text-center">
+					<img src="{{ app.request.basepath }}/media/{{ file.name }}">
+						<div class="caption">
+							<h4>{{ file.title }}</h4>
+							<h5><em>{{ file.category }}</em></h5>
+							<h5><em>{{ file.description }}</em></h5>
+							
+							
+							<h5><a href="{{ url('edit', {'id': file.id_file}) }}" title="Edit file">Edytuj zdjęcie</a></h5>
+							<h5><a href="{{ url('/files/delete', {'name': file.name}) }}" title="Delete file">Usuń zdjęcie</a></h5>
+							
+						</div>
+				</div>
+			</div>
 		</div>
+		
+
+		
+		
+		
+		
+        
 		
 		{% block comments %}
 

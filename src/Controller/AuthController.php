@@ -89,7 +89,7 @@ class AuthController implements ControllerProviderInterface
                 'error' => $app['security.last_error']($request)
             )
         );
-    }
+	}
 
     /**
      * Logout action.
