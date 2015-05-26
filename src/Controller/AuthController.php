@@ -77,7 +77,7 @@ class AuthController implements ControllerProviderInterface
             )
             ->add(
                 'password', 'password', array(
-                    'label' => 'Hasło'
+                    'label' => 'Haslo'
                 )
             )
             ->add('Zaloguj', 'submit')

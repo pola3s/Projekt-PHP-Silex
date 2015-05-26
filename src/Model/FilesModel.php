@@ -155,10 +155,16 @@ class FilesModel
         return $this->_db->fetchAssoc($sql, array($id));
     }
 	
-	 public function getUserById($id_user)
+	public function getFileUploaderName($id_user)
+    {
+        $sql = 'SELECT login FROM users WHERE `id_user` = ? Limit 1';
+        return $this->_db->fetchAssoc($sql, array((int)$id_user));
+    }
+	
+	 public function getUserById($id)
     {
         $sql = 'SELECT * FROM users WHERE `id_user` = ? Limit 1';
-        return $this->_db->fetchAssoc($sql, array((int)$id_user));
+        return $this->_db->fetchAssoc($sql, array((int)$id));
     }
 	
 	
