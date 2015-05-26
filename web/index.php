@@ -53,11 +53,7 @@ $app->register(
         ),
         'security.access_rules' => array(
             array('^/user$', 'ROLE_USER'),
-            array('^/user.*$', 'ROLE_USER'),
-            array('^/stocks$', 'ROLE_USER'),
-            array('^/stocks.*$', 'ROLE_USER'),
-            array('^/admin/.*$', 'ROLE_ADMIN'),
-            array('^/admin/$', 'ROLE_ADMIN'),
+            
 
 
         ),

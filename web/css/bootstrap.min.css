@@ -4895,11 +4895,8 @@ a.badge:focus {
   }
 }
 .thumbnail {
-  max-height: 150px;
-  max-width: 200px;
-  width: 120px;
-  height: 120px;
- display: block;
+ 
+  display: block;
   padding: 4px;
   margin-bottom: 20px; 
   line-height: 1.42857143;

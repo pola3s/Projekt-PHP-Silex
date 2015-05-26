@@ -25,7 +25,7 @@ class UsersController implements ControllerProviderInterface
         $usersController->match('/add/', array($this, 'add'))->bind('/users/add');
         $usersController->match('/edit/{id}', array($this, 'edit'))->bind('/users/edit');
         $usersController->match('/delete/{id}', array($this, 'delete'))->bind('/users/delete');
-        $usersController->get('/view/{id}', array($this, 'view'))->bind('/users/view');
+        $usersController->match('/view/{id}', array($this, 'view'))->bind('/users/view');
 		$usersController->get('/view/{id}/manager', array($this, 'manager'))->bind('/users/manager');
 
         return $usersController;

@@ -94,7 +94,7 @@ class CommentsController implements ControllerProviderInterface
 			//var_dump($data);
             $form = $app['form.factory']->createBuilder('form', $data)
                 ->add(
-                    'content', 'textarea', array('required' => false), array(
+                    'Tresc', 'textarea', array('required' => false), array(
                     'constraints' => array(
                         new Assert\NotBlank(),
                         new Assert\Length(
@@ -130,7 +130,7 @@ class CommentsController implements ControllerProviderInterface
                     );
                     return $app->redirect(
                         $app['url_generator']->generate(
-                            'files'
+                            '/files/'
                         ), 301
                     );
                 } catch (\Exception $e) {
@@ -154,7 +154,7 @@ class CommentsController implements ControllerProviderInterface
             );
             return $app->redirect(
                 $app['url_generator']->generate(
-                    'files'
+                    '/files/'
                 ), 301
             );
         }
@@ -162,58 +162,49 @@ class CommentsController implements ControllerProviderInterface
 	
 	public function edit(Application $app, Request $request)
     {
-        $id = (int)$request->get('id_file', 0);
-		
-		//var_dump($id);
 
-		//$commentModel = new CommentsModel($app);
-        $check = $this->_model->checkFileId($id);
-		
-		//var_dump($check);
+        $id = (int)$request->get('id', 0);
+
+        $check = $this->_model->checkCommentId($id);
 
         if ($check) {
 
-
+            $idCurrentUser = $this->_user->getIdCurrentUser($app);
             $comment = $this->_model->getComment($id);
-            //$user = new UsersModel($app);
-            //$idLoggedUser = $user->getIdCurrentUser($app);
 
             if (count($comment)) {
-              // if ($idLoggedUser == $comment['iduser']) { 
-                // admin has no possibility to edit the comment
+
                 $data = array(
-                    'id_comment' => $id,
-					'content' => $comment['content'],
-					'published_date' => $comment['published_date'],
+                    'idcomment' => $id,
+                    'published_date' => date('Y-m-d'),
                     'id_file' => $comment['id_file'],
-                    'id_user' => $comment['id_user']
+                    'id_user' => $comment['id_user'],
+                    'idCurrentUser' => $idCurrentUser,
+                    'content' => $comment['content'],
                 );
 
-				//var_dump($data);
-				
                 $form = $app['form.factory']->createBuilder('form', $data)
                     ->add(
-                        'content', 
-                        'textarea', 
-                        array(
-                            'constraints' => array(
-                                new Assert\NotBlank(),
-                                new Assert\Length(
-                                    array(
-                                        'min' => 5,
-                                        'minMessage' 
-                                            => 'Content must be at 
-                                                least 3 characters long',
-                                    )
-                                ),
-                                new Assert\Type(
-                                    array(
-                                        'type' => 'string',
-                                        'message' => 'The title is not valid.',
-                                    )
+                        'content', 'textarea', array(
+                            'required' => false
+                        ), array(
+                                'constraints' => array(
+                            new Assert\NotBlank(),
+                            new Assert\Length(
+                                array(
+                                    'min' => 5,
+                                    'minMessage' => 
+                                        'Minimalna ilo�� znak�w to 5',
+                                )
+                            ),
+                            new Assert\Type(
+                                array(
+                                    'type' => 'string',
+                                    'message' => 'Tekst nie poprawny.',
                                 )
                             )
                         )
+                    )
                     )
                     ->getForm();
 
@@ -222,67 +213,53 @@ class CommentsController implements ControllerProviderInterface
                 if ($form->isValid()) {
                     $data = $form->getData();
 
-                    $model = $this->_model->editComment($data);
-                    if (!$model) {
-                        $app['session']
-                        ->getFlashBag()
-                        ->set('success', 'Comment was updated successfully!');
-                        return $app->redirect(
-                            $app['url_generator']->generate("files"), 
-                            301
-                        );
-                    } else {
-                        $app['session']
-                        ->getFlashBag()
-                        ->set(
-                            'error', 
-                            'An error occured, 
-                            we were not able to edit the comment.'
+                    try {
+                        $model = $this->_model->editComment($data);
+
+                        $app['session']->getFlashBag()->add(
+                            'message', array(
+                                'type' => 'success',
+                                'content' => 'Komanetarz zosta� zmieniony'
+                            )
                         );
                         return $app->redirect(
-                            $app['url_generator']->generate('files'), 
-                            301
+                            $app['url_generator']->generate(
+                                'files'
+                            ), 301
                         );
+                    } catch (Exception $e) {
+                        $errors[] = 'Co� posz�o niezgodnie z planem';
                     }
                 }
                 return $app['twig']->render(
-                    '/comments/edit.twig',
-                    array(
-                        'form' => $form->createView(),
-                        'id_file' => $id
+                    'comments/edit.twig', array(
+                        'form' => $form->createView()
                     )
                 );
-                //} else { // user is not author
-                //    $app['session']
-                 //   ->getFlashBag()
-                 //   ->set(
-                //        'error', 
-                //        'It seems you are not an author of this comment!'
-                //    );
-                //    return $app->redirect(
-                //        $app['url_generator']->generate('/posts/'), 
-                //        301
-                //    );
-                //}
-            } else { // end count
-                $app['session']
-                ->getFlashBag()
-                ->set(
-                    'error', 
-                    'Comment not found, write a new one instead!'
+            } else {
+                $app['session']->getFlashBag()->add(
+                    'message', array(
+                        'type' => 'danger',
+                        'content' => 'Nie znaleziono komentarza'
+                    )
                 );
                 return $app->redirect(
-                    $app['url_generator']->generate('/comments/add'), 
-                    301
+                    $app['url_generator']->generate(
+                        '/comments/add'
+                    ), 301
                 );
             }
-        } else { // end check
-            $app['session']
-            ->getFlashBag()
-            ->set('error', 'Comment not found!');
+        } else {
+            $app['session']->getFlashBag()->add(
+                'message', array(
+                    'type' => 'danger',
+                    'content' => 'Nie znaleziono komentarza'
+                )
+            );
             return $app->redirect(
-                $app['url_generator']->generate("files"), 
-                301
+                $app['url_generator']->generate(
+                    '/files/'
+                ), 301
             );
 
         }
@@ -387,7 +364,7 @@ class CommentsController implements ControllerProviderInterface
             }
         } else {
             return $app->redirect(
-                $app['url_generator']->generate("chujemuje"), 
+                $app['url_generator']->generate("/files/"), 
                 301
             );
 

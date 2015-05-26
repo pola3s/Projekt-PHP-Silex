@@ -28,6 +28,13 @@ class FilesModel
 				));
     }
 	
+	public function getFileName($id)
+    {
+        $sql = 'SELECT name FROM files WHERE id_file = ?1';
+        return $this->_db->fetchAssoc($sql, array((int)$id));
+    }
+	
+	
 	public function saveFile2($name, $data)
 	{
     if (isset($data['id_file']) && ctype_digit((string)$data['id_file'])) {
@@ -234,7 +241,39 @@ class FilesModel
     }
 	
 	
-		
+	public function editFile($data)
+    {
+
+        if (isset($data['id_file']) && ctype_digit((string)$data['id_file'])) {
+            $sql = 'UPDATE files 
+                    SET title = ?, description = ?, 
+                        category = ?
+                    WHERE id_file = ?';
+            $this->_db
+                ->executeQuery(
+                    $sql,
+                    array(
+                        $data['title'], 
+                        $data['description'], 
+                        $data['category'], 
+                       
+                    )
+                );
+        } else {
+            $sql = 'INSERT INTO files 
+                    (title, description,category) 
+                    VALUES (?,?,?)';
+            $this->_db
+                ->executeQuery(
+                    $sql,
+                    array(
+                        $data['title'], 
+                        $data['description'], 
+                        $data['category']
+                    )
+                );
+        }
+    }
 	
 	 
 	 

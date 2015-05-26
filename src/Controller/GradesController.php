@@ -42,15 +42,11 @@ class GradesController implements ControllerProviderInterface
     {
         $id = (int)$request->get('id_file', 0);
 		
-		var_dump($id);
-
 		$filesModel = new FilesModel($app);
 		$gradesModel = new GradesModel($app);
 		$averageGrade = $gradesModel ->getGrades($id);  
 			
-		var_dump($averageGrade);
-
-				return $app['twig']->render(
+			return $app['twig']->render(
                 'grades/index.twig', array(
                 'averageGrade' => $averageGrade['AVG(grade)'],
 				'id_file' => $id

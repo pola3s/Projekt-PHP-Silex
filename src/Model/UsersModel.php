@@ -167,6 +167,8 @@ class UsersModel
         }
     }
 	
+	
+	
 	 public function getFileById($id)
     {
        $sql = 'SELECT * FROM files WHERE id_user = ?';
@@ -292,7 +294,8 @@ class UsersModel
 
         return $user;
     }
-
+	
+	
 	
 
     public function _isLoggedIn(Application $app)

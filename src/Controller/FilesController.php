@@ -94,6 +94,7 @@
 		return $app['twig']->render('files/view.twig', array(
 				'file' => $file,
 				'user' => $user,
+				'id_user' => $id_user,
 				'category' => $category,
 		));
 	}
@@ -196,52 +197,55 @@
 	}
 		
 		
-	public function edit(Application $app, Request $request)
-	{
+		public function edit(Application $app, Request $request)
+		{
+			$filesModel = new FilesModel($app);
+			$id = (int) $request->get('id', 0);
 			
-    $filesModel = new FilesModel($app);
-
-    $id = (int) $request->get('id', 0);
-
-    $file = $filesModel->getFile($id);
+			$file = $filesModel->getFile($id);
+			$filename = $filesModel -> getFile($id);
+			
+			$CategoriesModel = new CategoriesModel($app);
+			$categories = $CategoriesModel->getCategories();
+			
+			if (count($file)) {
+				$form = $app['form.factory']->createBuilder('form', $file)
+					->add('id_file', 'hidden', array(
+						'constraints' => array(new Assert\NotBlank())
+						)
+					)
+					->add('title', 'text', array(
+						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
+						)
+					)
+					->add(
+						'category', 'choice', array(
+							'choices' => $categories,
+						)
+					)
+					->add('description', 'text', array(
+						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
+						)
+					)
+					->add('save', 'submit')
+					->getForm();
+					
+			$form->handleRequest($request);
+			
+			if ($form->isValid()) {
+					$filesModel = new FilesModel($app);
+					$filesModel->saveFile2($filename, $form->getData());
+						
+					return $app->redirect($app['url_generator']->generate('files'), 301);
+			}
+					return $app['twig']->render('files/edit.twig', array('form' => $form->createView(), 'file' => $file));
+					
+			} else {
+			
+					return $app->redirect($app['url_generator']->generate('/files/add'), 301);
+			}
+} 
 	
-	$CategoriesModel = new CategoriesModel($app);
-	$categories = $CategoriesModel->getCategories();
-
-    if (count($file)) {
-
-        $form = $app['form.factory']->createBuilder('form', $file)
-            ->add('id_file', 'hidden', array(
-                'constraints' => array(new Assert\NotBlank())
-            ))
-            ->add('title', 'text', array(
-                'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
-            ))
-			->add(
-                'category', 'choice', array(
-                    'choices' => $categories,
-                    )
-            )
-            ->add('description', 'text', array(
-                'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
-            ))
-            ->add('save', 'submit')
-            ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isValid()) {
-            $filesModel = new FilesModel($app);
-            $filesModel->saveFile2($form->getData());
-            return $app->redirect($app['url_generator']->generate('files'), 301);
-        }
-
-        return $app['twig']->render('files/edit.twig', array('form' => $form->createView(), 'file' => $file));
-
-    } else {
-        return $app->redirect($app['url_generator']->generate('/files/add'), 301);
-    }
-	}	
 	
 	public function delete(Application $app, Request $request)
     {
@@ -285,7 +289,7 @@
                                 );
                                 return $app->redirect(
                                     $app['url_generator']->generate(
-                                        '/files/manager'
+                                        '/files/'
                                     ), 301
                                 );
                             } catch (\Exception $e) {
