@@ -25,15 +25,15 @@
 				->value('page', 1)
 				->bind('files');
 			
-			$filesController->match('/view/{id}', array($this, 'view'))
+			$filesController->match('files/view/{id}', array($this, 'view'))
 							->bind('view');
-			$filesController->match('/upload/', array($this, 'upload'))
+			$filesController->match('files/upload/', array($this, 'upload'))
 							->bind('/files/upload');
-			$filesController->match('/edit/{id}', array($this, 'edit'))
+			$filesController->match('files/edit/{id}', array($this, 'edit'))
 							->bind('edit');
-			$filesController->match('/delete/{name}', array($this, 'delete'))
+			$filesController->match('files/delete/{name}', array($this, 'delete'))
 							->bind('/files/delete');
-			$filesController->match('/manager/', array($this, 'manager'))
+			$filesController->match('files/manager/', array($this, 'manager'))
 							->bind('/files/manager');
 			return $filesController;
 		}
@@ -148,9 +148,7 @@
 		->add('description', 'text', array(
 			'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
 		))
-		//->add('id_user', 'text', array(
-		//	'constraints' => array(new Assert\NotBlank())
-		//))
+		
 		->add(
 			'file', 'file', array(
 			'label' => 'Choose file',

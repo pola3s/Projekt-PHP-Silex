@@ -35,7 +35,7 @@ $app->register(
                 'form' => array(
                     'login_path' => '/auth/login',
                     'check_path' => '/user_login_check',
-                    'default_target_path'=> 'files',
+                    'default_target_path'=> '/',
                     'username_parameter' => 'form[username]',
                     'password_parameter' => 'form[password]',
                 ),
@@ -66,7 +66,7 @@ $app->register(
 
 
 
-$app->mount('/files/', new Controller\FilesController());
+$app->mount('/', new Controller\FilesController());
 $app->mount('/users/', new Controller\UsersController());
 $app->mount('/auth/', new Controller\AuthController());
 $app->mount('/comments/', new Controller\CommentsController());

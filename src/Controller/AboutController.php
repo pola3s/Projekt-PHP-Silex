@@ -29,13 +29,10 @@ class AboutController implements ControllerProviderInterface{
           
             $AboutController = $app['controllers_factory'];
             $AboutController->get('view/{id_user}', array($this, 'index'))  // /projekt/web/about/view/1 
-				->value('page', 1)
 				->bind('/about/');
 			 $AboutController->get('edit/{id_user}', array($this, 'edit'))  // /projekt/web/edit/1 
-				->value('page', 1)
 				->bind('/about/edit');
 			$AboutController->match('add/{id_user}', array($this, 'add'))		  // /projekt/web/about/add/1
-				->value('page', 1)
 				->bind('/about/add/');
 			return $AboutController;
 		}

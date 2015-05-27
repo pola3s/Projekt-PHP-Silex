@@ -15,29 +15,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 use Model\UsersModel;
 
-/**
- * Class AuthController.
- *
- * @package Controller
- * @implements ControllerProviderInterface
- */
+
 class AuthController implements ControllerProviderInterface
 {
-    /**
-     * Data for view.
-     *
-     * @access protected
-     * @var array $view
-     */
+  
     protected $view = array();
 
-    /**
-     * Routing settings.
-     *
-     * @access public
-     * @param Silex\Application $app Silex application
-     * @return AlbumsController Result
-     */
     public function connect(Application $app)
     {
         $authController = $app['controllers_factory'];
@@ -48,14 +31,7 @@ class AuthController implements ControllerProviderInterface
         return $authController;
     }
 
-    /**
-     * Login action.
-     *
-     * @access public
-     * @param Silex\Application $app Silex application
-     * @param Symfony\Component\HttpFoundation\Request $request Request object
-     * @return string Output
-     */
+   
 	public function login(Application $app, Request $request)
     {
 	
@@ -91,14 +67,7 @@ class AuthController implements ControllerProviderInterface
         );
 	}
 
-    /**
-     * Logout action.
-     *
-     * @access public
-     * @param Silex\Application $app Silex application
-     * @param Symfony\Component\HttpFoundation\Request $request Request object
-     * @return string Output
-     */
+   
     public function logout(Application $app, Request $request)
     {
         $app['session']->clear();
