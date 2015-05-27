@@ -157,15 +157,15 @@ class UsersModel
         return $info;
     }
 
-	 public function getUser($id)
-    {
-        if (($id != '') && ctype_digit((string)$id)) {
-            $sql = 'SELECT * FROM users WHERE id_user = ?';
-            return $this->_db->fetchAssoc($sql, array((int) $id));
-        } else {
-            return array();
-        }
-    }
+	 // public function getUser($id)
+    // {
+        // if (($id != '') && ctype_digit((string)$id)) {
+            // $sql = 'SELECT * FROM users WHERE id_user = ?';
+            // return $this->_db->fetchAssoc($sql, array((int) $id));
+        // } else {
+            // return array();
+        // }
+    // }
 	
 	
 	
@@ -189,10 +189,52 @@ class UsersModel
     }
 	
 	
-	
+	public function getIdCurrentUser($app)
+    {
+
+        $login = $this->getCurrentUser($app);
+        $id_user = $this->getUserByLogin($login);
+
+        return $id_user['id_user'];
+
+
+    }
+
+   
+    protected function getCurrentUser($app)
+    {
+        $token = $app['security']->getToken();
+
+        if (null !== $token) {
+            $user = $token->getUser()->getUsername();
+        }
+
+        return $user;
+    }
+
+  
+  
+
+	public function _isLoggedIn(Application $app)
+    {
+        if ('anon.' !== $user = $app['security']->getToken()->getUser()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 	
    
-      
+       
+    public function getUser($id)
+    {
+        if (($id != '') && ctype_digit((string)$id)) {
+            $sql = 'SELECT id_user, login, email, firstname, lastname FROM users WHERE id_user = ?';
+            return $this->_db->fetchAssoc($sql, array((int) $id));
+        } else {
+            return array();
+        }
+    }
 
 
     public function changePassword($data, $id)
@@ -251,16 +293,7 @@ class UsersModel
         $this->_db->executeQuery($sql, array($id));
     }
 
-    public function getIdCurrentUser($app)
-    {
-
-        $login = $this->getCurrentUser($app);
-        $iduser = $this->getUserByLogin($login);
-
-        return $iduser['id_user'];
-
-
-    }
+   
 	
 	
     public  function getUserList()
@@ -282,28 +315,10 @@ class UsersModel
         }
     }
 	
+}
+	
     
 
-    protected function getCurrentUser($app)
-    {
-        $token = $app['security']->getToken();
-
-        if (null !== $token) {
-            $user = $token->getUser()->getUser();
-        }
-
-        return $user;
-    }
 	
 	
 	
-
-    public function _isLoggedIn(Application $app)
-    {
-        if ('anon.' !== $user = $app['security']->getToken()->getUser()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-}

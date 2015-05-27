@@ -39,6 +39,15 @@
 		}
 		
 		
+		protected function _isLoggedIn(Application $app)
+		{
+			if (null === $user = $app['session']->get('user')) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+	
 /// WYŒWIETLANIE ZDJÊÆ, 6 NA STRONIE, DZIA£A!!!!///
 		public function index(Application $app, Request $request)
 		{
@@ -103,15 +112,31 @@
 	public function upload(Application $app, Request $request)
 	{
 		
-		//if(!$this->_isLoggedIn($app)) {
-			// limit access
-		//	return $app->redirect('/auth/login');
-		//}
-			
+		$usersModel = new UsersModel($app);
+        //$idLoggedUser = $usersModel->getIdCurrentUser($app);
+		
+		if ($usersModel ->_isLoggedIn($app)) {
+                $id_user = $usersModel -> getIdCurrentUser($app);
+				var_dump($id_user);
+            } else {
+                return $app->redirect(
+					$app['url_generator']->generate(
+						'auth_login'
+						), 301
+				);
+            }
+            $data = array(
+                'id_user' => $id_user,
+            );
+
    
 		$CategoriesModel = new CategoriesModel($app);
 		$categories = $CategoriesModel->getCategoriesDict();
-		var_dump($categories);
+		
+		
+		
+		
+
 		
 		$form = $app['form.factory']->createBuilder('form', $data)
 		->add('title', 'text', array(
@@ -123,9 +148,9 @@
 		->add('description', 'text', array(
 			'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
 		))
-		->add('id_user', 'text', array(
-			'constraints' => array(new Assert\NotBlank())
-		))
+		//->add('id_user', 'text', array(
+		//	'constraints' => array(new Assert\NotBlank())
+		//))
 		->add(
 			'file', 'file', array(
 			'label' => 'Choose file',
