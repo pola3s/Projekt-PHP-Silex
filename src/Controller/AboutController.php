@@ -31,33 +31,29 @@ class AboutController implements ControllerProviderInterface{
             $AboutController->get('view/{id_user}', array($this, 'index'))  // /projekt/web/about/view/1 
 				->value('page', 1)
 				->bind('/about/');
-			 $AboutController->get('edit/{id_user}', array($this, 'index'))  // /projekt/web/edit/1 
+			 $AboutController->get('edit/{id_user}', array($this, 'edit'))  // /projekt/web/edit/1 
 				->value('page', 1)
 				->bind('/about/edit');
-			$AboutController->match('view/add/{id_user}', array($this, 'add'))		  // /projekt/web/about/view/add/1
+			$AboutController->match('add/{id_user}', array($this, 'add'))		  // /projekt/web/about/add/1
 				->value('page', 1)
-				->bind('/about/add');
+				->bind('/about/add/');
 			return $AboutController;
 		}
 		
 	   public function add(Application $app, Request $request)
 	   {
 		
-		$iduser = (int)$request->get('iduser', 0);
+		$id_user = (int)$request->get('id_user', 0);
 		
 		$UsersModel = new UsersModel($app);
-		$check = $UsersModel->checkUserId($iduser);
+		$check = $UsersModel->checkUserId($id_user);
 
 		$check = 1;
 		
 
         if ($check) {
 
-          
-			
-			
-		
-            $form = $app['form.factory']->createBuilder('form', $data)
+          $form = $app['form.factory']->createBuilder('form', $data)
 				->add('email', 'text', array(
 					'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 1)))
 				))
@@ -84,8 +80,6 @@ class AboutController implements ControllerProviderInterface{
 			try {
 			
 			$data = $form->getData();
-			
-			
 			
 			$AboutModel->saveAbout($data);
 			$app['session']->getFlashBag()->add(

@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
 use Model\UsersModel;
 use Model\FilesModel;
+use Model\AboutModel;
 
 
 class UsersController implements ControllerProviderInterface
@@ -228,7 +229,8 @@ class UsersController implements ControllerProviderInterface
 		return $app['twig']->render('users/view.twig', array( 
 			'files' => $files, 
 			'user' => $user,
-			'about' => $about
+			'about' => $about,
+			'id_user' => $id_user
 			
 		));
 	

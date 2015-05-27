@@ -16,9 +16,9 @@
 		<p>{{ about.website }} </p>
 		<p>{{ about.city }} </p>
 		
-		<p><a href=" {{ url('/about/edit', {'id': about.id_about}) }}" class="btn btn-primary" role="button">Edytuj</a></p>
+		<p><a href=" {{ url('/about/add/', {'id': about.id_user }) }}" class="btn btn-primary" role="button">Edytuj</a></p>
 		
-		
+	
 	</div>
 	
 		{% for file in files %}
