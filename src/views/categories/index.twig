@@ -1,0 +1,29 @@
+{% extends 'layout.twig' %}
+
+{% block title %}Index users{% endblock %}
+
+{% block content %}
+    <h1>
+        List of users
+    </h1>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Id</th>
+			<th>Nazwa</th>
+		
+        <tbody>
+			{% for category in categories %}
+				<tr>
+					<td>{{ category.id_category }}</td>
+					<td>{{ category.name }}</td>
+				</tr>
+				
+        {% endfor %}
+		
+        </tbody>
+    </table>
+  
+          
+{% endblock %}

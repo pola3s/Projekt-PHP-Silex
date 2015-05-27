@@ -65,13 +65,13 @@ $app->register(
 );
 
 
-
 $app->mount('/', new Controller\FilesController());
 $app->mount('/users/', new Controller\UsersController());
 $app->mount('/auth/', new Controller\AuthController());
 $app->mount('/comments/', new Controller\CommentsController());
 $app->mount('/grades/', new Controller\GradesController());
 $app->mount('/about/', new Controller\AboutController());
+$app->mount('/categories/', new Controller\CategoriesController());
 $app->mount('/register/', new Controller\RegistrationController());
 $app->run();
 

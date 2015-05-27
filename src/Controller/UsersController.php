@@ -23,7 +23,7 @@ class UsersController implements ControllerProviderInterface
     {
         $usersController = $app['controllers_factory'];//definiowanie �cie�ek rutowania
         $usersController->get('/', array($this, 'index'))->bind ('/users/');
-        $usersController->match('/add/', array($this, 'add'))->bind('/users/add');
+        $usersController->match('/add/{id}', array($this, 'add'))->bind('/users/add');
         $usersController->match('/edit/{id}', array($this, 'edit'))->bind('/users/edit');
         $usersController->match('/delete/{id}', array($this, 'delete'))->bind('/users/delete');
         $usersController->match('/view/{id}', array($this, 'view'))->bind('/users/view');

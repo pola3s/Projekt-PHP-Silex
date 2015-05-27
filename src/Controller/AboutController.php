@@ -30,10 +30,10 @@ class AboutController implements ControllerProviderInterface{
             $AboutController = $app['controllers_factory'];
             $AboutController->get('view/{id_user}', array($this, 'index'))  // /projekt/web/about/view/1 
 				->bind('/about/');
-			 $AboutController->get('edit/{id_user}', array($this, 'edit'))  // /projekt/web/edit/1 
+			 $AboutController->get('edit/{id}', array($this, 'edit'))  // /projekt/web/edit/1 
 				->bind('/about/edit');
-			$AboutController->match('add/{id_user}', array($this, 'add'))		  // /projekt/web/about/add/1
-				->bind('/about/add/');
+			$AboutController->match('add/{id}', array($this, 'add'))		  // /projekt/web/about/add/1
+				->bind('/about/add');
 			return $AboutController;
 		}
 		
@@ -114,7 +114,7 @@ class AboutController implements ControllerProviderInterface{
 			}
 			
 				return $app['twig']->render(
-				'files/upload.twig',
+				'about/add.twig',
 					array(
 						'form' => $form->createView()
 					)

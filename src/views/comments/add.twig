@@ -5,12 +5,16 @@
     <h2 class="intro-text text-center">
         Dodaj komentarz
     </h2>
+	{% for flashMessage in app.session.getFlashBag.get('message') %}
+        <div class="alert alert-{{ flashMessage.type }}">
+            {{ flashMessage.content }}
+        </div>
+    {% endfor %}
+	
     <hr>
     <form action="" method="post">
         {{ form_widget(form) }}
         <input type="submit" name="submit"/>
     </form>
 {% endblock %}
-
-
 		

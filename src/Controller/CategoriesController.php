@@ -27,8 +27,32 @@ class CategoriesController implements ControllerProviderInterface
         $this->_user = new UsersModel($app);
         $this->_files = new FilesModel($app);
         $categoriesController = $app['controllers_factory'];
+		$categoriesController->match('', array($this, 'index'))
+				
+				->bind('categories');
+		$categoriesController->match('/add/', array($this, 'add'))
+            ->bind('/categories/add');
+        $categoriesController->match('/edit/{id_category}', array($this, 'edit'))
+            ->bind('/categories/edit');
+        $categoriesController
+            ->match('/delete/{id_category}', array($this, 'delete'))
+            ->bind('/categories/delete');
+     
         return $categoriesController;
     }
+		
+     public function index(Application $app)
+    {
+        $categoriesModel = new CategoriesModel($app);
+        $categories = $categoriesModel->getCategories();
+		
+        return $app['twig']->render('categories/index.twig', 
+			array(
+				'categories' => $categories
+			)
+		);
+    }
+
 
 }
 	

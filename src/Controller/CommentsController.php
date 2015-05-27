@@ -42,7 +42,7 @@ class CommentsController implements ControllerProviderInterface
   
     public function index(Application $app, Request $request)
     {
-        $id = (int)$request->get('id_file', 0);
+        $id_file = (int)$request->get('id_file', 0);
 		
 		
 
@@ -55,7 +55,7 @@ class CommentsController implements ControllerProviderInterface
 				return $app['twig']->render(
                 'comments/index.twig', array(
                 'comments' => $comments, 
-				'id_file' => $id
+				'id_file' => $id_file
                 )
             );
 	} 
@@ -64,101 +64,7 @@ class CommentsController implements ControllerProviderInterface
 	public function add(Application $app, Request $request)
     {
 
-        $idfile = (int)$request->get('id_file');
-		
-		//var_dump($idfile);
-
-        $check = $this->_files->checkFileId($idfile);
-		
-		//var_dump($check);
-
-        if ($check) {
-
-            //if ($this->_user->_isLoggedIn($app)) {
-             //   $iduser = $this->_user->getIdCurrentUser($app);
-            //} else {
-            //    $iduser = 0;
-            //}
-			
-			$iduser = 4;
-			
-			
-			//var_dump($iduser);
-			
-            $data = array(
-                'published_date' => date('Y-m-d'),
-                'id_file' => $idfile,
-                'id_user' => $iduser,
-            );
-
-			//var_dump($data);
-            $form = $app['form.factory']->createBuilder('form', $data)
-                ->add(
-                    'Tresc', 'textarea', array('required' => false), array(
-                    'constraints' => array(
-                        new Assert\NotBlank(),
-                        new Assert\Length(
-                            array(
-                                'min' => 5,
-                                'minMessage' => 
-                                    'Minimalna ilo�� znak�w to 5',
-                            )
-                        ),
-                        new Assert\Type(
-                            array(
-                                'type' => 'string',
-                                'message' => 'tekst nie jest poprawny',
-                            )
-                        )
-                    )
-                )
-                )
-                ->getForm();
-
-            $form->handleRequest($request);
-
-            if ($form->isValid()) {
-                $data = $form->getData();
-                try {
-                    $model = $this->_model->addComment($data);
-
-                    $app['session']->getFlashBag()->add(
-                        'message', array(
-                            'type' => 'success',
-                            'content' => 'Komentarz zosta� dodany'
-                        )
-                    );
-                    return $app->redirect(
-                        $app['url_generator']->generate(
-                            '/files/'
-                        ), 301
-                    );
-                } catch (\Exception $e) {
-                    $errors[] = 'Co� posz�o niezgodnie z planem';
-                }
-            }
-            return $app['twig']->render(
-                'comments/add.twig', array(
-                    'form' => $form->createView(), 
-                    'id_file' => $idfile
-					
-					
-                )
-            );
-        } else {
-            $app['session']->getFlashBag()->add(
-                'message', array(
-                    'type' => 'danger',
-                    'content' => 'Nie znaleziono komentarza'
-                )
-            );
-            return $app->redirect(
-                $app['url_generator']->generate(
-                    '/files/'
-                ), 301
-            );
-        }
-    }
+	}
 	
 	public function edit(Application $app, Request $request)
 	{

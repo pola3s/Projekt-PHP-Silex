@@ -33,8 +33,7 @@
 							->bind('edit');
 			$filesController->match('files/delete/{name}', array($this, 'delete'))
 							->bind('/files/delete');
-			$filesController->match('files/manager/', array($this, 'manager'))
-							->bind('/files/manager');
+			
 			return $filesController;
 		}
 		
