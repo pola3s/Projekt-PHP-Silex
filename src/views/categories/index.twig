@@ -4,8 +4,14 @@
 
 {% block content %}
     <h1>
-        List of users
+        Lista kategorii
     </h1>
+	<p>
+        <a href="{{ url('/categories/add') }}" title="Add album">
+            Dodaj nową kategorię
+        </a>
+    </p>
+    {%  if categories|length > 0 %}
 
     <table>
         <thead>
@@ -16,14 +22,25 @@
         <tbody>
 			{% for category in categories %}
 				<tr>
-					<td>{{ category.id_category }}</td>
-					<td>{{ category.name }}</td>
+					<td>{{ category.id_category }}  </td>
+					<td>{{ category.name }}  </td>
+					<td>
+                        <a href="{{ url('/categories/edit', {'id': category.id_category}) }}" title="Edit album">Edytuj</a>
+                    </td>
+                    <td>
+                        <a href="{{ url('/categories/delete', {'id': category.id_category}) }}" title="Delete album">Usuń</a>
+                    </td>
 				</tr>
+					
 				
         {% endfor %}
 		
         </tbody>
     </table>
-  
+   {% else %}
+        <p>
+            Brak kategorii do wyświetlenia.
+        </p>
+    {% endif %}
           
 {% endblock %}

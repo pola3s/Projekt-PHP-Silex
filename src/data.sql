@@ -79,7 +79,7 @@ INSERT INTO `12_serwinska`.`values` (`id_grade`, `value`) VALUES ('5', '5');
 DROP TABLE `12_serwinska`.`category`;
 
 CREATE TABLE `12_serwinska`.`categories` (
-  `id_category` INT NOT NULL,
+  `id_category` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id_category`));
 

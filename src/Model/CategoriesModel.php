@@ -31,8 +31,48 @@ class CategoriesModel
         return $this->_db->fetchAll($sql);
     }
 	
+	public function addCategory($data)
+    {
+        $sql = 'INSERT INTO categories VALUES (?, ?)';
+        $this->_db->executeQuery(
+            $sql, array(
+				$data['id_category'],
+				$data['name']
+			)
+        );
+    }
 	
-
+	
+		
+	public function getCategory($id_category)
+	{
+		if (($id_category != '') && ctype_digit((string)$id_category)) {
+			$sql = 'SELECT id_category, name FROM categories WHERE id_category= ?';
+			return $this->_db->fetchAssoc($sql, array((int) $id_category));
+		} else {
+			return array();
+		}
+	}
 	 
+	
+	public function saveCategory2($data, $id_category)
+	{
+		if (isset($data['id_category']) && ctype_digit((string)$data['id_category'])) {
+		   $sql = 'UPDATE categories SET name = ? WHERE id_category = ?';
+		   $this->_db->executeQuery($sql, array($data['name'], $data['id_category']));
+		} else {
+		   $sql = 'INSERT INTO `categories` (`name`) VALUES (?)';
+		   $this->_db->executeQuery($sql, array($data['name']));
+		}
+	}
+	 
+	
+	 public function deleteCategory($id_category)
+    {
+        $sql = 'DELETE FROM categories WHERE id_category = ?';
+        $this->_db->executeQuery($sql, array($id_category));
+    }
+	
+    
 	
 }

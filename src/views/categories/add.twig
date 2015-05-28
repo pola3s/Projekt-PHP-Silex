@@ -1,0 +1,13 @@
+{% extends 'layout.twig' %}
+
+{% block title %}Dodaj kategoriê{% endblock %}
+
+{% block content %}
+    <h1>
+        Dodaj kategoriê:
+    </h1>
+    <form action="{{ url('categories') }}" method="post">
+        {{ form_widget(form) }}
+        <input type="submit" name="submit" />
+    </form>
+{% endblock %}

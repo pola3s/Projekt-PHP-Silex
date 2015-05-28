@@ -339,7 +339,7 @@
                 );
                 return $app->redirect(
                     $app['url_generator']->generate(
-                        '/iles'
+                        'files'
                     ), 301
                 );
             }
