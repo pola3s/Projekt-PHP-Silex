@@ -62,8 +62,90 @@ class CommentsController implements ControllerProviderInterface
 	
 
 	public function add(Application $app, Request $request)
-    {
+	{
+		
+		$usersModel = new UsersModel($app);
+        
+		$id_file = (int)$request->get('id_file', 0);
+		
+		var_dump($id_file);
+		$check = $this->_files->checkFileId($id_file);
+		
+		if ($check) {
 
+            if ($usersModel ->_isLoggedIn($app)) {
+                $id_user = $usersModel -> getIdCurrentUser($app);
+				
+            } else {
+                return $app->redirect(
+					$app['url_generator']->generate(
+						'auth_login'
+						), 301
+				);
+            }
+			
+			$data = array(
+                'published_date' => date('Y-m-d'),
+                'id_file' => $id_file,
+                'id_user' => $id_user,
+            );
+
+			$form = $app['form.factory']->createBuilder('form', $data)
+				->add('content', 'text', array(
+						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
+					))
+			
+				->add('save', 'submit')
+				->getForm();
+				
+		   $form->handleRequest($request);
+			if ($form->isValid()) {
+               
+				
+                try { 
+					$data = $form->getData();
+					var_dump($data);
+                    $model = $this->_model->addComment($data);
+					
+
+                    $app['session']->getFlashBag()->add(
+                        'message', array(
+                            'type' => 'success',
+                            'content' => 'Komentarz został dodany'
+                        )
+                    );
+                    return $app->redirect(
+                        $app['url_generator']->generate(
+                            'files'
+                        ), 301
+                    );
+					} catch (Exception $e) {
+						$app['session']->getFlashBag()->add(
+						'message',
+							array(
+							'type' => 'error',
+							'content' => 'Cannot upload file.'
+							)
+						);
+						}
+					} else {
+						$app['session']->getFlashBag()->add(
+						'message',
+							array(
+								'type' => 'error',
+								'content' => 'Form contains invalid data.'
+								)
+						);
+						}
+			
+			
+				return $app['twig']->render(
+				'comments/add.twig',
+					array(
+						'form' => $form->createView()
+					)
+				);
+	}
 	}
 	
 	public function edit(Application $app, Request $request)

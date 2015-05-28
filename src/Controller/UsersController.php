@@ -207,8 +207,9 @@ class UsersController implements ControllerProviderInterface
 	public function view(Application $app, Request $request)
 	{
 		
+		
 		$id_user = (int) $request -> get('id', 0);  //id usera
-		var_dump($id_user);
+		
 	   
 		$UsersModel = new UsersModel($app);
 		$user = $UsersModel-> getUser($id_user);

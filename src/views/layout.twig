@@ -18,9 +18,11 @@
 				<div class="menu btn-group">
                         
 						{% if is_granted('IS_AUTHENTICATED_FULLY') %}
+						
 								<a class="btn btn-inverse" href="{{ path('files') }}">Strona główna</a>
 								<a class="btn btn-inverse" href="{{ path('/files/upload') }}">Dodaj zdjęcie</a>
 								<a class="btn btn-inverse" href="{{ path('auth_logout') }}">wyloguj się</a>
+								
 						{% else %}	
 								<a class="btn btn-inverse" href="{{ path('files') }}">Strona główna</a>
 								<a class="btn btn-inverse" href="{{ path('auth_login') }}">Zaloguj się</a>
@@ -42,14 +44,7 @@
 			
 		</div>   
         
-			
-		<footer>
-
-			<ul class="nav navbar-nav">
-				<a href="#">Admin</a>
-			</ul>
-		</footer>
-		
+	
 	
 		<script src="/components/jquery/jquery.min.js"></script>
 		

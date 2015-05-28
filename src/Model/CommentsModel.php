@@ -28,22 +28,7 @@ class CommentsModel
     }
 
   
-    public function addComment($data)
-    {
-        $sql = 'INSERT INTO comments
-            (content, published_date, id_file, id_user) 
-            VALUES (?,?,?,?)';
-        $this->_db
-            ->executeQuery(
-                $sql, 
-                array(
-                    $data['content'], 
-                    $data['published_date'], 
-                    $data['id_file'], 
-                    $data['id_user']
-                )
-            );
-    }
+     
 
   
     public function editComment($data)
@@ -98,10 +83,10 @@ class CommentsModel
         }
     }
 	
-	 public function checkFileId($id)
+	 public function checkFileId($id_file)
     {
         $sql = 'SELECT * FROM files WHERE id_file=?';
-        $result = $this->_db->fetchAll($sql, array($id));
+        $result = $this->_db->fetchAll($sql, array($id_file));
 
         if ($result) {
             return true;
@@ -110,6 +95,21 @@ class CommentsModel
         }
     }
 	
-	
+	public function addComment($data)
+    {
+        $sql = 'INSERT INTO comments 
+            (content, published_date, id_file, id_user) 
+            VALUES (?,?,?,?)';
+        $this->_db
+            ->executeQuery(
+                $sql, 
+                array(
+                    $data['content'], 
+                    $data['published_date'], 
+                    $data['id_file'], 
+                    $data['id_user']
+                )
+            );
+    }
     
 }
