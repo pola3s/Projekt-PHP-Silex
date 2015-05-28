@@ -48,7 +48,7 @@ class CommentsController implements ControllerProviderInterface
 
 		$filesModel = new FilesModel($app);
 		$commentsModel = new CommentsModel($app);
-		$comments = $commentsModel->getCommentsList($id);
+		$comments = $commentsModel->getCommentsList($id_file);
 			
 			
 
@@ -148,10 +148,10 @@ class CommentsController implements ControllerProviderInterface
 	}
 	}
 	
-	public function edit(Application $app, Request $request)
-	{
+	//public function edit(Application $app, Request $request)
+	//{
 				
-	} 
+	//} 
 	
 	
 	// public function delete(Application $app, Request $request)
@@ -246,11 +246,11 @@ class CommentsController implements ControllerProviderInterface
 	public function delete(Application $app, Request $request)
     {
         $id = (int)$request->get('id', 0);
-		//var_dump($id);
+		
 
         $check = $this->_model->checkCommentId($id);
 		
-		//var_dump($check);
+	
 
         if ($check) {
 
@@ -350,7 +350,112 @@ class CommentsController implements ControllerProviderInterface
     }
 	
 	
+	 public function edit(Application $app, Request $request)
+    {
 
+        $id_comment = (int)$request->get('id', 0);
+
+        $check = $this->_model->checkCommentId($id_comment);
+
+        if ($check) {
+
+            $idCurrentUser = $this->_user->getIdCurrentUser($app);
+            $comment = $this->_model->getComment($id_comment);
+			
+			var_dump($comment);
+
+            if (count($comment)) {
+
+                $data = array(
+                    'id_comment' => $id_comment,
+                    'published_date' => date('Y-m-d'),
+                    'id_file' => $comment['id_file'],
+                    'id_user' => $comment['id_user'],
+                    'idCurrentUser' => $idCurrentUser,
+                    'content' => $comment['content'],
+                );
+
+                $form = $app['form.factory']->createBuilder('form', $data)
+                    ->add(
+                        'content', 'textarea', array(
+                            'required' => false
+                        ), array(
+                                'constraints' => array(
+                            new Assert\NotBlank(),
+                            new Assert\Length(
+                                array(
+                                    'min' => 5,
+                                    'minMessage' => 
+                                        'Minimalna ilość znaków to 5',
+                                )
+                            ),
+                            new Assert\Type(
+                                array(
+                                    'type' => 'string',
+                                    'message' => 'Tekst nie poprawny.',
+                                )
+                            )
+                        )
+                    )
+                    )
+                    ->getForm();
+
+                $form->handleRequest($request);
+
+                if ($form->isValid()) {
+                    $data = $form->getData();
+
+                    try {
+                        $model = $this->_model->editComment($data);
+
+                        $app['session']->getFlashBag()->add(
+                            'message', array(
+                                'type' => 'success',
+                                'content' => 'Komanetarz został zmieniony'
+                            )
+                        );
+                        return $app->redirect(
+                            $app['url_generator']->generate(
+                                'files'
+                            ), 301
+                        );
+                    } catch (Exception $e) {
+                        $errors[] = 'Coś poszło niezgodnie z planem';
+                    }
+                }
+                return $app['twig']->render(
+                    'comments/edit.twig', array(
+                        'form' => $form->createView()
+                    )
+                );
+            } else {
+                $app['session']->getFlashBag()->add(
+                    'message', array(
+                        'type' => 'danger',
+                        'content' => 'Nie znaleziono komentarza'
+                    )
+                );
+                return $app->redirect(
+                    $app['url_generator']->generate(
+                        '/comments/add'
+                    ), 301
+                );
+            }
+        } else {
+            $app['session']->getFlashBag()->add(
+                'message', array(
+                    'type' => 'danger',
+                    'content' => 'Nie znaleziono komentarza'
+                )
+            );
+            return $app->redirect(
+                $app['url_generator']->generate(
+                    '/posts/'
+                ), 301
+            );
+
+        }
+   }
    
 	
 

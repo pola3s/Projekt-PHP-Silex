@@ -21,10 +21,10 @@ class CommentsModel
         return $this->_db->fetchAssoc($sql, array($idcomment));
     }
 
-    public function getCommentsList($id)
+    public function getCommentsList($id_file)
     {
         $sql = 'SELECT * FROM comments WHERE id_file = ?';
-        return $this->_db->fetchAll($sql, array($id));
+        return $this->_db->fetchAll($sql, array($id_file));
     }
 
   
