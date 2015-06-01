@@ -53,6 +53,24 @@ class AboutModel
         }
     }
 
+	public function saveAbout($data, $id_user)
+    {
+        $sql = 'INSERT INTO abouts
+            (email, phone, description, website, city, id_user) 
+            VALUES (?,?,?,?,?, ?)';
+        $this->_db
+            ->executeQuery(
+                $sql, 
+                array(
+                    $data['email'], 
+                    $data['phone'], 
+                    $data['description'], 
+                    $data['website'],
+					$data['city'],
+					$id_user
+                )
+            );
+    }
 
 	
  

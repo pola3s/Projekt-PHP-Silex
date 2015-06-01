@@ -303,10 +303,10 @@ class UsersModel
     }
 
 	
-	 public function checkUserId($iduser)
+	 public function checkUserId($id_user)
     {
         $sql = 'SELECT * FROM users WHERE id_user=?';
-        $result = $this->_db->fetchAll($sql, array($id));
+        $result = $this->_db->fetchAll($sql, array($id_user));
 
         if ($result) {
             return true;

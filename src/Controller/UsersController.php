@@ -216,8 +216,6 @@ class UsersController implements ControllerProviderInterface
 		$files = $usersModel -> getFileByUser($id_user);
 		$about = $usersModel -> getAboutByUser($id_user);
 
-		var_dump($about);
-
         if (count($id_user)) {
             return $app['twig']->render(
                 'users/info.twig', array(

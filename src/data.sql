@@ -109,6 +109,13 @@ CREATE TABLE IF NOT EXISTS `users` (
 ALTER TABLE `users`
   ADD CONSTRAINT `FK_users_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`);
   
-  
-INSERT INTO `12_serwinska`.`users` (`id`, `login`, `password`, `role_id`) VALUES ('1', 'TestAdmin', 'DJAhPVmfV76bEZ9xsW5O3oaN9o+zmwpRZ78XW5QspToIjtbBlAFSbd5v3l/QFdj1F5svzjMZ5tuQsugny0MnpA==', '1');
-INSERT INTO `12_serwinska`.`users` (`id`, `login`, `password`, `role_id`) VALUES ('2', 'TestUser', '31sJZ7dGw9iFvJUqKIuS34JHj3D0MPLplLN+dxTq3vL3zz8pxkUSUCamau8UW1nGBOyNlQ0NE1NLWXYZNSV/Hg==', '2');
+CREATE TABLE `12_serwinska`.`abouts` (
+  `id_about` INT NOT NULL AUTO_INCREMENT,
+  `email` VARCHAR(45) NOT NULL,
+  `phone` VARCHAR(45) NOT NULL,
+  `description` TEXT NOT NULL,
+  `website` VARCHAR(45) NOT NULL,
+  `city` VARCHAR(45) NOT NULL,
+  `id_user` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id_about`));
+

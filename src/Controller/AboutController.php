@@ -40,15 +40,12 @@ class AboutController implements ControllerProviderInterface{
 	   public function add(Application $app, Request $request)
 	   {
 		
-		$id_user = (int)$request->get('id_user', 0);
+		$id_user = (int)$request->get('id', 0);
 		
 		$UsersModel = new UsersModel($app);
 		$check = $UsersModel->checkUserId($id_user);
 
-		$check = 1;
-		
-
-        if ($check) {
+		if ($check) {
 
           $form = $app['form.factory']->createBuilder('form', $data)
 				->add('email', 'text', array(
@@ -67,7 +64,7 @@ class AboutController implements ControllerProviderInterface{
 					'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
 				))
                
-				->add('save', 'submit', array('label' => 'Upload file'))
+				->add('save', 'submit')
 				->getForm();
 			
 		if ($request->isMethod('POST')) {
@@ -78,13 +75,14 @@ class AboutController implements ControllerProviderInterface{
 			
 			$data = $form->getData();
 			
-			$AboutModel->saveAbout($data);
+			$aboutModel = new AboutModel($app);
+			$aboutModel->saveAbout($data, $id_user);
 			$app['session']->getFlashBag()->add(
 			'message',
 			
 				array(
 					'type' => 'success',
-					'content' => 'File successfully uploaded.'
+					'content' => 'Dodano "o mnie".'
 					)
 				);
 		
@@ -98,7 +96,7 @@ class AboutController implements ControllerProviderInterface{
 				'message',
 					array(
 					'type' => 'error',
-					'content' => 'Cannot upload file.'
+					'content' => 'Nie można dodać "o mnie".'
 					)
 				);
 				}
@@ -107,7 +105,7 @@ class AboutController implements ControllerProviderInterface{
 				'message',
 					array(
 						'type' => 'error',
-						'content' => 'Form contains invalid data.'
+						'content' => 'Niepoprawne dane.'
 						)
 				);
 				}
@@ -119,23 +117,7 @@ class AboutController implements ControllerProviderInterface{
 						'form' => $form->createView()
 					)
 				);
-
-			
-
-           
-        }else {
-            $app['session']->getFlashBag()->add(
-                'message', array(
-                    'type' => 'danger',
-                    'content' => 'Nie znaleziono komentarza'
-                )
-            );
-            return $app->redirect(
-                $app['url_generator']->generate(
-                    'files'
-                ), 301
-            );
-        }
+			}
 	   }
 		
     
