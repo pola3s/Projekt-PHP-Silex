@@ -157,15 +157,7 @@ class UsersModel
         return $info;
     }
 
-	 // public function getUser($id)
-    // {
-        // if (($id != '') && ctype_digit((string)$id)) {
-            // $sql = 'SELECT * FROM users WHERE id_user = ?';
-            // return $this->_db->fetchAssoc($sql, array((int) $id));
-        // } else {
-            // return array();
-        // }
-    // }
+	
 	
 	
 	

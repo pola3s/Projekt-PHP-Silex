@@ -20,11 +20,11 @@
                 <small> {{ comment.published_date|e }}</small>
 				
             </p>
-            <p>
-                {{ comment.content|raw }}
-				
-            </p>
-            </p>
+				<p>
+					{{ comment.content|raw }}
+					
+				</p>
+           
 
 				
 				{% if is_granted ('ROLE_ADMIN') %}

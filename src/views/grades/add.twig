@@ -1,12 +1,12 @@
 {% extends 'layout.twig' %}
-
+{% block pagetitle %}Dodaj ocenę{% endblock %}
 {% block content %}
     <hr>
     <h2 class="intro-text text-center">
-        Dodaj komentarz
+        Dodaj ocenę:
     </h2>
     <hr>
-    <form action="" method="post">
+    <form action="{{ url('/grades/add', {'id_file': file.id_file}) }}" method="post">
         {{ form_widget(form) }}
         <input type="submit" name="submit"/>
     </form>

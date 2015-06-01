@@ -1,5 +1,5 @@
 {% extends 'layout.twig' %}
-
+{% block pagetitle %}Zdjęcie{% endblock %}
 {% block content %}
 
 		<div class="thumbnail">
@@ -7,7 +7,7 @@
 			<div class="row">
 						
 				<div class="col-lg-12 text-center">
-					<img src="{{ app.request.basepath }}/media/{{ file.name }}">
+					<img src="{{ app.request.basepath }}/media/{{ file.name }}" alt="{{ file.title }}" >
 						<div class="caption">
 							<h4>Tytuł: {{ file.title }}</h4>
 							<h4>Kategoria: {{ file.category }}</h4>

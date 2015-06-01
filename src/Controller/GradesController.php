@@ -57,21 +57,20 @@ class GradesController implements ControllerProviderInterface
 
 	public function add(Application $app, Request $request)
     {
-		$idfile = (int)$request->get('id_file');
+		$id_file = (int)$request->get('id_file');
 		
 		$gradesModel = new GradesModel($app);
         $choiceGrade = $gradesModel->getGradesDict();
 
+		$filesModel = new FilesModel($app);
+		$file = $filesModel -> getFile($id_file);
 		
-    
-		
-		
-		
-		$iduser = 3; ///ZMIENI� !!!!
+		$id_user = 3; ///ZMIENI� !!!!
 		
 		$data = array(
-                'id_file' => $idfile,
-                'id_user' => $iduser
+                'id_file' => $id_file,
+                'id_user' => $id_user
+				
             );
 			
 	
@@ -98,7 +97,7 @@ class GradesController implements ControllerProviderInterface
          return $app->redirect($app['url_generator']->generate('files'), 301);
       }
         return $app['twig']
-            ->render('grades/add.twig', array('form' => $form->createView()));
+            ->render('grades/add.twig', array('form' => $form->createView(), 'file' => $file));
     }
 		
 		
