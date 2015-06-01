@@ -30,7 +30,7 @@ class AboutController implements ControllerProviderInterface{
             $AboutController = $app['controllers_factory'];
             $AboutController->get('view/{id_user}', array($this, 'index'))  // /projekt/web/about/view/1 
 				->bind('/about/');
-			 $AboutController->get('edit/{id}', array($this, 'edit'))  // /projekt/web/edit/1 
+			 $AboutController->match('edit/{id}', array($this, 'edit'))  // /projekt/web/edit/1 
 				->bind('/about/edit');
 			$AboutController->match('add/{id}', array($this, 'add'))		  // /projekt/web/about/add/1
 				->bind('/about/add');
@@ -119,6 +119,57 @@ class AboutController implements ControllerProviderInterface{
 				);
 			}
 	   }
+	   
+	 public function edit(Application $app, Request $request)
+	 {
+			$aboutModel = new AboutModel($app);
+			$id_user = (int) $request->get('id', 0);
+			
+			var_dump($id_user);
+			$about = $aboutModel->getAbout($id_user);
+			
+		
+		
+			if (count($about)) {
+				$form = $app['form.factory']->createBuilder('form', $about)
+					->add('email', 'text', array(
+						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 1)))
+					))
+					->add('phone', 'text', array(
+						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 1)))
+					))
+					->add('description', 'text', array(
+						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
+					))
+					->add('website', 'text', array(
+						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
+					))
+					->add('city', 'text', array(
+						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
+					))
+               
+				->add('save', 'submit')
+				->getForm();
+					
+			$form->handleRequest($request);
+			
+			if ($form->isValid()) {
+					$aboutModel = new AboutModel($app);
+					$data = $form->getData();
+					$aboutModel->saveAbout2($data, $id_user);
+					
+					var_dump($data);
+						
+					return $app->redirect($app['url_generator']->generate('files'), 301);
+			}
+					return $app['twig']->render('about/edit.twig', array('form' => $form->createView(), 'about' => $about));
+					
+			} else {
+			
+					return $app->redirect($app['url_generator']->generate('/about/add'), 301);
+			}
+
+	}
 		
     
 }

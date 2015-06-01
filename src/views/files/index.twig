@@ -12,14 +12,20 @@
 				{% for file in files  %}
 					<div class="row">
 						<div class="col-md-8 col-md-offset-2">
-			
+							
 							<div class="thumbnail">
-								 <img src="{{ app.request.basepath }}/media/{{ file.name }}" alt="" size="40%" > 
-									  <div class="caption">
-											<h3>{{ file.title }}</h3>
-											<p>{{ file.description }}</p>
-											<p><a href=" {{ url('view', {'id': file.id_file}) }}" class="btn btn-primary" role="button">Zobacz</a></p>
-									  </div>
+								 <img src="{{ app.request.basepath }}/media/{{ file.name }}" alt="" size="40%" >
+									 <div class="caption">
+												<h3>{{ file.title }}</h3>
+												<p>{{ file.description }}</p>
+													<p>	
+														<a href=" {{ url('view', {'id': file.id_file}) }}" class="btn btn-primary" role="button">Zobacz</a>
+														
+													</p>
+										</a>
+												</p>
+									</div>
+									  
 							</div>
 								
 						 </div>

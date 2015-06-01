@@ -14,13 +14,7 @@
 							
 							<h5>Zdjęcie dodal: <a href="{{ url('/users/view', {'id': file.id_user }) }}" >{{ user.login }}</a></h5>
 							<h6>Opis: {{ file.description }}</h6>
-								<p><a href="{{ url('edit', {'id': file.id_file}) }}" title="Edit file">
-											<button type="button" class="btn btn-success">Edytuj zdjęcie</button>
-										</a>
-										<a href="{{ url('/files/delete', {'name': file.name}) }}" title="Delete file">
-											<button type="button" class="btn btn-danger">Usuń zdjęcie</button>
-									</a>
-								</p>
+								
 						</div>
 						
 						{% block grades %}

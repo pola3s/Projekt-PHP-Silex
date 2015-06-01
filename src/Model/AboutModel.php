@@ -17,7 +17,7 @@ class AboutModel
 
     public function getAbout($id)
     {
-		$sql = 'SELECT * FROM about WHERE id_user = ?;';
+		$sql = 'SELECT * FROM abouts WHERE id_user = ?;';
 		return $this->_db->fetchAssoc($sql, array($id));
     }
 	
@@ -71,6 +71,34 @@ class AboutModel
                 )
             );
     }
+	
+	public function saveAbout2($data, $id_user)
+	{
+		if (isset($data['id_user']) && ctype_digit((string)$data['id_user'])) {
+		   $sql = 'UPDATE abouts SET email = ?, phone = ?, description = ?, website = ?, city = ? WHERE id_user = ?';
+		   $this->_db->executeQuery($sql, array( 
+						$data['email'], 
+						$data['phone'], 
+						$data['description'], 
+						$data['website'],
+						$data['city'],
+						$id_user
+						
+						)
+					);
+		} else {
+		   $sql = 'INSERT INTO `abouts` (`email`, `phone`, `description`, `website`, `city` ) VALUES (?, ?, ?, ?, ?)';
+		   $this->_db->executeQuery($sql, array(
+							$data['email'], 
+							$data['phone'], 
+							$data['description'], 
+							$data['website'],
+							$data['city']
+							
+							)
+						);
+		}
+	}
 
 	
  
