@@ -145,103 +145,9 @@ class CommentsController implements ControllerProviderInterface
 						'form' => $form->createView()
 					)
 				);
+		}
 	}
-	}
 	
-	//public function edit(Application $app, Request $request)
-	//{
-				
-	//} 
-	
-	
-	// public function delete(Application $app, Request $request)
-    // {
-        // $name = (string)$request->get('name', 0);
-        // $check = $this->_model->checkFileName($name);
-        // if ($check) {
-            // $file = $this->_model->getFileByName($name);
-            // $path = dirname(dirname(dirname(__FILE__))) . '/web/media/' . $name;
-
-            // if (count($file)) {
-                // $data = array();
-                // $form = $app['form.factory']->createBuilder('form', $data)
-                    // ->add(
-                        // 'name', 'hidden', array(
-                            // 'data' => $name,
-                        // )
-                    // )
-                    // ->add('Yes', 'submit')
-                    // ->add('No', 'submit')
-                    // ->getForm();
-
-                // $form->handleRequest($request);
-
-                // if ($form->isValid()) {
-                    // if ($form->get('Yes')->isClicked()) {
-                        // $data = $form->getData();
-
-                        // try {
-                            // $model = unlink($path);
-
-
-                            // try {
-                                // $link = $this->_model->removeFile($name);
-
-                                // $app['session']->getFlashBag()->add(
-                                    // 'message', array(
-                                        // 'type' => 'success',
-                                        // 'content' => 
-                                            // 'Zdjecie zostało usunięte'
-                                    // )
-                                // );
-                                // return $app->redirect(
-                                    // $app['url_generator']->generate(
-                                        // '/files/'
-                                    // ), 301
-                                // );
-                            // } catch (\Exception $e) {
-                                // $errors[] = 'Coś poszło niezgodnie z planem';
-                            // }
-                        // } catch (\Exception $e) {
-                            // $errors[] = 'Plik nie zstał usuniety';
-                        // }
-                    // }
-                // }
-
-                // return $app['twig']->render(
-                    // 'files/delete.twig', array(
-                        // 'form' => $form->createView()
-                    // )
-                // );
-
-            // } else {
-                // $app['session']->getFlashBag()->add(
-                    // 'message', array(
-                        // 'type' => 'danger',
-                        // 'content' => 'Nie znaleziono zdjęcia'
-                    // )
-                // );
-                // return $app->redirect(
-                    // $app['url_generator']->generate(
-                        // '/files/manager'
-                    // ), 301
-                // );
-            // }
-        // } else {
-            // $app['session']->getFlashBag()->add(
-                // 'message', array(
-                    // 'type' => 'danger',
-                    // 'content' => 'Nie znaleziono zdjęcia'
-                // )
-            // );
-            // return $app->redirect(
-                // $app['url_generator']->generate(
-                    // '/files/manager'
-                // ), 301
-            // );
-
-        // }
-    // }
 	
 	public function delete(Application $app, Request $request)
     {
@@ -252,106 +158,113 @@ class CommentsController implements ControllerProviderInterface
 		
 	
 
-        if ($check) {
+				if ($check) {
 
-            $comment = $this->_model->getComment($id);
-			
-			//var_dump($comment);
+					$comment = $this->_model->getComment($id);
+					
+					//var_dump($comment);
 
-            $data = array();
-            
-            if (count($comment)) {
-                $user = new UsersModel($app);
-                //$idLoggedUser = $user->getIdCurrentUser($app);
-                //if (
-                //    $idLoggedUser == $comment['iduser'] || 
-                //    $app['security']->isGranted('ROLE_ADMIN')
-                //) { 
-                // checking if currently logged user 
-                // is an author of the post or admin
-                $form = $app['form.factory']->createBuilder('form', $data)
-                    ->add(
-                        'id_comment', 
-                        'hidden', 
-                        array(
-                            'data' => $id,
-                        )
-                    )
-                    ->add('Yes', 'submit')
-                    ->add('No', 'submit')
-                    ->getForm();
+					$data = array();
+					
+					if (count($comment)) {
+					
+						$user = new UsersModel($app);
+						
+						$idLoggedUser = $user->getIdCurrentUser($app);
+						
+						if (
+							$idLoggedUser == $comment['id_user'] || 
+							$app['security']->isGranted('ROLE_ADMIN')
+						) { 
+						
+						
+					  
+						$form = $app['form.factory']->createBuilder('form', $data)
+							->add(
+								'id_comment', 
+								'hidden', 
+								array(
+									'data' => $id,
+								)
+							)
+							->add('Yes', 'submit')
+							->add('No', 'submit')
+							->getForm();
 
-                $form->handleRequest($request);
+						$form->handleRequest($request);
 
-                if ($form->isValid()) {
-                    if ($form->get('Yes')->isClicked()) {
-                        $data = $form->getData();
-                        $model = $this->_model->deleteComment($data);
-                        if (!$model) {
-                            $app['session']
-                            ->getFlashBag()
-                            ->set('success', 'Comment was deleted');
-                            return $app->redirect(
-                                $app['url_generator']->generate("files"), 
-                                301
-                            );
-                        } else {
-                            $app['session']
-                            ->getFlashBag()
-                            ->set(
-                                'error', 
-                                'An error occured, we were not 
-                                able to delete the comment.'
-                            );
-                            return $app->redirect(
-                                $app['url_generator']->generate('files'), 
-                                301
-                            );
-                        }
-                    } else {
-                        return $app->redirect(
-                            $app['url_generator']->generate('files'), 
-                            301
-                        );
-                    }
-                }
-                return $app['twig']->render(
-                    'comments/delete.twig', 
-                    array('form' => $form->createView())
-                );
-                //} else { // user is not author
-                //    $app['session']
-                //    ->getFlashBag()
-                //    ->set(
-                //        'error', 
-                //        'It seems you are not an author of this comment!'
-                //    );
-                //return $app->redirect(
-                //    $app['url_generator']->generate('/posts/'), 
-                //    301
-                //);
-                //}
-            } else { // end of count
-                $app['session']
-                ->getFlashBag()
-                ->set('error', 'Comment not found');
-                return $app->redirect(
-                    $app['url_generator']->generate("files"), 
-                    301
-                );
-            }
-        } else {
-            return $app->redirect(
-                $app['url_generator']->generate("/files/"), 
-                301
-            );
+						if ($form->isValid()) {
+							if ($form->get('Yes')->isClicked()) {
+								$data = $form->getData();
+								$model = $this->_model->deleteComment($data);
+								if (!$model) {
+									$app['session']
+									->getFlashBag()
+									->set('success', 'Comment was deleted');
+									return $app->redirect(
+										$app['url_generator']->generate("files"), 
+										301
+									);
+								} else {
+									$app['session']
+									->getFlashBag()
+									->set(
+										'error', 
+										'An error occured, we were not 
+										able to delete the comment.'
+									);
+									return $app->redirect(
+										$app['url_generator']->generate('files'), 
+										301
+									);
+								}
+							} else {
+								return $app->redirect(
+									$app['url_generator']->generate('files'), 
+									301
+								);
+							}
+						}
+						return $app['twig']->render(
+							'comments/delete.twig', 
+							array('form' => $form->createView())
+						);
+					} else { // user is not author
+						    $app['session']->getFlashBag()->add(
+						'message',
+							array(
+							'type' => 'error',
+							'content' => 'Nie jesteś autorem tego wpisu!'
+							)
+						);
+					
+						return $app->redirect(
+						    $app['url_generator']->generate('files'), 
+						    301
+						);
+					}
+					} else { // end of count
+						$app['session']
+						->getFlashBag()
+						->set('error', 'Comment not found');
+						return $app->redirect(
+							$app['url_generator']->generate("files"), 
+							301
+						);
+					}
+				} else {
+					return $app->redirect(
+						$app['url_generator']->generate("/files/"), 
+						301
+					);
 
-        }
-    }
+				}
+	}
+	
 	
 	
 	 public function edit(Application $app, Request $request)
-    {
+	 {
 
         $id_comment = (int)$request->get('id', 0);
 
@@ -365,6 +278,12 @@ class CommentsController implements ControllerProviderInterface
 			var_dump($comment);
 
             if (count($comment)) {
+			
+			$idLoggedUser = $user->getIdCurrentUser($app);
+				if (
+					$idLoggedUser == $comment['id_user'] || 
+					$app['security']->isGranted('ROLE_ADMIN')
+				) { 
 
                 $data = array(
                     'id_comment' => $id_comment,
@@ -441,6 +360,19 @@ class CommentsController implements ControllerProviderInterface
                     ), 301
                 );
             }
+			} else { 
+				// user is not author
+					$app['session']
+					 ->getFlashBag()
+				     ->set(
+						   'error', 
+						   'It seems you are not an author of this comment!'
+					);
+						return $app->redirect(
+						    $app['url_generator']->generate('files'), 
+						    301
+						);
+					}
         } else {
             $app['session']->getFlashBag()->add(
                 'message', array(
@@ -450,7 +382,7 @@ class CommentsController implements ControllerProviderInterface
             );
             return $app->redirect(
                 $app['url_generator']->generate(
-                    '/posts/'
+                    'files'
                 ), 301
             );
 

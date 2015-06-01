@@ -1,8 +1,8 @@
 <?php
 
-namespace Controller; //przestrze� nazw kontroler�w
+namespace Controller; 
 
-use Silex\Application; // u�yte biblioteki
+use Silex\Application; 
 use Silex\ControllerProviderInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,6 +18,7 @@ class UsersController implements ControllerProviderInterface
     protected $_model;
 	
 	protected $_user;
+
 	
     public function connect(Application $app)
     {
@@ -27,7 +28,8 @@ class UsersController implements ControllerProviderInterface
         $usersController->match('/edit/{id}', array($this, 'edit'))->bind('/users/edit');
         $usersController->match('/delete/{id}', array($this, 'delete'))->bind('/users/delete');
         $usersController->match('/view/{id}', array($this, 'view'))->bind('/users/view');
-		$usersController->get('/view/{id}/manager', array($this, 'manager'))->bind('/users/manager');
+		$usersController->match('/panel/', array($this, 'panel'))->bind('/users/panel');
+		
 
         return $usersController;
     }
@@ -204,6 +206,42 @@ class UsersController implements ControllerProviderInterface
         return $app->redirect($app['url_generator']->generate('/users/'), 301);
     }
 
+	public function panel(Application $app, Request $request)
+    {
+		$usersModel = new UsersModel($app);
+		
+		$id_user = $usersModel->getIdCurrentUser($app);
+		$user = $usersModel-> getUser($id_user);
+		
+		$files = $usersModel -> getFileByUser($id_user);
+		$about = $usersModel -> getAboutByUser($id_user);
+
+		var_dump($about);
+
+        if (count($id_user)) {
+            return $app['twig']->render(
+                'users/info.twig', array(
+                    'user' => $user,
+					'files' => $files, 
+					'about' => $about,
+					'id_user' => $id_user
+                )
+            );
+        } else {
+            $app['session']->getFlashBag()->add(
+                'message', array(
+                    'type' => 'danger',
+                    'content' => 'Nie znaleziono użytkownika'
+                )
+            );
+            return $app->redirect(
+                $app['url_generator']->generate(
+                    '/files'
+                ), 301
+            );
+        }
+    }
+	
 	public function view(Application $app, Request $request)
 	{
 		
@@ -211,13 +249,13 @@ class UsersController implements ControllerProviderInterface
 		$id_user = (int) $request -> get('id', 0);  //id usera
 		
 	   
-		$UsersModel = new UsersModel($app);
-		$user = $UsersModel-> getUser($id_user);
+		$usersModel = new UsersModel($app);
+		$user = $usersModel-> getUser($id_user);
 		
 		var_dump($user);
 
-		$files = $UsersModel -> getFileByUser($id_user);
-		$about = $UsersModel -> getAboutByUser($id_user);
+		$files = $usersModel -> getFileByUser($id_user);
+		$about = $usersModel -> getAboutByUser($id_user);
 		
 		
 		//var_dump($files);
@@ -237,13 +275,4 @@ class UsersController implements ControllerProviderInterface
 	
 	}
 	
-	
-		
-
-	
-	public function manager(Application $app, Request $request)
-    {
-		echo "Menad�er";
-	}
-
 }

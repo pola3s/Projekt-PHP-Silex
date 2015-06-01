@@ -59,22 +59,21 @@ class AuthController implements ControllerProviderInterface
             ->add('Zaloguj', 'submit')
             ->getForm();
 			
-		
-		   
-        return $app['twig']->render(
-            'auth/login.twig', array(
-                'form' => $form->createView(),
-                'error' => $app['security.last_error']($request),
-				'id_user' => $id_user,
-				'user' => $user
-            )
-        );
+			return $app['twig']->render(
+				'auth/login.twig', array(
+					'form' => $form->createView(),
+					'error' => $app['security.last_error']($request),
+					'id_user' => $id_user,
+					'user' => $user
+				)
+			);
 	}
 
    
     public function logout(Application $app, Request $request)
     {
         $app['session']->clear();
-        return $app['twig']->render('auth/logout.twig', $this->view);
+		return $app['twig']->render('auth/logout.twig', $this->view);
+		
     }
 }

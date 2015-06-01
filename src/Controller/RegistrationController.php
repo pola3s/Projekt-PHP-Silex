@@ -122,37 +122,7 @@ class RegistrationController implements ControllerProviderInterface
                 $checkLogin = $this->_model->getUserByLogin(
                     $data['login']
                 );
-////////////////////////////////
-				// $filesModel->saveFile($newFilename, $data);
-			
-			// } catch (Exception $e) {
-				// $app['session']->getFlashBag()->add(
-				// 'message',
-					// array(
-					// 'type' => 'error',
-					// 'content' => 'Cannot upload file.'
-					// )
-				// );
-				// }
-			// } else {
-				// $app['session']->getFlashBag()->add(
-				// 'message',
-					// array(
-						// 'type' => 'error',
-						// 'content' => 'Form contains invalid data.'
-						// )
-				// );
-				// }
-			// }
-			
-				// return $app['twig']->render(
-				// 'files/upload.twig',
-					// array(
-						// 'form' => $form->createView()
-					// )
-				// );
 				
-	//////////////////////////////////			
                 if (!$checkLogin) {
                     try
                     {
@@ -167,20 +137,21 @@ class RegistrationController implements ControllerProviderInterface
                       //          ), 301
                       //  );
 					  
-					  
-					  $app['session']->getFlashBag()->add(
-						'message', array(
-							'type' => 'success',
-							'content' => 'Rejestracja powiod³a siê!'
+					$app['session']->getFlashBag()->add(
+						'message',
+				
+							array(
+								'type' => 'success',
+								'content' => 'Rejestracja powiod³a siê'
 							)
-						);
-		
+					);
 					return $app->redirect(
 						$app['url_generator']->generate(
 						 '/register/success'
 						)	, 301
 					);
                     }
+				
                     catch (\Exception $e)
                     {
                         $errors[] = 'Rejestracja siê nie powiod³a,
@@ -189,7 +160,8 @@ class RegistrationController implements ControllerProviderInterface
                 } else {
                     $app['session']->getFlashBag()->add(
                         'message', array(
-                            'type' => 'warning', 'content' => 'Login zajêty'
+                            'type' => 'warning', 
+							'content' => 'Login zajêty'
                         )
                     );
                     return $app['twig']->render(

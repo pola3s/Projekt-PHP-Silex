@@ -25,9 +25,27 @@ class CategoriesModel
         return $data;
     }
 	
+	public function getCategoryId($name)
+    {
+        $sql = 'SELECT id_category FROM categories WHERE name = ? ';
+        return $this->_db->fetchAssoc($sql, array( $name));
+    }
+	
+	public function getCategoryName($id_category)
+    {
+        $sql = 'SELECT name FROM categories WHERE id_category = ? ';
+        return $this->_db->fetchAssoc($sql, array($id_category));
+    }
+	
 	public function getCategories()
     {
         $sql = 'SELECT * FROM categories';
+        return $this->_db->fetchAll($sql);
+    }
+	
+	public function getCategoriesList()
+    {
+        $sql = 'SELECT id_category, name FROM categories';
         return $this->_db->fetchAll($sql);
     }
 	

@@ -33,6 +33,10 @@
 							->bind('edit');
 			$filesController->match('files/delete/{name}', array($this, 'delete'))
 							->bind('/files/delete');
+			$filesController->match('files/search/', array($this, 'search'))
+							->bind('/files/search');
+			$filesController->match('files/results/', array($this, 'results'))
+							->bind('/files/results');
 			
 			return $filesController;
 		}
@@ -61,14 +65,14 @@
 			$page = 1;
 			}
 		
-		$files = $this->_model ->getFilesPage($page, $pageLimit, $pagesCount);
-		$paginator = array('page' => $page, 'pagesCount' => $pagesCount);
-		return $app['twig']->render(
-			'files/index.twig', array(
-			'files' => $files,
-			'paginator' => $paginator
-			)
-		);
+			$files = $this->_model ->getFilesPage($page, $pageLimit, $pagesCount);
+			$paginator = array('page' => $page, 'pagesCount' => $pagesCount);
+			return $app['twig']->render(
+				'files/index.twig', array(
+				'files' => $files,
+				'paginator' => $paginator
+				)
+			);
 		}
 		
 	public function view(Application $app, Request $request)
@@ -132,11 +136,6 @@
 		$CategoriesModel = new CategoriesModel($app);
 		$categories = $CategoriesModel->getCategoriesDict();
 		
-		
-		
-		
-
-		
 		$form = $app['form.factory']->createBuilder('form', $data)
 		->add('title', 'text', array(
 			'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
@@ -165,7 +164,20 @@
 			$files = $request->files->get($form->getName());
 			$data = $form->getData();
 			
+			$id_category = $data['category'];
 			
+			
+            $categoriesModel = new CategoriesModel($app);
+            $category = $categoriesModel->getCategoriesList();
+            $category = $category[$id_category];
+			var_dump($id_category);
+			$category_name_array = $categoriesModel->getCategoryName($id_category);
+			var_dump($category_name_array);
+			$category_name=$category_name_array['name'];
+			var_dump($category_name);
+            $data['category']=$category_name;
+			
+			var_dump($data);
 			
 			$path = dirname(dirname(dirname(__FILE__))).'/web/media';
 			$filesModel = new FilesModel($app);
@@ -173,7 +185,7 @@
 			$originalFilename = $files['file']->getClientOriginalName();
 			$newFilename = $filesModel->createName($originalFilename);
 			$files['file']->move($path, $newFilename);
-			
+		
 			$filesModel->saveFile($newFilename, $data);
 			$app['session']->getFlashBag()->add(
 			'message',
@@ -183,13 +195,15 @@
 					'content' => 'File successfully uploaded.'
 					)
 					
-				);
+			);
 		
 			return $app->redirect(
 				$app['url_generator']->generate(
 				'files'
 				), 301
 			);
+		
+			
 			} catch (Exception $e) {
 				$app['session']->getFlashBag()->add(
 				'message',
@@ -357,6 +371,65 @@
             );
 
         }
+    }
+	
+	public function search(Application $app, Request $request)
+    {
+        $data = array();
+        $categoriesModel = new CategoriesModel($app);
+        $choiceCategories = $categoriesModel->getCategoriesDict();
+        $choiceCategory = array_combine(
+            $choiceCategories, $choiceCategories
+        );
+
+        
+
+        $form = $app['form.factory']->createBuilder('form', $data)
+            ->add(
+                'name', 'choice', array(
+                    'choices' => $choiceCategory,
+                    'multiple' => false
+
+                )
+            )
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $data = $form->getData();
+			var_dump($data['name']);
+			
+		
+		
+			return $app->redirect(
+                $app['url_generator']->generate(
+                    '/files/results', array(
+                        'data' => $data
+                    )
+                ), 301
+            );
+        }
+        return $app['twig']
+            ->render(
+                'files/search.twig', array(
+                    'form' => $form->createView()
+                )
+            );
+    }
+	
+	public function results(Application $app)
+    {
+        $data = $app['request']->get('data');
+		
+		$name = (string)$data['name'];
+		
+		var_dump($name);
+	
+		$filesModel = new FilesModel($app);
+        $files = $filesModel->searchFile($name);
+        return $app['twig']
+            ->render('files/results.twig', array('files' => $files));
     }
 	
 	

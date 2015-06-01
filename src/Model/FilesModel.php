@@ -38,11 +38,11 @@ class FilesModel
 	public function saveFile2($name, $data)
 	{
     if (isset($data['id_file']) && ctype_digit((string)$data['id_file'])) {
-       $sql = 'UPDATE files SET title = ?, description = ?, category =?, id_user = ? WHERE id_file = ?';
-       $this->_db->executeQuery($sql, array($data['title'], $data['description'], $data['category'], $data['id_user'], $data['id_file']));
+       $sql = 'UPDATE files SET title = ?, description = ?, category = ?, id_user = ? WHERE id_file = ?';
+       $this->_db->executeQuery($sql, array($data['title'], $data['description'], $data['name'], $data['id_user'], $data['id_file']));
     } else {
        $sql = 'INSERT INTO `files` (`title`, `category`, `description`, `id_user`) VALUES (?,?,?,?)';
-       $this->_db->executeQuery($sql, array($data['title'], $data['description'], $data['category'], $data['id_user']));
+       $this->_db->executeQuery($sql, array($data['title'], $data['description'], $data['name'], $data['id_user']));
     }
 	}
 
@@ -273,6 +273,13 @@ class FilesModel
                     )
                 );
         }
+    }
+	
+	 
+    public function searchFile($name)
+    {
+       $sql = 'SELECT * FROM files WHERE category = ?';
+       return $this->_db-> fetchAll($sql, array($name));
     }
 	
 	 

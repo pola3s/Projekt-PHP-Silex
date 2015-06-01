@@ -1,0 +1,37 @@
+{% extends 'layout.twig' %}
+{% block content %}
+
+    <h1>
+        Advertisements which have been found.
+    </h1>
+
+
+    {% if files|length > 0 %}
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Category</th>
+                <th>Type</th>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Description</th>
+                <th colspan="2">&nbsp;</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for file in files %}
+                <tr>
+                    <td>{{ file.id_file|e }}</td>
+                    <td>{{ file.title|e }}</td>
+                    
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>
+            Advertisements not found.
+        </p>
+    {% endif %}
+{% endblock %}

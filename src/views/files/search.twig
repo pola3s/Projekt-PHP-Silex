@@ -1,0 +1,13 @@
+{% extends 'layout.twig' %}
+
+{% block title %}Szukaj zdjêæ{% endblock %}
+
+{% block content %}
+    <h1>
+        Szukaj zdjeæ
+    </h1>
+    <form action="#" method="post">
+        {{ form_widget(form) }}
+        <input type="submit" name="submit" />
+    </form>
+{% endblock %}
