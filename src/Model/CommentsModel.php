@@ -15,10 +15,10 @@ class CommentsModel
         $this->_db = $app['db'];
     }
 
-    public function getComment($idcomment)
+    public function getComment($id_comment)
     {
         $sql = 'SELECT * FROM comments WHERE id_comment = ? LIMIT 1';
-        return $this->_db->fetchAssoc($sql, array($idcomment));
+        return $this->_db->fetchAssoc($sql, array($id_comment));
     }
 
     public function getCommentsList($id_file)
@@ -31,33 +31,29 @@ class CommentsModel
      
 
   
-    public function editComment($data)
+    public function editComment($data, $id_comment)
     {
 
         if (isset($data['id_comment']) 
         && ctype_digit((string)$data['id_comment'])) {
             $sql = 'UPDATE comments 
-                SET content = ?, published_date = ? 
+                SET content = ?
             WHERE id_comment = ?';
             $this->_db->executeQuery(
                 $sql, array(
-                    $data['content'], 
-                    $data['published_date'], 
-                    $data['id_comment']
+                    $data['content']
                 )
             );
         } else {
             $sql = 'INSERT INTO comments 
-                (content, published_date, id_file, id_user) 
-            VALUES (?,?,?,?)';
+                (content) 
+            VALUES (?)';
             $this->_db
                 ->executeQuery(
                     $sql,
                     array(
-                        $data['content'], 
-                        $data['published_date'], 
-                        $data['id_file'], 
-                        $data['id_user']
+                        $data['content']
+                     
                     )
                 );
         }
