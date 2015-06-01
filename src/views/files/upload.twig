@@ -11,7 +11,11 @@
             {{ flashMessage.content }}
         </div>
     {% endfor %}
+	
+
+	
     <form action="{{ url('/files/upload') }}" {{ form_enctype(form) }} method="post">
         {{ form_widget(form) }}
     </form>
+	
 {% endblock %}

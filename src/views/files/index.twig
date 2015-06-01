@@ -1,6 +1,15 @@
 {% extends 'layout.twig' %}
 
+
 {% block content %}
+
+
+	{% block search %}
+		
+			{{ render( url('/files/search')) }}
+
+	{% endblock %}
+
 
 	{% for flashMessage in app.session.getFlashBag.get('message') %}
         <div class="alert alert-{{ flashMessage.type }}">

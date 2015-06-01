@@ -125,7 +125,6 @@ class AboutController implements ControllerProviderInterface{
 			$aboutModel = new AboutModel($app);
 			$id_user = (int) $request->get('id', 0);
 			
-			var_dump($id_user);
 			$about = $aboutModel->getAbout($id_user);
 			
 		
@@ -158,8 +157,6 @@ class AboutController implements ControllerProviderInterface{
 					$data = $form->getData();
 					$aboutModel->saveAbout2($data, $id_user);
 					
-					var_dump($data);
-						
 					return $app->redirect($app['url_generator']->generate('files'), 301);
 			}
 					return $app['twig']->render('about/edit.twig', array('form' => $form->createView(), 'about' => $about));

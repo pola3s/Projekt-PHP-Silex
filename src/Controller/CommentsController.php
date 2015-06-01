@@ -44,14 +44,10 @@ class CommentsController implements ControllerProviderInterface
     {
         $id_file = (int)$request->get('id_file', 0);
 		
-		
-
 		$filesModel = new FilesModel($app);
 		$commentsModel = new CommentsModel($app);
 		$comments = $commentsModel->getCommentsList($id_file);
-			
-			
-
+		
 				return $app['twig']->render(
                 'comments/index.twig', array(
                 'comments' => $comments, 
@@ -68,7 +64,6 @@ class CommentsController implements ControllerProviderInterface
         
 		$id_file = (int)$request->get('id_file', 0);
 		
-		var_dump($id_file);
 		$check = $this->_files->checkFileId($id_file);
 		
 		if ($check) {
@@ -104,7 +99,7 @@ class CommentsController implements ControllerProviderInterface
 				
                 try { 
 					$data = $form->getData();
-					var_dump($data);
+					
                     $model = $this->_model->addComment($data);
 					
 
@@ -162,8 +157,7 @@ class CommentsController implements ControllerProviderInterface
 
 					$comment = $this->_model->getComment($id);
 					
-					//var_dump($comment);
-
+					
 					$data = array();
 					
 					if (count($comment)) {
@@ -302,7 +296,7 @@ class CommentsController implements ControllerProviderInterface
 							$data = $form->getData();
 							$commentsModel->editComment($data, $id_comment);
 							
-							var_dump($data);
+							
 								
 							return $app->redirect($app['url_generator']->generate('files'), 301);
 					}

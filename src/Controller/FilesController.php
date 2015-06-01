@@ -79,9 +79,6 @@
 	{
 		$id = (int) $request -> get('id', 0); //id zdjêcia
 		
-		
-		var_dump($id);
-		
 		$FilesModel = new FilesModel($app);
 		$file = $FilesModel -> getFile($id);
 		
@@ -89,19 +86,8 @@
 		$id_category = $FilesModel -> checkCategoryId($id);
 		$category = $FilesModel -> getCategory($id_category);
 		
-		var_dump($id_category);
-		var_dump($category);
-		
-		
-		
 		$id_user = $FilesModel-> checkUserId($id);
 		$user = $FilesModel -> getFileUploaderName($id_user['id_user']);
-		
-		var_dump($id_user);
-		var_dump($user);
-		
-		
-		
 		
 		return $app['twig']->render('files/view.twig', array(
 				'file' => $file,
@@ -120,7 +106,7 @@
 		
 		if ($usersModel ->_isLoggedIn($app)) {
                 $id_user = $usersModel -> getIdCurrentUser($app);
-				var_dump($id_user);
+				
             } else {
                 return $app->redirect(
 					$app['url_generator']->generate(
@@ -138,12 +124,12 @@
 		
 		$form = $app['form.factory']->createBuilder('form', $data)
 		->add('title', 'text', array(
-			'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
+			'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 3)))
 		))
 		->add('category', 'choice', array(
              'choices' => $categories,
         ))
-		->add('description', 'text', array(
+		->add('description', 'textarea', array(
 			'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
 		))
 		
@@ -153,8 +139,8 @@
 			'constraints' => array(new Assert\Image())
 			)
 		)
-			->add('save', 'submit', array('label' => 'Upload file'))
-			->getForm();
+		->add('save', 'submit', array('label' => 'Upload file'))
+		->getForm();
 			
 		if ($request->isMethod('POST')) {
 			$form->bind($request);
@@ -170,14 +156,14 @@
             $categoriesModel = new CategoriesModel($app);
             $category = $categoriesModel->getCategoriesList();
             $category = $category[$id_category];
-			var_dump($id_category);
+			
 			$category_name_array = $categoriesModel->getCategoryName($id_category);
-			var_dump($category_name_array);
+		
 			$category_name=$category_name_array['name'];
-			var_dump($category_name);
+		
             $data['category']=$category_name;
 			
-			var_dump($data);
+			
 			
 			$path = dirname(dirname(dirname(__FILE__))).'/web/media';
 			$filesModel = new FilesModel($app);
@@ -386,21 +372,19 @@
 
         $form = $app['form.factory']->createBuilder('form', $data)
             ->add(
-                'name', 'choice', array(
+                'category', 'choice', array(
                     'choices' => $choiceCategory,
                     'multiple' => false
 
                 )
             )
+			
             ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $data = $form->getData();
-			var_dump($data['name']);
-			
-		
 		
 			return $app->redirect(
                 $app['url_generator']->generate(
@@ -422,47 +406,16 @@
     {
         $data = $app['request']->get('data');
 		
-		$name = (string)$data['name'];
+		$name = (string)$data['category'];
 		
-		var_dump($name);
+		
 	
 		$filesModel = new FilesModel($app);
         $files = $filesModel->searchFile($name);
         return $app['twig']
-            ->render('files/results.twig', array('files' => $files));
+            ->render('files/results.twig', array('files' => $files, 'name' => $name));
     }
-	
-	
-	
-	
-}	
-			// return $app->redirect(
-				// $app['url_generator']->generate(
-				// 'files'
-				// ), 301
-			// );
-			// } catch (Exception $e) {
-				// $app['session']->getFlashBag()->add(
-				// 'message',
-					// array(
-					// 'type' => 'error',
-					// 'content' => 'Cannot upload file.'
-					// )
-				// );
-				// }
-			// } else {
-				// $app['session']->getFlashBag()->add(
-				// 'message',
-					// array(
-						// 'type' => 'error',
-						// 'content' => 'Form contains invalid data.'
-						// )
-				// );
-				// }
-			
-			// } else {
-				// return $app->redirect($app['url_generator']->generate('/files/'), 301);
-    // }
+}
 
 			
 	

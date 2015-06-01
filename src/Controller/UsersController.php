@@ -200,9 +200,6 @@ class UsersController implements ControllerProviderInterface
     public function delete(Application $app, Request $request)
     {
         $id = (int) $request -> get('id_user');
-		var_dump($id);
-        //$UsersModel = new UsersModel($app);
-       // $UsersModel -> deleteUser($id);
         return $app->redirect($app['url_generator']->generate('/users/'), 301);
     }
 
@@ -249,20 +246,11 @@ class UsersController implements ControllerProviderInterface
 	   
 		$usersModel = new UsersModel($app);
 		$user = $usersModel-> getUser($id_user);
-		
-		var_dump($user);
+
 
 		$files = $usersModel -> getFileByUser($id_user);
 		$about = $usersModel -> getAboutByUser($id_user);
 		
-		
-		//var_dump($files);
-	
-	 
-		var_dump($about);
-	   
-	   
-
 		return $app['twig']->render('users/view.twig', array( 
 			'files' => $files, 
 			'user' => $user,

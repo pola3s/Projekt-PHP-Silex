@@ -4,10 +4,15 @@
 
 	<p class="text-center">
 				<h3>Ocena:{{ averageGrade }}</h3>
+
+{% if is_granted ('ROLE_ADMIN') %}
+							 
+{% elseif is_granted('ROLE_USER') %}
+
         <a href="{{ url('/grades/add', {'id_file': id_file|e}) }}" title="Add grade">
             <button type="button" class="btn btn-success">Dodaj ocenę</button>
         </a> </h3>
     </p>
+{% endif %}
    
-   
- {% endblock %}
+{% endblock %}

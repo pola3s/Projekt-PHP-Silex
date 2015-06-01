@@ -91,7 +91,7 @@ class GradesController implements ControllerProviderInterface
           $gradesModel = new GradesModel($app);
           $data = $form->getData();
 		  
-		  var_dump($data);
+		
 		  
 		  
           $gradesModel->addGrade($data);

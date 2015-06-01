@@ -1,37 +1,52 @@
 {% extends 'layout.twig' %}
+
 {% block content %}
 
-    <h1>
-        Advertisements which have been found.
-    </h1>
+	{% block search %}
+		
+			{{ render( url('/files/search')) }}
+
+	{% endblock %}
 
 
-    {% if files|length > 0 %}
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>Id</th>
-                <th>Category</th>
-                <th>Type</th>
-                <th>Name</th>
-                <th>Date</th>
-                <th>Description</th>
-                <th colspan="2">&nbsp;</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for file in files %}
-                <tr>
-                    <td>{{ file.id_file|e }}</td>
-                    <td>{{ file.title|e }}</td>
-                    
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+	{% for flashMessage in app.session.getFlashBag.get('message') %}
+        <div class="alert alert-{{ flashMessage.type }}">
+            {{ flashMessage.content }}
+        </div>
+    {% endfor %}
+			
+
+	{% if files|length > 0 %}
+	
+	<h1>Znalezione zdjęcia w kategorii {{ name }}</h1>
+
+		{% for file in files  %}
+					<div class="row">
+						<div class="col-md-8 col-md-offset-2">
+							
+							<div class="thumbnail">
+								 <img src="{{ app.request.basepath }}/media/{{ file.name }}" alt="" size="40%" >
+									 <div class="caption">
+												<h3>{{ file.title }}</h3>
+												<p>{{ file.description }}</p>
+													<p>	
+														<a href=" {{ url('view', {'id': file.id_file}) }}" class="btn btn-primary" role="button">Zobacz</a>
+														
+													</p>
+										</a>
+												</p>
+									</div>
+									  
+							</div>
+								
+						 </div>
+					</div>
+					{% endfor %}
+			 
+			
+			
     {% else %}
-        <p>
-            Advertisements not found.
-        </p>
+        <h3>Nie znaleziono zdjęć w kategorii {{ name }}</h3>
     {% endif %}
+	
 {% endblock %}

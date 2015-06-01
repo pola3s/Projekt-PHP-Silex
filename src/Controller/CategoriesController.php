@@ -73,10 +73,7 @@ class CategoriesController implements ControllerProviderInterface
 			  if ($form->isValid()) {
 				  $categoriesModel = new CategoriesModel($app);
 				  $data = $form->getData();
-				  
-				  var_dump($data);
-				  
-				  
+				
 				 $categoriesModel->addCategory($data);
 				 return $app->redirect($app['url_generator']->generate('categories'), 301);
 			  }
@@ -112,8 +109,6 @@ class CategoriesController implements ControllerProviderInterface
 					$data = $form->getData();
 					$categoriesModel->saveCategory2($data, $id_category);
 					
-					var_dump($data);
-						
 					return $app->redirect($app['url_generator']->generate('categories'), 301);
 			}
 					return $app['twig']->render('categories/edit.twig', array('form' => $form->createView(), 'category' => $category));

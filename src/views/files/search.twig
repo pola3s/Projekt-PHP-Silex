@@ -1,13 +1,12 @@
-{% extends 'layout.twig' %}
 
-{% block title %}Szukaj zdjêæ{% endblock %}
 
-{% block content %}
+{% block search %}
     <h1>
-        Szukaj zdjeæ
+        Szukaj wedÅ‚ug kategorii:
     </h1>
-    <form action="#" method="post">
+    <form action="{{ url('/files/search') }}" method="post">
         {{ form_widget(form) }}
         <input type="submit" name="submit" />
     </form>
 {% endblock %}
+
