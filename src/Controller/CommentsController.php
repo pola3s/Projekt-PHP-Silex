@@ -196,10 +196,15 @@ class CommentsController implements ControllerProviderInterface
 									$app['session']
 									->getFlashBag()
 									->set('success', 'Comment was deleted');
+									
 									return $app->redirect(
-										$app['url_generator']->generate("files"), 
-										301
-									);
+									$app['url_generator']->generate(
+										'view', 
+											array(
+												'id' => $id_file,
+											)	
+									), 301
+								);
 								} else {
 									$app['session']
 									->getFlashBag()
@@ -243,13 +248,13 @@ class CommentsController implements ControllerProviderInterface
 						->getFlashBag()
 						->set('error', 'Comment not found');
 						return $app->redirect(
-							$app['url_generator']->generate("files"), 
+							$app['url_generator']->generate('files'), 
 							301
 						);
 					}
 				} else {
 					return $app->redirect(
-						$app['url_generator']->generate("/files/"), 
+						$app['url_generator']->generate('files'), 
 						301
 					);
 
@@ -260,14 +265,18 @@ class CommentsController implements ControllerProviderInterface
 	
 	 public function edit(Application $app, Request $request)
 	 {
-	 
+		
 		$id_comment = (int) $request->get('id', 0);
 		$check = $this->_model->checkCommentId($id_comment);
+		
+		
 		
 		if ($check) {
 
 			$commentsModel = new CommentsModel($app);
 			$comment = $commentsModel -> getComment($id_comment);
+			
+			$id_file = $comment['id_file'];
 					
 			if (count($comment)) {
 					
@@ -298,24 +307,30 @@ class CommentsController implements ControllerProviderInterface
 							$data = $form->getData();
 							$commentsModel->editComment($data, $id_comment);
 							
-							
 								
-							return $app->redirect($app['url_generator']->generate('files'), 301);
+							return $app->redirect(
+								$app['url_generator']->generate(
+									'view', 
+										array(
+											'id' => $id_file,
+										)	
+								), 301
+							);
 					}
 							return $app['twig']->render('comments/edit.twig', array('form' => $form->createView(), 'comment' => $comment));
 							
-					} else {
+							} else {
 					
 							return $app->redirect($app['url_generator']->generate('/comments/add'), 301);
-					}
-			 }else { // user is not author
-						    $app['session']->getFlashBag()->add(
-						'message',
-							array(
-							'type' => 'error',
-							'content' => 'Nie jesteś autorem tego wpisu!'
-							)
-						);
+							}
+						}else { // user is not author
+								$app['session']->getFlashBag()->add(
+							'message',
+								array(
+								'type' => 'error',
+								'content' => 'Nie jesteś autorem tego wpisu!'
+								)
+							);
 					
 						return $app->redirect(
 						    $app['url_generator']->generate('files'), 
@@ -333,9 +348,13 @@ class CommentsController implements ControllerProviderInterface
 					}
 				} else {
 					return $app->redirect(
-						$app['url_generator']->generate("/files/"), 
-						301
-					);
+									$app['url_generator']->generate(
+										'view', 
+											array(
+												'id' => $id_file,
+											)	
+									), 301
+								);
 
 				}
 		}

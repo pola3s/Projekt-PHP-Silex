@@ -193,7 +193,6 @@ class FilesModel
     }
 	
 	
-	
 	 public function getFileByName($name)
     {
         $sql = 'SELECT * FROM files WHERE name=?';
