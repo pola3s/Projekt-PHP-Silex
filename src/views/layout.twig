@@ -19,6 +19,13 @@
 				<div class="menu btn-group">
                         
 						 {% if is_granted ('ROLE_ADMIN') %}
+							
+								<a class="btn btn-inverse" href="{{ path('/users/') }}">Użytkownicy</a>
+								<a class="btn btn-inverse" href="{{ path('categories') }}">Kategorie</a>
+								<a class="btn btn-inverse" href="{{ path('files') }}">Strona główna</a>
+								<a class="btn btn-inverse" href="{{ path('/files/upload') }}">Dodaj zdjęcie</a>
+								<a class="btn btn-inverse" href="{{ path('/users/panel') }}">Twój profil</a>
+								<a class="btn btn-inverse" href="{{ path('auth_logout') }}">wyloguj się</a>
 						 
 						 {% elseif is_granted('ROLE_USER') %}
 						

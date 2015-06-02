@@ -58,9 +58,7 @@ class CategoriesController implements ControllerProviderInterface
 	public function add(Application $app, Request $request)
     {
 
-     
-
-        $form = $app['form.factory']->createBuilder('form', $data)
+		$form = $app['form.factory']->createBuilder('form', $data)
             ->add('name', 'text', array(
                 'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 2)))
             ))
@@ -74,11 +72,11 @@ class CategoriesController implements ControllerProviderInterface
 				  $categoriesModel = new CategoriesModel($app);
 				  $data = $form->getData();
 				
-				 $categoriesModel->addCategory($data);
-				 return $app->redirect($app['url_generator']->generate('categories'), 301);
+				  $categoriesModel->addCategory($data);
+				  return $app->redirect($app['url_generator']->generate('categories'), 301);
 			  }
-				return $app['twig']
-					->render('categories/add.twig', array('form' => $form->createView()));
+				  return $app['twig']
+					->render('/categories/add.twig', array('form' => $form->createView()));
 	}
 	
 	public function edit(Application $app, Request $request)

@@ -41,7 +41,8 @@ class CommentsModel
             WHERE id_comment = ?';
             $this->_db->executeQuery(
                 $sql, array(
-                    $data['content']
+                    $data['content'],
+					$id_comment
                 )
             );
         } else {
@@ -52,7 +53,8 @@ class CommentsModel
                 ->executeQuery(
                     $sql,
                     array(
-                        $data['content']
+                        $data['content'],
+						
                      
                     )
                 );

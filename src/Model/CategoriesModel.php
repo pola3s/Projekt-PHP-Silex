@@ -51,15 +51,28 @@ class CategoriesModel
 	
 	public function addCategory($data)
     {
-        $sql = 'INSERT INTO categories VALUES (?, ?)';
+        $sql = 'INSERT INTO categories (name) VALUES (?)';
         $this->_db->executeQuery(
             $sql, array(
-				$data['id_category'],
 				$data['name']
 			)
         );
     }
 	
+	public function saveCategory($category)
+    {
+        if (isset($category['id_category'])
+            && ($category['id_category'] != '')
+            && ctype_digit((string)$category['id_category'])) {
+            // update record
+            $id_category = $category['id_category'];
+            unset($category['id_category']);
+            return $this->db->update('categories', $category, array('id_category' => $id_category));
+        } else {
+            // add new record
+            return $this->db->insert('categories', $categories);
+        }
+    }
 	
 		
 	public function getCategory($id_category)

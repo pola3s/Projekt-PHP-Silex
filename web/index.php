@@ -53,6 +53,15 @@ $app->register(
         ),
         'security.access_rules' => array(
             array('^/user$', 'ROLE_USER'),
+			array('^/user$', 'ROLE_USER'),
+            array('^/user.*$', 'ROLE_USER'),
+			array('^/grades/.*$', 'ROLE_USER'),
+			array('^/abouts/.*$', 'ROLE_USER'),
+            array('^/comments/.*$', 'ROLE_USER'),
+            array('^/files/.*$', 'ROLE_USER'),
+			array('^/users/.*$', 'ROLE_ADMIN'),
+            array('^/categories/.*$', 'ROLE_ADMIN'),
+            array('^/categories/$', 'ROLE_ADMIN'),
             
 
 
@@ -62,6 +71,16 @@ $app->register(
             'ROLE_USER' => array('ROLE_ANONYMUS'),
         ),
     )
+);
+
+$app->error(
+    function (\Exception $e, $code) use ($app) {
+        if ($code == 404) {
+            return new Response(
+                $app['twig']->render('404.twig'), 404
+            );
+        }
+    }
 );
 
 

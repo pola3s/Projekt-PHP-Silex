@@ -9,12 +9,16 @@
 		
 		<h4>{{ user.firstname }} {{ user.lastname }} </h4>
 		<h4>{{ user.login }} </h4>
+	{% if about %}
 		<h2>O mnie:</h2>
 		<p>{{ about.email }} </p>
 		<p>{{ about.phone }} </p>
 		<p>{{ about.description }} </p>
 		<p>{{ about.website }} </p>
 		<p>{{ about.city }} </p>
+	{% else %}
+		<small>Użytkownik nie dodał jeszcze "o mnie"</small>
+	{% endif %}
 		
 	</div>
 	

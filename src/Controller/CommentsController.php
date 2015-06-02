@@ -93,7 +93,7 @@ class CommentsController implements ControllerProviderInterface
 				->add('save', 'submit')
 				->getForm();
 				
-		   $form->handleRequest($request);
+			$form->handleRequest($request);
 			if ($form->isValid()) {
                
 				
@@ -102,8 +102,7 @@ class CommentsController implements ControllerProviderInterface
 					
                     $model = $this->_model->addComment($data);
 					
-
-                    $app['session']->getFlashBag()->add(
+					$app['session']->getFlashBag()->add(
                         'message', array(
                             'type' => 'success',
                             'content' => 'Komentarz został dodany'
@@ -111,7 +110,10 @@ class CommentsController implements ControllerProviderInterface
                     );
                     return $app->redirect(
                         $app['url_generator']->generate(
-                            'files'
+                            'view', 
+								array(
+									'id' => $id_file,
+								)	
                         ), 301
                     );
 					} catch (Exception $e) {
@@ -280,7 +282,7 @@ class CommentsController implements ControllerProviderInterface
 				
 				
 					if (count($comment)) {
-						$form = $app['form.factory']->createBuilder('form', $about)
+						$form = $app['form.factory']->createBuilder('form', $comment)
 							->add('content', 'text', array(
 								'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 1)))
 							))
