@@ -49,10 +49,10 @@ class AboutController implements ControllerProviderInterface{
 
           $form = $app['form.factory']->createBuilder('form', $data)
 				->add('email', 'text', array(
-					'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 1)))
+					'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 3)))
 				))
 				->add('phone', 'text', array(
-					'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 1)))
+					'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
 				))
 				->add('description', 'text', array(
 					'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
@@ -61,7 +61,7 @@ class AboutController implements ControllerProviderInterface{
 					'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
 				))
 				->add('city', 'text', array(
-					'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
+					'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 2)))
 				))
                
 				->add('save', 'submit')
@@ -77,25 +77,27 @@ class AboutController implements ControllerProviderInterface{
 			
 			$aboutModel = new AboutModel($app);
 			$aboutModel->saveAbout($data, $id_user);
+			
 			$app['session']->getFlashBag()->add(
 			'message',
-			
 				array(
 					'type' => 'success',
 					'content' => 'Dodano "o mnie".'
-					)
-				);
-		
+				)
+			);
 			return $app->redirect(
-				$app['url_generator']->generate(
-				'files'
-				), 301
+						$app['url_generator']->generate(
+								'/users/panel', 
+									array(
+										'id' => $id_user,
+									)	
+						), 301
 			);
 			} catch (Exception $e) {
 				$app['session']->getFlashBag()->add(
 				'message',
 					array(
-					'type' => 'error',
+					'type' => 'danger',
 					'content' => 'Nie można dodać "o mnie".'
 					)
 				);
@@ -104,7 +106,7 @@ class AboutController implements ControllerProviderInterface{
 				$app['session']->getFlashBag()->add(
 				'message',
 					array(
-						'type' => 'error',
+						'type' => 'danger',
 						'content' => 'Niepoprawne dane.'
 						)
 				);
@@ -132,10 +134,10 @@ class AboutController implements ControllerProviderInterface{
 			if (count($about)) {
 				$form = $app['form.factory']->createBuilder('form', $about)
 					->add('email', 'text', array(
-						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 1)))
+						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 3)))
 					))
 					->add('phone', 'text', array(
-						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 1)))
+						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
 					))
 					->add('description', 'text', array(
 						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
@@ -144,7 +146,7 @@ class AboutController implements ControllerProviderInterface{
 						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
 					))
 					->add('city', 'text', array(
-						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
+						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 2)))
 					))
                
 				->add('save', 'submit')
@@ -157,7 +159,24 @@ class AboutController implements ControllerProviderInterface{
 					$data = $form->getData();
 					$aboutModel->saveAbout2($data, $id_user);
 					
-					return $app->redirect($app['url_generator']->generate('files'), 301);
+					$app['session']->getFlashBag()->add(
+						'message',
+						
+							array(
+								'type' => 'success',
+								'content' => 'Edytowano "o mnie".'
+								)
+					);
+		
+					
+					return $app->redirect(
+						$app['url_generator']->generate(
+								'/users/panel', 
+									array(
+										'id' => $id_user,
+									)	
+						), 301
+					);
 			}
 					return $app['twig']->render('about/edit.twig', array('form' => $form->createView(), 'about' => $about));
 					

@@ -1,5 +1,34 @@
-{% extends 'layout.twig' %}
+<head>
+       
+		
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="{{ app.request.baseUrl }}/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="{{ app.request.baseUrl }}/css/styl.css" />
 
-<div class = "container">
-        <h1>Ta strona nie istnieje!</h1>
+    </head>
+	
+	<div id="inner-wrapper">
+			
+	{% block content %}
+	
+		<div class="row">
+			<div class="col-md-8 col-md-offset-2">
+				<div class="thumbnail">
+					<div class="caption">
+						<h1>
+							Oops!</h1>
+						<h2>
+							Error 404</h2>
+								<div class="error-details">
+									Nie znaleziono strony!
+								</div>
+						<div class="error-actions">
+							<a href="{{ path ('files') }}" class="btn btn-primary btn-lg"></span>Home</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	{% endblock %}
 </div>

@@ -52,16 +52,17 @@ $app->register(
             ),
         ),
         'security.access_rules' => array(
-            array('^/user$', 'ROLE_USER'),
-			array('^/user$', 'ROLE_USER'),
-            array('^/user.*$', 'ROLE_USER'),
+			array('^/register/$', 'IS_AUTHENTICATED_ANONYMOUSLY'),
+			array('^/auth/.+$', 'IS_AUTHENTICATED_ANONYMOUSLY'),
+			array('^/.$', 'IS_AUTHENTICATED_ANONYMOUSLY'),
+            array('^/users/panel/+$', 'ROLE_USER'),
+			array('^/users/view/.+$', 'ROLE_USER'),
 			array('^/grades/.*$', 'ROLE_USER'),
-			array('^/abouts/.*$', 'ROLE_USER'),
+			array('^/about/.*$', 'ROLE_USER'),
             array('^/comments/.*$', 'ROLE_USER'),
             array('^/files/.*$', 'ROLE_USER'),
-			array('^/users/.*$', 'ROLE_ADMIN'),
-            array('^/categories/.*$', 'ROLE_ADMIN'),
-            array('^/categories/$', 'ROLE_ADMIN'),
+			array('^/categories/.$', 'ROLE_ADMIN'),
+			array('^/.+$', 'ROLE_ADMIN')
             
 
 
@@ -73,6 +74,7 @@ $app->register(
     )
 );
 
+use Symfony\Component\HttpFoundation\Response;
 $app->error(
     function (\Exception $e, $code) use ($app) {
         if ($code == 404) {
@@ -80,6 +82,17 @@ $app->error(
                 $app['twig']->render('404.twig'), 404
             );
         }
+    }
+);
+
+$app->error(
+    function (\Exception $e, $code) use ($app) {
+        if ($code == 403) {
+            return new Response(
+                $app['twig']->render('403.twig'), 403
+            );
+        }
+
     }
 );
 

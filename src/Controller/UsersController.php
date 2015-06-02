@@ -23,7 +23,7 @@ class UsersController implements ControllerProviderInterface
     public function connect(Application $app)
     {
         $usersController = $app['controllers_factory'];//definiowanie �cie�ek rutowania
-        $usersController->get('/', array($this, 'index'))->bind ('/users/');
+        $usersController->get('/list/', array($this, 'index'))->bind ('/users/');
         $usersController->match('/add/{id}', array($this, 'add'))->bind('/users/add');
         $usersController->match('/edit/{id}', array($this, 'edit'))->bind('/users/edit');
         $usersController->match('/delete/{id}', array($this, 'delete'))->bind('/users/delete');
