@@ -114,7 +114,8 @@ class FilesModel
             $page = 1;
         }
         $sql = 'SELECT * 
-                FROM files 
+                FROM files
+				ORDER BY id_file DESC
                 LIMIT :start, :limit';
         $statement = $this->_db->prepare($sql);
         $statement->bindValue('start', ($page - 1) * $limit, \PDO::PARAM_INT);

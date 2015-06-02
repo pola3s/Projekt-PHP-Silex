@@ -133,12 +133,22 @@
 			'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
 		))
 		
-		->add(
-			'file', 'file', array(
-			'label' => 'Choose file',
-			'constraints' => array(new Assert\Image())
-			)
-		)
+		->add('file', 'file', array(
+                    'label' => 'Choose file',
+                    'constraints' => array(
+                        new Assert\File(
+                            array(
+                                'maxSize' => '1024k',
+                                'mimeTypes' => array(
+                                    'image/jpeg',
+                                    'image/png',
+                                    'image/gif',
+                                ),
+                            )
+                        )
+                    )
+                )
+                )
 		->add('save', 'submit', array('label' => 'Upload file'))
 		->getForm();
 			
@@ -173,13 +183,13 @@
 			$files['file']->move($path, $newFilename);
 		
 			$filesModel->saveFile($newFilename, $data);
+			
 			$app['session']->getFlashBag()->add(
 			'message',
-			
 				array(
 					'type' => 'success',
-					'content' => 'File successfully uploaded.'
-					)
+					'content' => 'Zdjêcie zosta³o dodane.'
+				)
 					
 			);
 		
@@ -238,7 +248,7 @@
 						)
 					)
 					->add('title', 'text', array(
-						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
+						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 2)))
 						)
 					)
 					->add(
@@ -246,7 +256,7 @@
 							'choices' => $categories,
 						)
 					)
-					->add('description', 'text', array(
+					->add('description', 'textarea', array(
 						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
 						)
 					)
@@ -258,7 +268,14 @@
 			if ($form->isValid()) {
 					$filesModel = new FilesModel($app);
 					$filesModel->saveFile2($filename, $form->getData());
-						
+					
+					$app['session']->getFlashBag()->add(
+							'message',
+								array(
+									'type' => 'success',
+									'content' => 'Zdjêcie zosta³o edytowane'
+								)
+					);
 					return $app->redirect($app['url_generator']->generate('files'), 301);
 			}
 					return $app['twig']->render('files/edit.twig', array('form' => $form->createView(), 'file' => $file));
@@ -302,14 +319,13 @@
 
                             try {
                                 $link = $this->_model->removeFile($name);
-
-                                $app['session']->getFlashBag()->add(
-                                    'message', array(
-                                        'type' => 'success',
-                                        'content' => 
-                                            'Zdjecie zosta³o usuniête'
-                                    )
-                                );
+									$app['session']->getFlashBag()->add(
+										'message',
+											array(
+												'type' => 'success',
+												'content' => 'Usuniêto zdjêcie'
+											)
+										);
                                 return $app->redirect(
                                     $app['url_generator']->generate(
                                         'files'

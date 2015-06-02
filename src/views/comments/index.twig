@@ -29,7 +29,19 @@
 
 				
 				{% if is_granted ('ROLE_ADMIN') %}
-											 
+						<p>
+                        <a href="{{ url('/comments/edit', {'id': comment.id_comment|e}) }}"
+                           title="Edit comment">
+                            <button type="button" class="btn btn-warning">Edytuj
+                                komentarz
+                            </button>
+                        </a>
+                        <a href="{{ url('/comments/delete', {'id': comment.id_comment|e}) }}"
+                           title="Delete comment">
+                            <button type="button" class="btn btn-danger">Usu�
+                                komentarz
+                            </button>
+                        </a>
 				{% elseif is_granted('ROLE_USER') %}
 						<p>
                         <a href="{{ url('/comments/edit', {'id': comment.id_comment|e}) }}"

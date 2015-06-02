@@ -170,7 +170,7 @@ class UsersModel
 	
 	public function getFileByUser($id)
     {
-        $sql = 'SELECT * FROM files WHERE id_user= ?';
+        $sql = 'SELECT * FROM files WHERE id_user= ?  ORDER BY id_file DESC ';
         return $this->_db->fetchAll($sql, array($id));
     }
 	

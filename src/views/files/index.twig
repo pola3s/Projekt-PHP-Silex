@@ -28,6 +28,11 @@
 												<h3>{{ file.title }}</h3>
 												<p>{{ file.description }}</p>
 												<a href=" {{ url('view', {'id': file.id_file}) }}" class="btn btn-primary" role="button">Zobacz</a>
+												
+												{% if is_granted ('ROLE_ADMIN') %}
+													<a href="{{ url('edit', {'id': file.id_file}) }}" class="btn btn-primary" role="button">Edytuj</a>
+													<a href="{{ url('/files/delete', {'name': file.name}) }}" class="btn btn-danger" role="button">Usuń</a>
+												{% endif %}
 									</div>
 							</div>
 						</div>
