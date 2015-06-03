@@ -59,6 +59,7 @@ class AuthController implements ControllerProviderInterface
             ->add('Zaloguj', 'submit')
             ->getForm();
 			
+		
 			return $app['twig']->render(
             'auth/login.twig', array(
                 'form' =>$form->createView(), 

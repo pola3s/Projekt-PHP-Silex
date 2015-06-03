@@ -64,9 +64,6 @@ class CommentsController implements ControllerProviderInterface
         
 		$id_file = (int)$request->get('id_file', 0);
 		
-		$check = $this->_files->checkFileId($id_file);
-		
-		if ($check) {
 
             if ($usersModel ->_isLoggedIn($app)) {
                 $id_user = $usersModel -> getIdCurrentUser($app);
@@ -86,10 +83,9 @@ class CommentsController implements ControllerProviderInterface
             );
 
 			$form = $app['form.factory']->createBuilder('form', $data)
-				->add('content', 'text', array(
-						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
-					))
-			
+				->add('content', 'textarea', array(
+						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 1)))
+				))
 				->add('save', 'submit')
 				->getForm();
 				
@@ -133,7 +129,7 @@ class CommentsController implements ControllerProviderInterface
 								'content' => 'Form contains invalid data.'
 								)
 						);
-						}
+					}
 			
 			
 				return $app['twig']->render(
@@ -142,7 +138,7 @@ class CommentsController implements ControllerProviderInterface
 						'form' => $form->createView()
 					)
 				);
-		}
+		
 	}
 	
 	
@@ -317,7 +313,7 @@ class CommentsController implements ControllerProviderInterface
 				
 					if (count($comment)) {
 						$form = $app['form.factory']->createBuilder('form', $comment)
-							->add('content', 'text', array(
+							->add('content', 'textarea', array(
 								'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 1)))
 							))
 							

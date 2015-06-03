@@ -51,7 +51,7 @@
 			}
 		}
 	
-/// WYŒWIETLANIE ZDJÊÆ, 6 NA STRONIE, DZIA£A!!!!///
+
 		public function index(Application $app, Request $request)
 		{
 
@@ -77,7 +77,7 @@
 		
 	public function view(Application $app, Request $request)
 	{
-		$id = (int) $request -> get('id', 0); //id zdjêcia
+		$id = (int) $request -> get('id', 0); //id zdjÄ™cia
 		
 		$FilesModel = new FilesModel($app);
 		$file = $FilesModel -> getFile($id);
@@ -185,13 +185,13 @@
 			$filesModel->saveFile($newFilename, $data);
 			
 			$app['session']->getFlashBag()->add(
-			'message',
-				array(
+				'message',
+					array(
 					'type' => 'success',
-					'content' => 'Zdjêcie zosta³o dodane.'
-				)
-					
-			);
+					'content' => 'ZdjÄ™cie zostaÅ‚o dodane!'
+					)
+				);
+			
 		
 			return $app->redirect(
 				$app['url_generator']->generate(
@@ -266,17 +266,40 @@
 			$form->handleRequest($request);
 			
 			if ($form->isValid()) {
+			
+					$data = $form->getData();
+					$id_category = $data['category'];
+			
+					$categoriesModel = new CategoriesModel($app);
+					$category = $categoriesModel->getCategoriesList();
+					$category = $category[$id_category];
+					
+					$category_name_array = $categoriesModel->getCategoryName($id_category);
+				
+					$category_name=$category_name_array['name'];
+					
+					$data['category']=$category_name;
+					
+			
 					$filesModel = new FilesModel($app);
-					$filesModel->saveFile2($filename, $form->getData());
+					$filesModel->saveFile2($filename, $data);
 					
 					$app['session']->getFlashBag()->add(
-							'message',
-								array(
-									'type' => 'success',
-									'content' => 'Zdjêcie zosta³o edytowane'
-								)
+						'message',
+							array(
+							'type' => 'success',
+							'content' => 'ZdjÄ™cie zostaÅ‚o edytowane!'
+							)
 					);
-					return $app->redirect($app['url_generator']->generate('files'), 301);
+			
+					return $app->redirect(
+								$app['url_generator']->generate(
+									'view', 
+										array(
+											'id' => $id,
+										)	
+								), 301
+					);
 			}
 					return $app['twig']->render('files/edit.twig', array('form' => $form->createView(), 'file' => $file));
 					
@@ -303,8 +326,8 @@
                             'data' => $name,
                         )
                     )
-                    ->add('Yes', 'submit')
-                    ->add('No', 'submit')
+                    ->add('Yes', 'submit') 
+					->add('No', 'submit')
                     ->getForm();
 
                 $form->handleRequest($request);
@@ -319,23 +342,25 @@
 
                             try {
                                 $link = $this->_model->removeFile($name);
-									$app['session']->getFlashBag()->add(
+								
+								$app['session']->getFlashBag()->add(
 										'message',
 											array(
 												'type' => 'success',
-												'content' => 'Usuniêto zdjêcie'
+												'content' => 'UsuniÄ™to zdjÄ™cie'
+												
 											)
-										);
+								);
                                 return $app->redirect(
                                     $app['url_generator']->generate(
                                         'files'
                                     ), 301
                                 );
                             } catch (\Exception $e) {
-                                $errors[] = 'Coœ posz³o niezgodnie z planem';
+                                $errors[] = 'CoÅ› poszÅ‚o niezgodnie z planem';
                             }
                         } catch (\Exception $e) {
-                            $errors[] = 'Plik nie zsta³ usuniety';
+                            $errors[] = 'Plik nie zstaÅ‚ usuniety';
                         }
                     }
                 }
@@ -350,7 +375,7 @@
                 $app['session']->getFlashBag()->add(
                     'message', array(
                         'type' => 'danger',
-                        'content' => 'Nie znaleziono zdjêcia'
+                        'content' => 'Nie znaleziono zdjÄ™cia'
                     )
                 );
                 return $app->redirect(
@@ -363,10 +388,10 @@
             $app['session']->getFlashBag()->add(
                 'message', array(
                     'type' => 'danger',
-                    'content' => 'Nie znaleziono zdjêcia'
+                    'content' => 'Nie znaleziono zdjÄ™cia'
                 )
             );
-            return $app->redirect(
+			return $app->redirect(
                 $app['url_generator']->generate(
                     'files'
                 ), 301

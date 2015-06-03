@@ -1,10 +1,10 @@
 {% extends 'layout.twig' %}
 
-{% block pagetitle %}Edytuj kategoriê{% endblock %}
+{% block pagetitle %}Edytuj kategoriÄ™{% endblock %}
 
 {% block content %}
     <h1>
-       edytuj kategoriê
+       Edytuj kategoriÄ™
     </h1>
     <form action="{{ url('/categories/edit', {'id': category.id_category }) }}" method="post">
         {{ form_widget(form) }}

@@ -47,4 +47,22 @@ class GradesModel
         return $data;
     }
 	
+	
+    public function checkGrade($id_file, $id_user)
+	{
+		 $sql = 'SELECT * FROM grades WHERE id_file = ? AND id_user = ? ';
+		 return $this->_db->fetchAssoc($sql, array($id_file, $id_user));
+	}
+	
+	
+	// public function _isLoggedIn(Application $app)
+    // {
+        // if ('anon.' !== $user = $app['security']->getToken()->getUser()) {
+            // return true;
+        // } else {
+            // return false;
+        // }
+    // }
+	
+	
 }

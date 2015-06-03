@@ -130,21 +130,7 @@ class RegistrationController implements ControllerProviderInterface
                             $form->getData(),
                             $password
                         );
-                      //  return $app->redirect(
-                       //     $app['url_generator']
-                       //         ->generate(
-                      //              '/register/success'
-                      //          ), 301
-                      //  );
-					  
-					$app['session']->getFlashBag()->add(
-						'message',
-				
-							array(
-								'type' => 'success',
-								'content' => 'Rejestracja powiod³a siê'
-							)
-					);
+               
 					return $app->redirect(
 						$app['url_generator']->generate(
 						 '/register/success'

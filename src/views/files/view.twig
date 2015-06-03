@@ -11,22 +11,18 @@
 	
 	{% if file %}
 
-		<div class="thumbnail">
-		
-		
-			<div class="row">
-			
-			
-						
-				<div class="col-lg-12 text-center">
-					<img src="{{ app.request.basepath }}/media/{{ file.name }}" alt="{{ file.title }}" >
+		<div class="row">
+			<div class="col-md-8 col-md-offset-2">
+				<div class="thumbnail">
+					<img src="{{ app.request.basepath }}/media/{{ file.name }}" alt="{{ file.title }}" style="max-height:960px" style="max-width:800px" >
 						<div class="caption">
-							<h4>Tytuł: {{ file.title }}</h4>
-							<h4>Kategoria: {{ file.category }}</h4>
 							
-							<h5>Zdjęcie dodal: <a href="{{ url('/users/view', {'id': file.id_user }) }}" >{{ user.login }}</a></h5>
-							<h6>Opis: {{ file.description }}</h6>
+								<h4>Tytuł: {{ file.title }}</h4>
+								<h4>Kategoria: {{ file.category }}</h4>
 								
+								<h5>Zdjęcie dodal: <a href="{{ url('/users/view', {'id': file.id_user }) }}" >{{ user.login }}</a></h5>
+								<h6>Opis: {{ file.description }}</h6>
+							
 						</div>
 						
 						{% block grades %}
@@ -36,23 +32,18 @@
 						{% endblock %}
 		
 				</div>
-				
-			
 		
-				
-			</div>
-			
-		</div>
+	
 		
 		
-				
-				{% block comments %}
+						
+						{% block comments %}
 
-					<div>
-						{{ render( path('/comments/', {'id_file': file.id_file})) }}
-					</div>
-					
-				{% endblock %}
+							<div>
+								{{ render( path('/comments/', {'id_file': file.id_file})) }}
+							</div>
+							
+						{% endblock %}
 			
 			
 			{% else %}
@@ -60,17 +51,9 @@
 				<h3>Brak zdjęć do wyświetlenia</h3>
 			
 			{% endif %}
-
+		</div>
+	</div>
 		
-		
-		
-		
-        
-		
-		
-		
-		
-
 {% endblock %}
 
 

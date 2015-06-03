@@ -53,6 +53,7 @@ $app->register(
         ),
         'security.access_rules' => array(
 			array('^/register/$', 'IS_AUTHENTICATED_ANONYMOUSLY'),
+			array('^/register/.+$', 'IS_AUTHENTICATED_ANONYMOUSLY'),
 			array('^/auth/.+$', 'IS_AUTHENTICATED_ANONYMOUSLY'),
 			array('^/.$', 'IS_AUTHENTICATED_ANONYMOUSLY'),
             array('^/users/panel/+$', 'ROLE_USER'),

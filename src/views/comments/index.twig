@@ -2,7 +2,13 @@
 {% block comments %}
 
 	{% if is_granted ('ROLE_ADMIN') %}
-							 
+		<p>
+			<div class="col-lg-12 text-center">
+				<a href="{{ url('/comments/add', {'id_file': id_file|e}) }}" title="Add comment">
+					<button type="button" class="btn btn-success">Dodaj komentarz</button>
+				</a>
+			</div>
+		</p>
 	{% elseif is_granted('ROLE_USER') %}
 		<p>
 			<div class="col-lg-12 text-center">
@@ -38,7 +44,7 @@
                         </a>
                         <a href="{{ url('/comments/delete', {'id': comment.id_comment|e}) }}"
                            title="Delete comment">
-                            <button type="button" class="btn btn-danger">Usu�
+                            <button type="button" class="btn btn-danger">Usuń
                                 komentarz
                             </button>
                         </a>
@@ -52,7 +58,7 @@
                         </a>
                         <a href="{{ url('/comments/delete', {'id': comment.id_comment|e}) }}"
                            title="Delete comment">
-                            <button type="button" class="btn btn-danger">Usu�
+                            <button type="button" class="btn btn-danger">Usuń
                                 komentarz
                             </button>
                         </a>
