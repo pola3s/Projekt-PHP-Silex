@@ -67,7 +67,7 @@ protected $_files;
 		$usersModel = new UsersModel($app);
 		
 		if ($usersModel ->_isLoggedIn($app)) {
-				$id_user = $usersModel -> getIdCurrentUser($app);
+				$id_current_user = $usersModel -> getIdCurrentUser($app);
 				
         } else {
                 return $app->redirect(
@@ -76,6 +76,10 @@ protected $_files;
 						), 301
 				);
         }
+		
+		//var_dump($file['id_user']);
+		//var_dump($id_current_user);
+		
 		
 		if($file['id_user'] = $id_user){
 			
@@ -97,10 +101,10 @@ protected $_files;
 		
 				$data = array(
 					'id_file' => $id_file,
-					'id_user' => $id_user
+					'id_user' => $id_current_user
 				);
 				
-				$grade = $gradesModel->checkGrade($id_file, $id_user);
+				$grade = $gradesModel->checkGrade($id_file, $id_current_user);
 			
 				if($grade){
 				
