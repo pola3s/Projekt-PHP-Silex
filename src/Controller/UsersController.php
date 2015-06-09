@@ -22,11 +22,10 @@ class UsersController implements ControllerProviderInterface
 	
     public function connect(Application $app)
     {
-        $usersController = $app['controllers_factory'];//definiowanie �cie�ek rutowania
+        $usersController = $app['controllers_factory'];
         $usersController->get('/list/', array($this, 'index'))->bind ('/users/');
         $usersController->match('/add/{id}', array($this, 'add'))->bind('/users/add');
         $usersController->match('/edit/{id}', array($this, 'edit'))->bind('/users/edit');
-        $usersController->match('/delete/{id}', array($this, 'delete'))->bind('/users/delete');
         $usersController->match('/view/{id}', array($this, 'view'))->bind('/users/view');
 		$usersController->match('/panel/', array($this, 'panel'))->bind('/users/panel');
 		
@@ -145,6 +144,201 @@ class UsersController implements ControllerProviderInterface
     }
   
 
+	public function edit(Application $app, Request $request)
+    {
+            $usersModel = new UsersModel($app);
+			
+			
+            if ($usersModel ->_isLoggedIn($app)) {
+                $id_user = $usersModel -> getIdCurrentUser($app);
+				
+            } else {
+                return $app->redirect(
+					$app['url_generator']->generate(
+						'auth_login'
+						), 301
+				);
+            }
+			
+			
+            $currentUserInfo = $usersModel -> getUser($id_user);
+			
+			var_dump($currentUserInfo);
+			
+
+            $data = array(
+                'login' => $currentUserInfo['login'],
+                'email' => $currentUserInfo['email'],
+                'firstname' => $currentUserInfo['firstname'],
+                'lastname' => $currentUserInfo['lastname'],
+                'password' => '',
+                'confirm_password' => ''
+            );
+            $form = $app['form.factory']->createBuilder('form', $data)
+            ->add(
+                'login', 'text', array(
+                        'label' => 'Login',
+                        'constraints' => array(
+                        new Assert\NotBlank()
+                    )
+                )
+            )
+            ->add(
+                'email', 'text', array(
+                        'label' => 'Email',
+                        'constraints' => array(
+                        new Assert\NotBlank(),
+                        new Assert\Email(
+                            array(
+                                'message' => 'Wrong email'
+                            )
+                        )
+                    )
+                )
+            )
+            ->add(
+                'firstname', 'text', array(
+                        'label' => 'Imię',
+                        'constraints' => array(
+                        new Assert\NotBlank(),
+                        new Assert\Length(
+                            array(
+                                'min' => 3
+                            )
+                        )
+                    )
+                )
+            )
+            ->add(
+                'lastname', 'text', array(
+                        'label' => 'Nazwisko',
+                        'constraints' => array(
+                        new Assert\NotBlank(),
+                        new Assert\Length(
+                            array('min' => 3)
+                        )
+                    )
+                )
+            )
+            ->add(
+                'password', 'password', array(
+                        'label' => 'Nowe hasło',
+                        'constraints' => array(
+                        new Assert\NotBlank()
+                    )
+                )
+            )
+            ->add(
+                'confirm_password', 'password', array(
+                        'label' => 'Potwierdź hasło',
+                        'constraints' => array(
+                        new Assert\NotBlank()
+                    )
+                )
+            )
+            ->getForm();
+
+
+            $form->handleRequest($request);
+
+            if ($form->isValid()) {
+                $data = $form->getData();
+                var_dump($data);
+
+                $data['login'] = $app
+                    ->escape($data['login']);
+                $data['email'] = $app
+                    ->escape($data['email']);
+                $data['firstname'] = $app
+                    ->escape($data['firstname']);
+                $data['lastname'] = $app
+                    ->escape($data['lastname']);
+                $data['password'] = $app
+                    ->escape($data['password']);
+                $data['confirm_password'] = $app
+                    ->escape($data['confirm_password']);
+
+                if ($data['password'] === $data['confirm_password']) {
+                    $password = $app['security.encoder.digest']
+                        ->encodePassword(
+                            $data['password'], ''
+                        );
+
+
+                    $checkLogin = $usersModel
+                        ->getUserByLogin(
+                            $data['login']
+                        );
+
+                    if ($data['login'] === $checkLogin ||
+                        !$checkLogin ||
+                        (int)$currentUserInfo['id_user'] ===(int)$checkLogin['id_user']) {
+                        try
+                        {
+                            $usersModel->updateUser(
+                                $currentUserInfo['id_user'],
+                                $form->getData(),
+                                $password
+                            );
+							
+							var_dump($data);
+
+                            $app['session']->getFlashBag()->add(
+                                'message', array(
+                                    'type' => 'success',
+                                    'content' => 'Edycja konta udała się,
+                                    możesz się teraz ponownie zalogować'
+                                )
+                            );
+                            return $app->redirect(
+                                $app['url_generator']
+                                    ->generate(
+                                        'files'
+                                    ), 301
+                            );
+                        }
+                        catch (\Exception $e)
+                        {
+                            $errors[] = 'Edycja konta nie powiodła się';
+                        }
+
+                    } else {
+                        $app['session']->getFlashBag()->add(
+                            'message', array(
+                                'type' => 'warning',
+                                'content' => 'Login zajęty'
+                            )
+                        );
+                        return $app['twig']->render(
+                            'users/edit.twig', array(
+                                'form' => $form->createView(),
+                                'login' => $currentUser
+                            )
+                        );
+                    }
+                } else {
+                    $app['session']->getFlashBag()->add(
+                        'message', array(
+                            'type' => 'warning',
+                            'content' => 'Hasła różnią się'
+                        )
+                    );
+                    return $app['twig']->render(
+                        'users/edit.twig', array(
+                            'form' => $form->createView(),
+                            'login' => $currentUser
+                        )
+                    );
+
+                }
+            }
+            return $app['twig']->render(
+                'users/edit.twig', array(
+                    'form' => $form->createView(),
+                    'login' => $currentUser
+                )
+            );
+    }
 
 	public function panel(Application $app, Request $request)
     {
@@ -194,6 +388,7 @@ class UsersController implements ControllerProviderInterface
 		$check = $usersModel->checkUserId($id_user);
 
 		if ($check) {
+		
 					return $app['twig']->render('users/view.twig', array( 
 						'files' => $files, 
 						'user' => $user,

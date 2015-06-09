@@ -154,14 +154,14 @@ class RegistrationController implements ControllerProviderInterface
 				
                     catch (\Exception $e)
                     {
-                        $errors[] = 'Rejestracja siê nie powiod³a,
-                        spróbuj jeszcze raz';
+                        $errors[] = 'Rejestracja siÄ™ nie powiodÅ‚a,
+                        sprÃ³buj jeszcze raz';
                     }
                 } else {
                     $app['session']->getFlashBag()->add(
                         'message', array(
                             'type' => 'warning', 
-							'content' => 'Login zajêty'
+							'content' => 'Login zajÄ™ty'
                         )
                     );
                     return $app['twig']->render(
@@ -174,7 +174,7 @@ class RegistrationController implements ControllerProviderInterface
                 $app['session']->getFlashBag()->add(
                     'message', array(
                         'type' => 'warning',
-                        'content' => 'Has³a ró¿ni¹ siê miêdzy sob¹'
+                        'content' => 'HasÅ‚a rÃ³Å¼niÄ… siÄ™ miÄ™dzy sobÄ…!'
                     )
                 );
                 return $app['twig']->render(

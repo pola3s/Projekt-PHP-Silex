@@ -1,11 +1,21 @@
 {% extends 'layout.twig' %}
 
+{% block title %}Update user{% endblock %}
+
 {% block content %}
-    <hr>
-    <h2 class="intro-text text-center">Edytuj informacje</h2>
-    <hr>
-    <form action="" method="post">
+
+    {% if is_granted('ROLE_USER') %}
+
+        <h2>Update user {{ login }}</h2>
+    {% for flashMessage in app.session.getFlashBag.get('message') %}
+        {{ flashMessage.content }}
+    {% endfor %}
+    <form action="" method="post" >
         {{ form_widget(form) }}
-        <input type="submit" name="submit"/>
+        <input class="btn btn-default" type="submit" name="Wyślij">
     </form>
+
+    {% else %}
+        No access
+    {% endif %}
 {% endblock %}

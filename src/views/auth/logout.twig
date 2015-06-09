@@ -3,6 +3,12 @@
 {% block title %}Wyloguj{% endblock %}
 
 {% block content %}
+	{% for flashMessage in app.session.getFlashBag.get('message') %}
+        <div class="alert alert-{{ flashMessage.type }}">
+            {{ flashMessage.content }}
+        </div>
+    {% endfor %}
+	
     <hr>
     <h2 class="intro-text text-center">Wyloguj</h2>
     <hr>

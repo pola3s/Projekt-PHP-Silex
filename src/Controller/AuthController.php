@@ -59,7 +59,12 @@ class AuthController implements ControllerProviderInterface
             ->add('Zaloguj', 'submit')
             ->getForm();
 			
-		
+			$app['session']->getFlashBag()->add(
+						'message', array(
+							'type' => 'success',
+                            'content' => 'Zostałeś zalogowany!'
+                        )
+            );
 			return $app['twig']->render(
             'auth/login.twig', array(
                 'form' =>$form->createView(), 
@@ -72,13 +77,14 @@ class AuthController implements ControllerProviderInterface
    
     public function logout(Application $app, Request $request)
     {
+		
+        $app['session']->clear();
 		$app['session']->getFlashBag()->add(
 						'message', array(
 							'type' => 'success',
                             'content' => 'Zostałeś wylogowany!'
                         )
-                    );
-        $app['session']->clear();
+        );
 		return $app['twig']->render('auth/logout.twig', $this->view);
 		
     }

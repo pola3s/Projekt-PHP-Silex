@@ -5,11 +5,11 @@
 {% block content %}
 
 	
-		{% for flashMessage in app.session.getFlashBag.get('message') %}
-			<div class="alert alert-{{ flashMessage.type }}">
-				{{ flashMessage.content }}     
-			</div>
-		{% endfor %}
+	{% for flashMessage in app.session.getFlashBag.get('message') %}
+		<div class="alert alert-{{ flashMessage.type }}">
+			{{ flashMessage.content }}     
+		</div>
+	{% endfor %}
 
 	<h3>Zarejestruj się</h3>
     <form action="{{ url('/register/') }}" {{ form_enctype(form) }} method="post" >

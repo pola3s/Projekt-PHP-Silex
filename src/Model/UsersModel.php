@@ -181,6 +181,33 @@ class UsersModel
         }
     }
 
+	 public function updateUser($id, $data, $password)
+    {
+        if (isset($id) && ctype_digit((string)$id)) {
+
+            $query = 'UPDATE `users`
+                  SET `login`= ?,
+                      `email`= ?,
+                      `password`= ?,
+                      `firstname`= ?,
+                      `lastname`= ?
+                  WHERE `id_user`= ?';
+
+        $this->_db->executeQuery(
+            $query, array(
+                $data['login'],
+                $data['email'],
+                $password,
+                $data['firstname'],
+                $data['lastname'],
+                $id
+            )
+        );
+        } else {
+
+        }
+
+    }
 	
 }
 	
