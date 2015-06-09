@@ -67,75 +67,95 @@ protected $_files;
 		$usersModel = new UsersModel($app);
 		
 		if ($usersModel ->_isLoggedIn($app)) {
-                $id_user = $usersModel -> getIdCurrentUser($app);
+				$id_user = $usersModel -> getIdCurrentUser($app);
 				
-            } else {
+        } else {
                 return $app->redirect(
 					$app['url_generator']->generate(
 						'auth_login'
 						), 301
 				);
-            }
+        }
 		
-			$data = array(
-                'id_file' => $id_file,
-                'id_user' => $id_user
-			);
+		if($file['id_user'] = $id_user){
 			
-			$grade = $gradesModel->checkGrade($id_file, $id_user);
-			
-			if($grade){
-			
-				$app['session']->getFlashBag()->add(
+			$app['session']->getFlashBag()->add(
                         'message', array(
                             'type' => 'warning',
-                            'content' => 'Dodałeś już ocenę do tego zdjęcia!'
+                            'content' => 'Nie możesz ocenić własnego zdjęcia!'
                         )
                     );
-				return $app->redirect(
+					return $app->redirect(
                         $app['url_generator']->generate(
                             'view', 
 								array(
 									'id' => $id_file,
 								)	
                         ), 301
-                    );
-			}else{
-			
-			
-			$form = $app['form.factory']->createBuilder('form', $data)
-				->add(
-					'grade',
-					'choice', array(
-						'choices' => $choiceGrade
-					)
-					)
-				->getForm();
+                );
+		}else{
 		
-			$form->handleRequest($request);
+				$data = array(
+					'id_file' => $id_file,
+					'id_user' => $id_user
+				);
+				
+				$grade = $gradesModel->checkGrade($id_file, $id_user);
+			
+				if($grade){
+				
+					$app['session']->getFlashBag()->add(
+							'message', array(
+								'type' => 'warning',
+								'content' => 'Dodałeś już ocenę do tego zdjęcia!'
+							)
+						);
+					return $app->redirect(
+							$app['url_generator']->generate(
+								'view', 
+									array(
+										'id' => $id_file,
+									)	
+							), 301
+						);
+				}else{
+			
+			
+					$form = $app['form.factory']->createBuilder('form', $data)
+						->add(
+							'grade',
+							'choice', array(
+								'choices' => $choiceGrade
+							)
+							)
+						->getForm();
+				
+					$form->handleRequest($request);
 
-			if ($form->isValid()) {
-				$gradesModel = new GradesModel($app);
-				$data = $form->getData();
-		  
-				$gradesModel->addGrade($data);
-				$app['session']->getFlashBag()->add(
-                        'message', array(
-                            'type' => 'success',
-                            'content' => 'Ocena została dodana'
-                        )
-                    );
-				return $app->redirect(
-                        $app['url_generator']->generate(
-                            'view', 
-								array(
-									'id' => $id_file,
-								)	
-                        ), 301
-                    );
-			  }
-				return $app['twig']
-					->render('grades/add.twig', array('form' => $form->createView(), 'file' => $file));
+					if ($form->isValid()) {
+						$gradesModel = new GradesModel($app);
+						$data = $form->getData();
+				  
+						$gradesModel->addGrade($data);
+						$app['session']->getFlashBag()->add(
+								'message', array(
+									'type' => 'success',
+									'content' => 'Ocena została dodana'
+								)
+							);
+						return $app->redirect(
+								$app['url_generator']->generate(
+									'view', 
+										array(
+											'id' => $id_file,
+										)	
+								), 301
+							);
+					  }
+						return $app['twig']
+							->render('grades/add.twig', array('form' => $form->createView(), 'file' => $file));
+					}
+	
 			}
 	}
 		

@@ -10,8 +10,9 @@
 		"doctrine/dbal": "2.2.*",
 		"symfony/security": "~2.3",
 		"symfony/security-csrf": "~2.3",
-        "symfony/translation": "~2.3",
-		"symfony/yaml": "~2.3"
+  	        "symfony/translation": "~2.3",
+		"symfony/yaml": "~2.3",
+		"nymo/silex-twig-breadcrumb-extension": "~1.1"
 	},
 	"autoload": {
 		"psr-0": {
@@ -20,8 +21,9 @@
 			"User" : "src/",
 			"Provider" : "src/"
 		}
-	}
+	},
         "require-dev": {
        		 "squizlabs/php_codesniffer": "2.*"
    	 }	
+
 }

@@ -3,16 +3,29 @@ require_once __DIR__.'/../vendor/autoload.php';
 $app = new Silex\Application();
 $app['debug'] = true;
 
+$app->register(new \nymo\Silex\Provider\BreadCrumbServiceProvider());
+
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__.'/../src/views',
 ));
 
+$app['twig'] = $app->share(
+    $app->extend(
+        'twig',
+        function ($twig, $app) {
+            $twig->addExtension(new \nymo\Twig\Extension\BreadCrumbExtension($app));
+            return $twig;
+        }
+    )
+);
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Silex\Provider\FormServiceProvider());
 $app->register(new Silex\Provider\ValidatorServiceProvider());
 $app->register(new Silex\Provider\TranslationServiceProvider(), array(
     'translator.domains' => array(),
 ));
+
+
 
 $app->register(new Silex\Provider\SessionServiceProvider());
 
@@ -56,7 +69,7 @@ $app->register(
 			array('^/register/.+$', 'IS_AUTHENTICATED_ANONYMOUSLY'),
 			array('^/auth/.+$', 'IS_AUTHENTICATED_ANONYMOUSLY'),
 			array('^/.$', 'IS_AUTHENTICATED_ANONYMOUSLY'),
-			array('^/files/view/.+', 'IS_AUTHENTICATED_ANONYMOUSLY'),
+			array('/files/view/.+', 'IS_AUTHENTICATED_ANONYMOUSLY'),
 			array('^/users/panel/+$', 'ROLE_USER'),
 			array('^/users/view/.+$', 'ROLE_USER'),
 			array('^/grades/.*$', 'ROLE_USER'),

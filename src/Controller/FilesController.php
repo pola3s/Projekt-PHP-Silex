@@ -16,6 +16,7 @@ class FilesController implements ControllerProviderInterface
 {
 	protected $_model;
 	protected $_user;
+	
 		
 	public function connect(Application $app)
 	{
@@ -24,7 +25,7 @@ class FilesController implements ControllerProviderInterface
       $filesController->match('{page}', array($this, 'index'))
 		->value('page', 1)
 		->bind('files');
-	  $filesController->match('files/view/{id}', array($this, 'view'))
+	  $filesController->match('/files/view/{id}', array($this, 'view'))
 	    ->bind('view');
 	  $filesController->match('files/upload/', array($this, 'upload'))
 	    ->bind('/files/upload');
@@ -53,6 +54,7 @@ class FilesController implements ControllerProviderInterface
 
 		public function index(Application $app, Request $request)
 		{
+			
 
 			$pageLimit = 6;
 			$page = (int)$request->get('page', 1);
@@ -64,24 +66,33 @@ class FilesController implements ControllerProviderInterface
 			$page = 1;
 			}
 			
+			
 			$files = $this->_model ->getFilesPage($page, $pageLimit, $pagesCount);
 			$paginator = array('page' => $page, 'pagesCount' => $pagesCount);
+			
+			$app->before(function (Request $request) use ($app) {
+				$app['twig']->addGlobal('current_page_name', $request->getRequestUri());
+			});
+		
 			return $app['twig']->render(
 				'files/index.twig', array(
 				'files' => $files,
 				'paginator' => $paginator,
-				'currentPage' => $page
+				'page' => $page
 				)
 			);
 		}
 		
+		  
+		
 	public function view(Application $app, Request $request)
 	{
-		$id = (int) $request -> get('id', 0); //id zdjęcia
 		
+		$id = (int) $request -> get('id', 0); //id zdjęcia
+		$page = (int) $request -> get('page', 0);
+		//var_dump($page);
 		$FilesModel = new FilesModel($app);
 		$file = $FilesModel -> getFile($id);
-		
 		
 		$id_category = $FilesModel -> checkCategoryId($id);
 		$category = $FilesModel -> getCategory($id_category);
@@ -89,12 +100,27 @@ class FilesController implements ControllerProviderInterface
 		$id_user = $FilesModel-> checkUserId($id);
 		$user = $FilesModel -> getFileUploaderName($id_user['id_user']);
 		
+		var_dump($user);
+		
+		// $app['breadcrumbs']->addItem('A complex route',array(
+			// 'route' => 'complex_named_route',
+			// 'params' => array(
+				// 'name' => "John",
+				// 'id' => 3
+				// )
+		// ));
+
 		return $app['twig']->render('files/view.twig', array(
 				'file' => $file,
 				'user' => $user,
 				'id_user' => $id_user,
 				'category' => $category,
+				'page' => $page
 		));
+		
+	
+		
+						
 	}
 		
 		

@@ -2,6 +2,8 @@
 {% block pagetitle %}Zdjęcie{% endblock %}
 {% block content %}
 
+<a href="{{ url('files', {'page': page }) }}" class="btn btn-primary" role="button">Wróć</a>
+{{renderBreadCrumbs()}}
 
 	{% for flashMessage in app.session.getFlashBag.get('message') %}
         <div class="alert alert-{{ flashMessage.type }}">
@@ -34,9 +36,7 @@
 				</div>
 		
 	
-		
-		
-						
+	
 						{% block comments %}
 
 							<div>
