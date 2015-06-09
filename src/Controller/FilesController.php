@@ -91,33 +91,48 @@ class FilesController implements ControllerProviderInterface
 		$id = (int) $request -> get('id', 0); //id zdjęcia
 		$page = (int) $request -> get('page', 0);
 		//var_dump($page);
-		$FilesModel = new FilesModel($app);
-		$file = $FilesModel -> getFile($id);
 		
-		$id_category = $FilesModel -> checkCategoryId($id);
-		$category = $FilesModel -> getCategory($id_category);
-		
-		$id_user = $FilesModel-> checkUserId($id);
-		$user = $FilesModel -> getFileUploaderName($id_user['id_user']);
-		
-		var_dump($user);
-		
-		// $app['breadcrumbs']->addItem('A complex route',array(
-			// 'route' => 'complex_named_route',
-			// 'params' => array(
-				// 'name' => "John",
-				// 'id' => 3
-				// )
-		// ));
+		$filesModel = new FilesModel($app);
+		$check = $filesModel->checkFileId($id);
 
-		return $app['twig']->render('files/view.twig', array(
-				'file' => $file,
-				'user' => $user,
-				'id_user' => $id_user,
-				'category' => $category,
-				'page' => $page
-		));
-		
+        if ($check) {
+			$FilesModel = new FilesModel($app);
+			$file = $FilesModel -> getFile($id);
+			
+			$id_category = $FilesModel -> checkCategoryId($id);
+			$category = $FilesModel -> getCategory($id_category);
+			
+			$id_user = $FilesModel-> checkUserId($id);
+			$user = $FilesModel -> getFileUploaderName($id_user['id_user']);
+			
+			// $app['breadcrumbs']->addItem('A complex route',array(
+				// 'route' => 'complex_named_route',
+				// 'params' => array(
+					// 'name' => "John",
+					// 'id' => 3
+					// )
+			// ));
+
+			return $app['twig']->render('files/view.twig', array(
+					'file' => $file,
+					'user' => $user,
+					'id_user' => $id_user,
+					'category' => $category,
+					'page' => $page
+			));
+		} else {
+            $app['session']->getFlashBag()->add(
+                'message', array(
+                    'type' => 'danger',
+                    'content' => 'Nie znaleziono zdjęcia'
+                )
+            );
+            return $app->redirect(
+                $app['url_generator']->generate(
+                    'files'
+                ), 301
+            );
+        }
 	
 		
 						
@@ -259,171 +274,192 @@ class FilesController implements ControllerProviderInterface
 		{
 			$filesModel = new FilesModel($app);
 			$id = (int) $request->get('id', 0);
-			
-			$file = $filesModel->getFile($id);
-			$filename = $filesModel -> getFile($id);
-			
-			
-			$CategoriesModel = new CategoriesModel($app);
-			$categories = $CategoriesModel->getCategoriesDict();
-			
-			if (count($file)) {
-				$form = $app['form.factory']->createBuilder('form', $file)
-					->add('id_file', 'hidden', array(
-						'constraints' => array(new Assert\NotBlank())
-						)
-					)
-					->add('title', 'text', array(
-						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 2)))
-						)
-					)
-					->add(
-						'category', 'choice', array(
-							'choices' => $categories,
-						)
-					)
-					->add('description', 'textarea', array(
-						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
-						)
-					)
-					->add('save', 'submit')
-					->getForm();
-					
-			$form->handleRequest($request);
-			
-			if ($form->isValid()) {
-			
-					$data = $form->getData();
-					$id_category = $data['category'];
-			
-					$categoriesModel = new CategoriesModel($app);
-					$category = $categoriesModel->getCategoriesList();
-					$category = $category[$id_category];
-					
-					$category_name_array = $categoriesModel->getCategoryName($id_category);
+		
+			$check = $filesModel->checkFileId($id);
+
+			if ($check) {
+				$file = $filesModel->getFile($id);
+				$filename = $filesModel -> getFile($id);
 				
-					$category_name=$category_name_array['name'];
-					
-					$data['category']=$category_name;
-					
-			
-					$filesModel = new FilesModel($app);
-					$filesModel->editFile($filename, $data);
-					
-					$app['session']->getFlashBag()->add(
-						'message',
-							array(
-							'type' => 'success',
-							'content' => 'Zdjęcie zostało edytowane!'
+				
+				$CategoriesModel = new CategoriesModel($app);
+				$categories = $CategoriesModel->getCategoriesDict();
+				
+				if (count($file)) {
+					$form = $app['form.factory']->createBuilder('form', $file)
+						->add('id_file', 'hidden', array(
+							'constraints' => array(new Assert\NotBlank())
 							)
-					);
-			
-					return $app->redirect(
-								$app['url_generator']->generate(
-									'view', 
-										array(
-											'id' => $id,
-										)	
-								), 301
-					);
-			}
-					return $app['twig']->render('files/edit.twig', array('form' => $form->createView(), 'file' => $file));
+						)
+						->add('title', 'text', array(
+							'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 2)))
+							)
+						)
+						->add(
+							'category', 'choice', array(
+								'choices' => $categories,
+							)
+						)
+						->add('description', 'textarea', array(
+							'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
+							)
+						)
+						->add('save', 'submit')
+						->getForm();
+						
+				$form->handleRequest($request);
+				
+				if ($form->isValid()) {
+				
+						$data = $form->getData();
+						$id_category = $data['category'];
+				
+						$categoriesModel = new CategoriesModel($app);
+						$category = $categoriesModel->getCategoriesList();
+						$category = $category[$id_category];
+						
+						$category_name_array = $categoriesModel->getCategoryName($id_category);
 					
-			} else {
-			
-					return $app->redirect($app['url_generator']->generate('/files/add'), 301);
-			}
-} 
-	
-	
-	public function delete(Application $app, Request $request)
-    {
-        $name = (string)$request->get('name', 0);
-        $check = $this->_model->checkFileName($name);
-        if ($check) {
-            $file = $this->_model->getFileByName($name);
-            $path = dirname(dirname(dirname(__FILE__))) . '/web/media/' . $name;
-
-            if (count($file)) {
-                $data = array();
-                $form = $app['form.factory']->createBuilder('form', $data)
-                    ->add(
-                        'name', 'hidden', array(
-                            'data' => $name,
-                        )
-                    )
-                    ->add('Yes', 'submit') 
-					->add('No', 'submit')
-                    ->getForm();
-
-                $form->handleRequest($request);
-
-                if ($form->isValid()) {
-                    if ($form->get('Yes')->isClicked()) {
-                        $data = $form->getData();
-
-                        try {
-                            $model = unlink($path);
-
-
-                            try {
-                                $link = $this->_model->removeFile($name);
-								
-								$app['session']->getFlashBag()->add(
-										'message',
+						$category_name=$category_name_array['name'];
+						
+						$data['category']=$category_name;
+						
+				
+						$filesModel = new FilesModel($app);
+						$filesModel->editFile($filename, $data);
+						
+						$app['session']->getFlashBag()->add(
+							'message',
+								array(
+								'type' => 'success',
+								'content' => 'Zdjęcie zostało edytowane!'
+								)
+						);
+				
+						return $app->redirect(
+									$app['url_generator']->generate(
+										'view', 
 											array(
-												'type' => 'success',
-												'content' => 'Usunięto zdjęcie'
-												
-											)
-								);
-                                return $app->redirect(
-                                    $app['url_generator']->generate(
-                                        'files'
-                                    ), 301
-                                );
-                            } catch (\Exception $e) {
-                                $errors[] = 'Coś poszło niezgodnie z planem';
-                            }
-                        } catch (\Exception $e) {
-                            $errors[] = 'Plik nie zstał usuniety';
-                        }
-                    }
-                }
+												'id' => $id,
+											)	
+									), 301
+						);
+				}
+						return $app['twig']->render('files/edit.twig', array('form' => $form->createView(), 'file' => $file));
+						
+				} else {
+				
+						return $app->redirect($app['url_generator']->generate('/files/add'), 301);
+				} 
+			} else {
+				$app['session']->getFlashBag()->add(
+					'message', array(
+						'type' => 'danger',
+						'content' => 'Nie znaleziono zdjęcia'
+					)
+				);
+				return $app->redirect(
+					$app['url_generator']->generate(
+						'files'
+					), 301
+				);
+			}
+		
+		
+					
+	} 
+		
+		
+		public function delete(Application $app, Request $request)
+		{
+			$name = (string)$request->get('name', 0);
+			$check = $this->_model->checkFileName($name);
+			
+			if ($check) {
+				$file = $this->_model->getFileByName($name);
+				$path = dirname(dirname(dirname(__FILE__))) . '/web/media/' . $name;
 
-                return $app['twig']->render(
-                    'files/delete.twig', array(
-                        'form' => $form->createView()
-                    )
-                );
+				if (count($file)) {
+					$data = array();
+					$form = $app['form.factory']->createBuilder('form', $data)
+						->add(
+							'name', 'hidden', array(
+								'data' => $name,
+							)
+						)
+						->add('Yes', 'submit') 
+						->add('No', 'submit')
+						->getForm();
 
-            } else {
-                $app['session']->getFlashBag()->add(
-                    'message', array(
-                        'type' => 'danger',
-                        'content' => 'Nie znaleziono zdjęcia'
-                    )
-                );
-                return $app->redirect(
-                    $app['url_generator']->generate(
-                        'files'
-                    ), 301
-                );
-            }
-        } else {
-            $app['session']->getFlashBag()->add(
-                'message', array(
-                    'type' => 'danger',
-                    'content' => 'Nie znaleziono zdjęcia'
-                )
-            );
-			return $app->redirect(
-                $app['url_generator']->generate(
-                    'files'
-                ), 301
-            );
+					$form->handleRequest($request);
 
-        }
+					if ($form->isValid()) {
+						if ($form->get('Yes')->isClicked()) {
+							$data = $form->getData();
+
+							try {
+								$model = unlink($path);
+
+
+								try {
+									$link = $this->_model->removeFile($name);
+									
+									$app['session']->getFlashBag()->add(
+											'message',
+												array(
+													'type' => 'success',
+													'content' => 'Usunięto zdjęcie'
+													
+												)
+									);
+									return $app->redirect(
+										$app['url_generator']->generate(
+											'files'
+										), 301
+									);
+								} catch (\Exception $e) {
+									$errors[] = 'Coś poszło niezgodnie z planem';
+								}
+							} catch (\Exception $e) {
+								$errors[] = 'Plik nie został usuniety';
+							   
+							}
+						}
+					}
+
+					return $app['twig']->render(
+						'files/delete.twig', array(
+							'form' => $form->createView()
+						)
+					);
+
+				} else {
+					$app['session']->getFlashBag()->add(
+						'message', array(
+							'type' => 'danger',
+							'content' => 'Nie znaleziono zdjęcia'
+						)
+					);
+					return $app->redirect(
+						$app['url_generator']->generate(
+							'files'
+						), 301
+					);
+				}
+			} else {
+				$app['session']->getFlashBag()->add(
+					'message', array(
+						'type' => 'danger',
+						'content' => 'Nie znaleziono zdjęcia'
+					)
+				);
+				return $app->redirect(
+					$app['url_generator']->generate(
+						'files'
+					), 301
+				);
+
+			}
     }
 	
 	public function search(Application $app, Request $request)
@@ -435,9 +471,7 @@ class FilesController implements ControllerProviderInterface
             $choiceCategories, $choiceCategories
         );
 
-        
-
-        $form = $app['form.factory']->createBuilder('form', $data)
+		$form = $app['form.factory']->createBuilder('form', $data)
             ->add(
                 'category', 'choice', array(
                     'choices' => $choiceCategory,

@@ -48,10 +48,17 @@ class CommentsController implements ControllerProviderInterface
 		$commentsModel = new CommentsModel($app);
 		$comments = $commentsModel->getCommentsList($id_file);
 		
+		$usersModel = new UsersModel($app);
+		
+		if ($usersModel ->_isLoggedIn($app)) {
+                $idLoggedUser = $usersModel ->getIdCurrentUser($app);
+		}
+						
 				return $app['twig']->render(
                 'comments/index.twig', array(
                 'comments' => $comments, 
-				'id_file' => $id_file
+				'id_file' => $id_file,
+				'idLoggedUser' => $idLoggedUser
                 )
             );
 	} 
@@ -61,9 +68,8 @@ class CommentsController implements ControllerProviderInterface
 	{
 		
 		$usersModel = new UsersModel($app);
-        
-		$id_file = (int)$request->get('id_file', 0);
-		
+        $id_file = (int)$request->get('id_file', 0);
+	
 
             if ($usersModel ->_isLoggedIn($app)) {
                 $id_user = $usersModel -> getIdCurrentUser($app);
@@ -106,10 +112,9 @@ class CommentsController implements ControllerProviderInterface
                     );
                     return $app->redirect(
                         $app['url_generator']->generate(
-                            'view', 
-								array(
-									'id' => $id_file,
-								)	
+                            '/comments/', array(
+								'id_file' => $id_file,
+							)
                         ), 301
                     );
 					} catch (Exception $e) {
@@ -135,7 +140,9 @@ class CommentsController implements ControllerProviderInterface
 				return $app['twig']->render(
 				'comments/add.twig',
 					array(
-						'form' => $form->createView()
+						'form' => $form->createView(),
+						'id_file' => $id_file,
+						
 					)
 				);
 		
@@ -149,10 +156,7 @@ class CommentsController implements ControllerProviderInterface
 
         $check = $this->_model->checkCommentId($id);
 		
-		
-	
-
-				if ($check) {
+		if ($check) {
 
 					$comment = $this->_model->getComment($id);
 					$id_file = $comment['id_file'];
@@ -161,9 +165,8 @@ class CommentsController implements ControllerProviderInterface
 					
 					if (count($comment)) {
 					
-						$user = new UsersModel($app);
-						
-						$idLoggedUser = $user->getIdCurrentUser($app);
+						$usersModel = new UsersModel($app);
+						$idLoggedUser = $usersModel->getIdCurrentUser($app);
 						
 						if (
 							$idLoggedUser == $comment['id_user'] || 

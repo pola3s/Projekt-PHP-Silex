@@ -100,6 +100,17 @@ class AboutModel
 		}
 	}
 
+	public function checkAboutId($id_about)
+    {
+        $sql = 'SELECT * FROM abouts WHERE id_about=?';
+        $result = $this->_db->fetchAll($sql, array($id_about));
+
+        if ($result) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 	
  
 	

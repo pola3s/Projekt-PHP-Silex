@@ -172,4 +172,15 @@ class FilesModel
        return $this->_db-> fetchAll($sql, array($name));
     }
   
+	public function checkFileId($id)
+    {
+        $sql = 'SELECT * FROM files WHERE id_file=?';
+        $result = $this->_db->fetchAll($sql, array($id));
+
+        if ($result) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

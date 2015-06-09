@@ -3,6 +3,15 @@
 {% block pagetitle %}Kategorie{% endblock %}
 
 {% block content %}
+
+
+	
+	  {% for flashMessage in app.session.getFlashBag.get('message') %}
+        <div class="alert alert-{{ flashMessage.type }}">
+            {{ flashMessage.content }}
+        </div>
+    {% endfor %}
+	
     <h1>
         Lista kategorii
     </h1>

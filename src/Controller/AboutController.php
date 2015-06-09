@@ -42,10 +42,23 @@ class AboutController implements ControllerProviderInterface{
 		
 		$id_user = (int)$request->get('id', 0);
 		
-		$UsersModel = new UsersModel($app);
-		$check = $UsersModel->checkUserId($id_user);
 
-		if ($check) {
+		$usersModel = new UsersModel($app);
+        if ($usersModel ->_isLoggedIn($app)) {
+                $id_current_user = $usersModel -> getIdCurrentUser($app);
+				
+        } else {
+                return $app->redirect(
+					$app['url_generator']->generate(
+						'auth_login'
+						), 301
+				);
+         }
+            
+			
+		if ($id_user == $id_current_user) {
+		
+		  
 
           $form = $app['form.factory']->createBuilder('form', $data)
 					->add(
@@ -154,15 +167,38 @@ class AboutController implements ControllerProviderInterface{
 					)
 				);
 			}
+			
+			return $app['twig']->render(
+                '403.twig'
+            );
 	   }
 	   
 	 public function edit(Application $app, Request $request)
 	 {
-			$aboutModel = new AboutModel($app);
-			$id_user = (int) $request->get('id', 0);
+		$aboutModel = new AboutModel($app);
+		$id_user = (int) $request->get('id', 0);
 			
-			$about = $aboutModel->getAbout($id_user);
+		$about = $aboutModel->getAbout($id_user);
+		$id_about = $about['id_about'];
+		
+		$check = $aboutModel->checkAboutId($id_about);
+		
+		if ($check) {
 			
+		$usersModel = new UsersModel($app);
+        if ($usersModel ->_isLoggedIn($app)) {
+                $id_current_user = $usersModel -> getIdCurrentUser($app);
+				
+        } else {
+                return $app->redirect(
+					$app['url_generator']->generate(
+						'auth_login'
+						), 301
+				);
+         }
+            
+			
+		if ($id_user == $id_current_user) {
 		
 		
 			if (count($about)) {
@@ -252,8 +288,28 @@ class AboutController implements ControllerProviderInterface{
 			
 					return $app->redirect($app['url_generator']->generate('/about/add'), 301);
 			}
-
-	}
+			
 		
-    
+
+			}return $app['twig']->render(
+                '403.twig'
+            );
+			} else {
+						$app['session']->getFlashBag()->add(
+							'message', array(
+								'type' => 'danger',
+								'content' => 'Nie znaleziono "o mnie"!'
+							)
+						);
+						return $app->redirect(
+								$app['url_generator']->generate(
+										'/users/panel', 
+											array(
+												'id' => $id_user,
+											)	
+								), 301
+							);
+					}
+	}
+			
 }

@@ -79,6 +79,18 @@ class CategoriesModel
         $sql = 'SELECT name FROM categories WHERE id_category = ? ';
         return $this->_db->fetchAssoc($sql, array($id_category));
     }
+	
+	public function checkCategoryId($id_category)
+    {
+        $sql = 'SELECT * FROM categories WHERE id_category=?';
+        $result = $this->_db->fetchAll($sql, array($id_category));
+
+        if ($result) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 	
 }

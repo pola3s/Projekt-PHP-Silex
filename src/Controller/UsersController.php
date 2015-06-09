@@ -94,7 +94,7 @@ class UsersController implements ControllerProviderInterface
                         $app['session']->getFlashBag()->add(
                             'message', array(
                                 'type' => 'success',
-                                'content' => 'Konto zosta�o stworzone'
+                                'content' => 'Konto zostało stworzone'
                             )
                         );
                         return $app->redirect(
@@ -105,14 +105,14 @@ class UsersController implements ControllerProviderInterface
 
                     } catch (\Exception $e) {
 
-                        $errors[] = 'Co� posz�o niezgodnie z planem';
+                        $errors[] = 'Coś poszło niezgodnie z planem';
                     }
 
                 } else {
                     $app['session']->getFlashBag()->add(
                         'message', array(
                             'type' => 'warning',
-                            'content' => 'Has�a nie s� takie same'
+                            'content' => 'Hasła nie są takie same'
                         )
                     );
                     return $app['twig']->render(
@@ -125,7 +125,7 @@ class UsersController implements ControllerProviderInterface
                 $app['session']->getFlashBag()->add(
                     'message', array(
                         'type' => 'danger',
-                        'content' => 'U�ytkownik o tym nicku ju� istnieje'
+                        'content' => 'Użytkownik o tym nicku już istnieje'
                     )
                 );
                 return $app['twig']->render(
@@ -143,65 +143,8 @@ class UsersController implements ControllerProviderInterface
             )
         );
     }
-    public function edit(Application $app, Request $request)
-    {
-        $usersModel = new UsersModel($app);
-        $id = (int) $request->get('id', 0);
-        $user = $usersModel->getUser($id);
+  
 
-        //pobieram  z formularza
-
-
-        $data = array(
-            'id' => $user['id_user'],
-            'firstname' => $user['firstname'],
-            'lastname' => $user['lastname'],
-            'login' => $user['login'],
-            'password' => $user['login'],
-            'confirm_password' => $user['login']
-        );
-        if (count($user)) {
-
-            $form = $app['form.factory']->createBuilder('form', $data)
-                ->add('firstname', 'text', array(
-                    'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 1)))
-                ))
-                ->add('lastname', 'text', array(
-                    'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 1)))
-                ))
-                ->add('login', 'text', array(
-                    'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
-                ))
-                ->add('password', 'password', array(
-                    'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
-                ))
-                ->add('confirm_password', 'password', array(
-                    'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
-                ))
-                
-                ->add('save', 'submit')
-                ->getForm();
-
-            $form->handleRequest($request);
-
-            if ($form->isValid()) {
-                $usersModel = new UsersModel($app);
-                $usersModel->saveUser($form->getData());
-                return $app->redirect($app['url_generator']->generate('/users/'), 301);
-            }
-
-            return $app['twig']->render('users/edit.twig', array('form' => $form->createView(), 'user' => $user));
-
-        } else {
-            return $app->redirect($app['url_generator']->generate('/users/add'), 301);
-        }
-    }
-
-    public function delete(Application $app, Request $request)
-    {
-        $id = (int) $request -> get('id_user');
-        return $app->redirect($app['url_generator']->generate('/users/'), 301);
-    }
 
 	public function panel(Application $app, Request $request)
     {
@@ -239,25 +182,38 @@ class UsersController implements ControllerProviderInterface
 	
 	public function view(Application $app, Request $request)
 	{
-		
-		
 		$id_user = (int) $request -> get('id', 0);  //id usera
 		
-	   
 		$usersModel = new UsersModel($app);
 		$user = $usersModel-> getUser($id_user);
-
 
 		$files = $usersModel -> getFileByUser($id_user);
 		$about = $usersModel -> getAboutByUser($id_user);
 		
-		return $app['twig']->render('users/view.twig', array( 
-			'files' => $files, 
-			'user' => $user,
-			'about' => $about,
-			'id_user' => $id_user
-			
-		));
+		
+		$check = $usersModel->checkUserId($id_user);
+
+		if ($check) {
+					return $app['twig']->render('users/view.twig', array( 
+						'files' => $files, 
+						'user' => $user,
+						'about' => $about,
+						'id_user' => $id_user
+						
+					));
+		} else {
+					$app['session']->getFlashBag()->add(
+						'message', array(
+							'type' => 'danger',
+							'content' => 'Nie znaleziono użytkownika'
+						)
+					);
+					return $app->redirect(
+						   $app['url_generator']->generate(
+									'/users/'
+							), 301
+					);
+		}
 	
 	}
 	

@@ -3,6 +3,12 @@
 {% block pagetitle %}Dodaj "o mnie"{% endblock %}
 
 {% block content %}
+
+	  {% for flashMessage in app.session.getFlashBag.get('message') %}
+        <div class="alert alert-{{ flashMessage.type }}">
+            {{ flashMessage.content }}
+        </div>
+    {% endfor %}
     <h1>
         Dodaj "o mnie"
     </h1>

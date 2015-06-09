@@ -49,6 +49,7 @@
                             </button>
                         </a>
 				{% elseif is_granted('ROLE_USER') %}
+					 {% if idLoggedUser|e == comment.id_user|e %}
 						<p>
                         <a href="{{ url('/comments/edit', {'id': comment.id_comment|e}) }}"
                            title="Edit comment">
@@ -62,6 +63,7 @@
                                 komentarz
                             </button>
                         </a>
+					{% endif %}
                 {% endif %}   
           
             <hr>

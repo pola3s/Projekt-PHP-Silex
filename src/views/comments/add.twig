@@ -17,9 +17,8 @@
     {% endfor %}
 	
 	
-    <form action="" method="post">
+    <form action="{{ url('/comments/add', {'id_file': id_file|e}) }}" method="post">
         {{ form_widget(form) }}
-        
     </form>
 {% endblock %}
 		

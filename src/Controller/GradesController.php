@@ -81,7 +81,7 @@ protected $_files;
 		//var_dump($id_current_user);
 		
 		
-		if($file['id_user'] = $id_user){
+		if($file['id_user'] == $id_user){
 			
 			$app['session']->getFlashBag()->add(
                         'message', array(

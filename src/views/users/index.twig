@@ -4,6 +4,14 @@
 
 
 {% block content %}
+
+
+	{% for flashMessage in app.session.getFlashBag.get('message') %}
+        <div class="alert alert-{{ flashMessage.type }}">
+            {{ flashMessage.content }}
+        </div>
+    {% endfor %}
+	
     <h1>
         List of users
     </h1>
