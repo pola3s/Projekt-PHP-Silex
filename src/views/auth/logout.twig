@@ -1,15 +1,15 @@
 {% extends 'layout.twig' %}
-{% block pagetitle %}}Zostałeś wylogowany!{% endblock %}
+{% block pagetitle %}Zostałeś wylogowany!{% endblock %}
 
 
-
-{% block content %}
-    Logged out!
-	
 		{% for flashMessage in app.session.getFlashBag.get('message') %}
         <div class="alert alert-{{ flashMessage.type }}">
             {{ flashMessage.content }}
         </div>
     {% endfor %}
+    
+{% block content %}
+    Logged out!
+	
 	
 {% endblock %}

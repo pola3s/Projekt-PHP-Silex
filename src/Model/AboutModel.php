@@ -72,7 +72,7 @@ class AboutModel
             );
     }
 	
-	public function saveAbout2($data, $id_user)
+	public function editAbout($data, $id_user)
 	{
 		if (isset($data['id_user']) && ctype_digit((string)$data['id_user'])) {
 		   $sql = 'UPDATE abouts SET email = ?, phone = ?, description = ?, website = ?, city = ? WHERE id_user = ?';

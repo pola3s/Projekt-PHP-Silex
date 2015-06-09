@@ -1,6 +1,5 @@
 <?php
 
- 
 namespace Controller;
 
 use Silex\Application;
@@ -16,11 +15,11 @@ use Model\GradesModel;
 class GradesController implements ControllerProviderInterface
 {
    
-    protected $_model;
+protected $_model;
 
-	protected $_user;
+protected $_user;
 
-    protected $_files;
+protected $_files;
 
     public function connect(Application $app)
     {
@@ -37,21 +36,21 @@ class GradesController implements ControllerProviderInterface
         return $gradesController;
     }
 
-  
     public function index(Application $app, Request $request)
     {
         $id = (int)$request->get('id_file', 0);
-		
 		$filesModel = new FilesModel($app);
-		$gradesModel = new GradesModel($app);
-		$averageGrade = $gradesModel ->getGrades($id);  
-			
-			return $app['twig']->render(
-                'grades/index.twig', array(
-                'averageGrade' => $averageGrade['AVG(grade)'],
-				'id_file' => $id
-                )
-            );
+	    $gradesModel = new GradesModel($app);
+	    $averageGrade = $gradesModel ->getGrades($id);
+		
+		$roundGrade = round($averageGrade['AVG(grade)'], 2);
+
+		return $app['twig']->render(
+        'grades/index.twig', array(
+                'roundGrade' => $roundGrade,
+	            'id_file' => $id
+				)
+			);
 	}
 
 
@@ -147,3 +146,4 @@ class GradesController implements ControllerProviderInterface
         
 }
 	
+?>

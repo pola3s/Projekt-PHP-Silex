@@ -56,17 +56,15 @@ $app->register(
 			array('^/register/.+$', 'IS_AUTHENTICATED_ANONYMOUSLY'),
 			array('^/auth/.+$', 'IS_AUTHENTICATED_ANONYMOUSLY'),
 			array('^/.$', 'IS_AUTHENTICATED_ANONYMOUSLY'),
-            array('^/users/panel/+$', 'ROLE_USER'),
+			array('^/files/view/.+', 'IS_AUTHENTICATED_ANONYMOUSLY'),
+			array('^/users/panel/+$', 'ROLE_USER'),
 			array('^/users/view/.+$', 'ROLE_USER'),
 			array('^/grades/.*$', 'ROLE_USER'),
 			array('^/about/.*$', 'ROLE_USER'),
             array('^/comments/.*$', 'ROLE_USER'),
-            array('^/files/.*$', 'ROLE_USER'),
+			array('^/files/.*$', 'ROLE_USER'),
 			array('^/categories/.$', 'ROLE_ADMIN'),
 			array('^/.+$', 'ROLE_ADMIN')
-            
-
-
         ),
         'security.role_hierarchy' => array(
             'ROLE_ADMIN' => array('ROLE_USER', 'ROLE_ANONYMUS'),

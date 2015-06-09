@@ -15,87 +15,6 @@ class FilesModel
     {
         $this->_db = $app['db'];
     }
-
-    public function saveFile($name, $data)
-    {
-        $sql = 'INSERT INTO `files` (`name`,`title`, `category`, `description`, `id_user`) VALUES (?,?,?,?,?)';
-        $this->_db->executeQuery($sql, array(
-				$name,
-				$data['title'],
-				$data['category'],
-				$data['description'],
-				$data['id_user']
-				));
-    }
-	
-	public function getFileName($id)
-    {
-        $sql = 'SELECT name FROM files WHERE id_file = ?1';
-        return $this->_db->fetchAssoc($sql, array((int)$id));
-    }
-	
-	
-	public function saveFile2($name, $data)
-	{
-    if (isset($data['id_file']) && ctype_digit((string)$data['id_file'])) {
-       $sql = 'UPDATE files SET title = ?, description = ?, category = ?, id_user = ? WHERE id_file = ?';
-       $this->_db->executeQuery($sql, array($data['title'], $data['description'], $data['category'], $data['id_user'], $data['id_file']));
-    } else {
-       $sql = 'INSERT INTO `files` (`title`, `description`, `category`,  `id_user`) VALUES (?,?,?,?)';
-       $this->_db->executeQuery($sql, array($data['title'], $data['description'], $data['name'], $data['id_user']));
-    }
-	}
-
-    public function createName($name)
-    {
-        $newName = '';
-        $ext = pathinfo($name, PATHINFO_EXTENSION);
-        $newName = $this->_randomString(32) . '.' . $ext;
-
-        while(!$this->_isUniqueName($newName)) {
-            $newName = $this->_randomString(32) . '.' . $ext;
-        }
-
-        return $newName;
-    }
-
-    protected function _randomString($length)
-    {
-        $string = '';
-        $keys = array_merge(range(0, 9), range('a', 'z'));
-        for ($i = 0; $i < $length; $i++) {
-            $string .= $keys[array_rand($keys)];
-        }
-        return $string;
-    }
-
-    protected function _isUniqueName($name)
-    {
-        $sql = 'SELECT COUNT(*) AS files_count FROM files WHERE name = ?';
-        $result = $this->_db->fetchAssoc($sql, array($name));
-        return !$result['files_count'];
-    }
-
-	protected function _isLoggedIn(Application $app)
-{
-    if (null === $user = $app['session']->get('user')) {
-        return false;
-    } else {
-        return true;
-    }
-}
-	
-	public function getFiles()
-    {
-        $sql = 'SELECT * FROM files';
-        return $this->_db->fetchAll($sql);
-	}
-	
-	public function getUserByLogin($login)
-	{
-	$sql = 'SELECT * FROM users WHERE login = ?';
-	return $this->_db->fetchAssoc($sql, array((string) $this->_app->escape($login)));
-	}
 	
 	public function countFilesPages($limit)
     {
@@ -124,7 +43,7 @@ class FilesModel
         return $statement->fetchAll();
     }
 	
-	 public function getFile($id)
+	public function getFile($id)
     {
         if (($id != '') && ctype_digit((string)$id)) {
             $sql = 'SELECT * FROM files WHERE id_file = ?';
@@ -132,43 +51,6 @@ class FilesModel
         } else {
             return array();
         }
-    }
-	
-	
-	
-	 public function getUserByFile($id)
-    {
-        if (($id != '') && ctype_digit((string)$id)) {
-            $sql = 'SELECT * FROM files WHERE id_file = ?';
-            return $this->_db->fetchAssoc($sql, array((int) $id));
-        } else {
-            return array();
-        }
-    }
-
-	
-	 public function checkFileId($id)
-    {
-        $sql = 'SELECT * FROM files WHERE id_file=?';
-        $result = $this->_db->fetchAll($sql, array($id));
-
-        if ($result) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-	
-	public function checkUserId($id)
-    {
-        $sql = 'SELECT id_user FROM files WHERE id_file=?';
-        return $this->_db->fetchAssoc($sql, array((int)$id));
-    }
-	
-	 public function getFileUploaderName($id_user)
-    {
-        $sql = 'SELECT login FROM users WHERE id_user=?';
-        return $this->_db->fetchAssoc($sql, array((int)$id_user));
     }
 	
 	public function checkCategoryId($id)
@@ -183,22 +65,81 @@ class FilesModel
         return $this->_db->fetchAssoc($sql, array((int)$id_category));
     }
 	
-	
-	
-	
-	
-	 public function getUserById($id)
+	public function checkUserId($id)
     {
-        $sql = 'SELECT * FROM users WHERE `id_user` = ? Limit 1';
+        $sql = 'SELECT id_user FROM files WHERE id_file=?';
         return $this->_db->fetchAssoc($sql, array((int)$id));
     }
 	
 	
-	 public function getFileByName($name)
+	public function getFileUploaderName($id_user)
     {
-        $sql = 'SELECT * FROM files WHERE name=?';
-        return $this->_db->fetchAssoc($sql, array($name));
+        $sql = 'SELECT login FROM users WHERE id_user=?';
+        return $this->_db->fetchAssoc($sql, array((int)$id_user));
     }
+	
+	public function createName($name)
+    {
+        $newName = '';
+        $ext = pathinfo($name, PATHINFO_EXTENSION);
+        $newName = $this->_randomString(32) . '.' . $ext;
+
+        while(!$this->_isUniqueName($newName)) {
+            $newName = $this->_randomString(32) . '.' . $ext;
+        }
+
+        return $newName;
+    }
+	
+	
+    protected function _randomString($length)
+    {
+        $string = '';
+        $keys = array_merge(range(0, 9), range('a', 'z'));
+        for ($i = 0; $i < $length; $i++) {
+            $string .= $keys[array_rand($keys)];
+        }
+        return $string;
+    }
+
+    protected function _isUniqueName($name)
+    {
+        $sql = 'SELECT COUNT(*) AS files_count FROM files WHERE name = ?';
+        $result = $this->_db->fetchAssoc($sql, array($name));
+        return !$result['files_count'];
+    }
+
+	protected function _isLoggedIn(Application $app)
+	{
+		if (null === $user = $app['session']->get('user')) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	public function saveFile($name, $data)
+    {
+        $sql = 'INSERT INTO `files` (`name`,`title`, `category`, `description`, `id_user`) VALUES (?,?,?,?,?)';
+        $this->_db->executeQuery($sql, array(
+				$name,
+				$data['title'],
+				$data['category'],
+				$data['description'],
+				$data['id_user']
+				));
+    }
+	
+	public function editFile($name, $data)
+	{
+		if (isset($data['id_file']) && ctype_digit((string)$data['id_file'])) {
+		   $sql = 'UPDATE files SET title = ?, description = ?, category = ?, id_user = ? WHERE id_file = ?';
+		   $this->_db->executeQuery($sql, array($data['title'], $data['description'], $data['category'], $data['id_user'], $data['id_file']));
+		} else {
+		   $sql = 'INSERT INTO `files` (`title`, `description`, `category`,  `id_user`) VALUES (?,?,?,?)';
+		   $this->_db->executeQuery($sql, array($data['title'], $data['description'], $data['name'], $data['id_user']));
+		}
+	}
 	
 	public function checkFileName($name)
     {
@@ -211,84 +152,24 @@ class FilesModel
             return false;
         }
     }
-
 	
-
+	public function getFileByName($name)
+    {
+        $sql = 'SELECT * FROM files WHERE name=?';
+        return $this->_db->fetchAssoc($sql, array($name));
+    }
 	
-	 public function removeFile($name)
+	
+	public function removeFile($name)
     {
         $sql = 'DELETE FROM `files` WHERE name = ?';
         $this->_db->executeQuery($sql, array($name));
     }
-	
 
-	
-	// public function saveFile2($data)
-	// {
-		// if (isset($data['id_file']) && ctype_digit((string)$data['id_file'])) {
-			// $sql = 'UPDATE files SET title = ?, category = ?,  description = ? WHERE id_file = ?';
-			// $this->_db->executeQuery($sql, array($data['title'], $data['category'], $data['description'], $data['id_file']));
-		// } else {
-			// $sql = 'INSERT INTO files (title, category, description) VALUES (?,?)';
-			// $this->_db->executeQuery($sql, array($data['title'], $data['category'], $data['description']));
-		// }
-	// }
-	
-	public function getFileByUser($id)
-    {
-        $sql = 'SELECT * FROM files WHERE id_user= ?';
-        return $this->_db->fetchAssoc($sql, array($file));
-    }
-	
-	
-	public function editFile($data)
-    {
-
-        if (isset($data['id_file']) && ctype_digit((string)$data['id_file'])) {
-            $sql = 'UPDATE files 
-                    SET title = ?, description = ?, 
-                        category = ?
-                    WHERE id_file = ?';
-            $this->_db
-                ->executeQuery(
-                    $sql,
-                    array(
-                        $data['title'], 
-                        $data['description'], 
-                        $data['category'], 
-                       
-                    )
-                );
-        } else {
-            $sql = 'INSERT INTO files 
-                    (title, description,category) 
-                    VALUES (?,?,?)';
-            $this->_db
-                ->executeQuery(
-                    $sql,
-                    array(
-                        $data['title'], 
-                        $data['description'], 
-                        $data['category']
-                    )
-                );
-        }
-    }
-	
-	 
-    public function searchFile($name)
+	public function searchFile($name)
     {
        $sql = 'SELECT * FROM files WHERE category = ?';
        return $this->_db-> fetchAll($sql, array($name));
     }
-	
-	 
-	 
-	
-
-
-	
-		
-      
-	
+  
 }

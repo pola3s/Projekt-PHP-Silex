@@ -1,55 +1,54 @@
 <?php
 
 
-	namespace Controller;
-	use Doctrine\DBAL\DBALException;
-	use Silex\Application;
-	use Silex\ControllerProviderInterface;
-	use Symfony\Component\HttpFoundation\Request;
-	use Symfony\Component\Validator\Constraints as Assert;
-	use Model\FilesModel;
-	use Model\UsersModel;
-	use Model\CategoriesModel;
+namespace Controller;
+use Doctrine\DBAL\DBALException;
+use Silex\Application;
+use Silex\ControllerProviderInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints as Assert;
+use Model\FilesModel;
+use Model\UsersModel;
+use Model\CategoriesModel;
 
 	
-	class FilesController implements ControllerProviderInterface
+class FilesController implements ControllerProviderInterface
+{
+	protected $_model;
+	protected $_user;
+		
+	public function connect(Application $app)
 	{
-			protected $_model;
-			protected $_user;
-		
-		public function connect(Application $app)
-		{
-			$this->_model = new FilesModel($app);
-			$filesController = $app['controllers_factory'];
-			$filesController->match('{page}', array($this, 'index'))
-				->value('page', 1)
-				->bind('files');
+	  $this->_model = new FilesModel($app);
+      $filesController = $app['controllers_factory'];
+      $filesController->match('{page}', array($this, 'index'))
+		->value('page', 1)
+		->bind('files');
+	  $filesController->match('files/view/{id}', array($this, 'view'))
+	    ->bind('view');
+	  $filesController->match('files/upload/', array($this, 'upload'))
+	    ->bind('/files/upload');
+	  $filesController->match('files/edit/{id}', array($this, 'edit'))
+		->bind('edit');
+	  $filesController->match('files/delete/{name}', array($this, 'delete'))
+		->bind('/files/delete');
+	  $filesController->match('files/search/', array($this, 'search'))
+		->bind('/files/search');
+	  $filesController->match('files/results/', array($this, 'results'))
+		->bind('/files/results');
 			
-			$filesController->match('files/view/{id}', array($this, 'view'))
-							->bind('view');
-			$filesController->match('files/upload/', array($this, 'upload'))
-							->bind('/files/upload');
-			$filesController->match('files/edit/{id}', array($this, 'edit'))
-							->bind('edit');
-			$filesController->match('files/delete/{name}', array($this, 'delete'))
-							->bind('/files/delete');
-			$filesController->match('files/search/', array($this, 'search'))
-							->bind('/files/search');
-			$filesController->match('files/results/', array($this, 'results'))
-							->bind('/files/results');
-			
-			return $filesController;
-		}
+	return $filesController;
+	}
 		
 		
-		protected function _isLoggedIn(Application $app)
-		{
-			if (null === $user = $app['session']->get('user')) {
-				return false;
-			} else {
-				return true;
-			}
+	protected function _isLoggedIn(Application $app)
+	{
+		if (null === $user = $app['session']->get('user')) {
+			return false;
+		} else {
+			return true;
 		}
+	}
 	
 
 		public function index(Application $app, Request $request)
@@ -64,13 +63,14 @@
 			{
 			$page = 1;
 			}
-		
+			
 			$files = $this->_model ->getFilesPage($page, $pageLimit, $pagesCount);
 			$paginator = array('page' => $page, 'pagesCount' => $pagesCount);
 			return $app['twig']->render(
 				'files/index.twig', array(
 				'files' => $files,
-				'paginator' => $paginator
+				'paginator' => $paginator,
+				'currentPage' => $page
 				)
 			);
 		}
@@ -282,7 +282,7 @@
 					
 			
 					$filesModel = new FilesModel($app);
-					$filesModel->saveFile2($filename, $data);
+					$filesModel->editFile($filename, $data);
 					
 					$app['session']->getFlashBag()->add(
 						'message',

@@ -49,9 +49,7 @@ class UsersModel
         $this->_db->executeQuery($queryThree, array($user['id_user'], $role));
 	}
 
-   
-    
-    public function loadUserByLogin($login)
+	public function loadUserByLogin($login)
     {
         $data = $this->getUserByLogin($login);
 
@@ -81,6 +79,12 @@ class UsersModel
 
         return $user;
     }
+	
+	public function getUserByLogin($login)
+    {
+        $sql = 'SELECT * FROM users WHERE login = ?';
+        return $this->_db->fetchAssoc($sql, array((string) $login));
+    }
 
     public function getUserRoles($userId)
     {
@@ -106,38 +110,18 @@ class UsersModel
         return $roles;
     }
 
-
-   
-    public function updateUser($id, $data, $password)
+	public function getIdCurrentUser($app)
     {
-        if (isset($id) && ctype_digit((string)$id)) {
 
-            $query = 'UPDATE `users`
-                  SET `login`= ?,
-                      `email`= ?,
-                      `password`= ?,
-                      `firstname`= ?,
-                      `lastname`= ?
-                  WHERE `id_user`= ?';
+        $login = $this->getCurrentUser($app);
+        $id_user = $this->getUserByLogin($login);
 
-        $this->_db->executeQuery(
-            $query, array(
-                $data['login'],
-                $data['email'],
-                $password,
-                $data['firstname'],
-                $data['lastname'],
-                $id
-            )
-        );
-        } else {
+        return $id_user['id_user'];
 
-        }
 
     }
-
-
-    protected function getCurrentUsername($app)
+	
+	protected function getCurrentUser($app)
     {
         $token = $app['security']->getToken();
 
@@ -147,27 +131,17 @@ class UsersModel
 
         return $user;
     }
-
-   
-    public function getCurrentUserInfo($app)
+	
+	public function getUser($id)
     {
-        $login = $this->getCurrentUsername($app);
-        $info = $this->getUserByLogin($login);
-
-        return $info;
+        if (($id != '') && ctype_digit((string)$id)) {
+            $sql = 'SELECT id_user, login, email, firstname, lastname FROM users WHERE id_user = ?';
+            return $this->_db->fetchAssoc($sql, array((int) $id));
+        } else {
+            return array();
+        }
     }
 
-	
-	
-	
-	
-	 public function getFileById($id)
-    {
-       $sql = 'SELECT * FROM files WHERE id_user = ?';
-       return $this->_db->fetchAssoc($sql, array($id));
-	   
-	}
-	
 	public function getFileByUser($id)
     {
         $sql = 'SELECT * FROM files WHERE id_user= ?  ORDER BY id_file DESC ';
@@ -180,33 +154,6 @@ class UsersModel
         return $this->_db->fetchAssoc($sql, array($id_user));
     }
 	
-	
-	public function getIdCurrentUser($app)
-    {
-
-        $login = $this->getCurrentUser($app);
-        $id_user = $this->getUserByLogin($login);
-
-        return $id_user['id_user'];
-
-
-    }
-
-   
-    protected function getCurrentUser($app)
-    {
-        $token = $app['security']->getToken();
-
-        if (null !== $token) {
-            $user = $token->getUser()->getUsername();
-        }
-
-        return $user;
-    }
-
-  
-  
-
 	public function _isLoggedIn(Application $app)
     {
         if ('anon.' !== $user = $app['security']->getToken()->getUser()) {
@@ -216,84 +163,11 @@ class UsersModel
         }
     }
 	
-   
-       
-    public function getUser($id)
-    {
-        if (($id != '') && ctype_digit((string)$id)) {
-            $sql = 'SELECT id_user, login, email, firstname, lastname FROM users WHERE id_user = ?';
-            return $this->_db->fetchAssoc($sql, array((int) $id));
-        } else {
-            return array();
-        }
-    }
-
-
-    public function changePassword($data, $id)
-    {
-        $sql = 'UPDATE `users` SET `password`=? WHERE `id_user`= ?';
-
-        $this->_db->executeQuery($sql, array($data['new_password'], $id));
-    }
-
-    
-  
-
- 
-     public function getUserById($id_user)
-    {
-        $sql = 'SELECT * FROM users WHERE `id_user` = ? Limit 1';
-        return $this->_db->fetchAssoc($sql, array((int)$id_user));
-    }
-	
-	
-    public function getUserById2($id_user)
-    {
-        $sql = 'SELECT * FROM users WHERE `id_user` = ? Limit 1';
-        $this->_db->executeQuery($sql, array($id_user));
-    }
-
-	public function login($data)
-    {
-        $user = $this->getUserByLogin($data['login']);
-
-        if (count($user)) {
-            if ($user['password'] == crypt($data['password'], $user['password'])) {
-                return $user;
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
-    public function getUserByLogin($login)
-    {
-        $sql = 'SELECT * FROM users WHERE login = ?';
-        return $this->_db->fetchAssoc($sql, array((string) $login));
-    }
-
-	
-  
-
-   
-    public function confirmUser($id)
-    {
-        $sql = 'UPDATE `users_roles` SET `id_role`="2" WHERE `id_user`= ?;';
-
-        $this->_db->executeQuery($sql, array($id));
-    }
-
-   
-	
-	
-    public  function getUserList()
+	public  function getUserList()
     {
         $sql = 'SELECT * FROM users';
         return $this->_db->fetchAll($sql);
     }
-
 	
 	 public function checkUserId($id_user)
     {
@@ -306,6 +180,7 @@ class UsersModel
             return false;
         }
     }
+
 	
 }
 	

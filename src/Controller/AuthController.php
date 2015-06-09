@@ -72,6 +72,7 @@ class AuthController implements ControllerProviderInterface
    
     public function logout(Application $app, Request $request)
     {
+	
         $app['session']->clear();
 		return $app['twig']->render('auth/logout.twig', $this->view);
 		

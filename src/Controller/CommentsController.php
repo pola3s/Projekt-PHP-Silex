@@ -256,7 +256,7 @@ class CommentsController implements ControllerProviderInterface
 										), 301
 						);
 					}
-					} else { // end of count
+					} else {
 						$app['session']
 						->getFlashBag()
 						->set('error', 'Comment not found');
@@ -332,7 +332,7 @@ class CommentsController implements ControllerProviderInterface
 							'message',
 								array(
 								'type' => 'success',
-								'content' => 'Komentarz został zmieiony'
+								'content' => 'Komentarz został zmieniony'
 								)
 							);	
 							return $app->redirect(

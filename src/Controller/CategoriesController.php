@@ -105,7 +105,7 @@ class CategoriesController implements ControllerProviderInterface
 			if ($form->isValid()) {
 					$categoriesModel = new CategoriesModel($app);
 					$data = $form->getData();
-					$categoriesModel->saveCategory2($data, $id_category);
+					$categoriesModel->editCategory($data, $id_category);
 					
 					return $app->redirect($app['url_generator']->generate('categories'), 301);
 			}

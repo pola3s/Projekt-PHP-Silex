@@ -3,12 +3,12 @@
 
 {% block content %}
 
-
+{% if is_granted ('ROLE_USER') %}
 	{% block search %}
-		
-			{{ render( url('/files/search')) }}
-
+		{{ render( url('/files/search')) }}
 	{% endblock %}
+{% endif %}
+
 
 	
 	{% for flashMessage in app.session.getFlashBag.get('message') %}

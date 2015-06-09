@@ -48,18 +48,52 @@ class AboutController implements ControllerProviderInterface{
 		if ($check) {
 
           $form = $app['form.factory']->createBuilder('form', $data)
-				->add('email', 'text', array(
-					'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 3)))
-				))
-				->add('phone', 'text', array(
-					'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
-				))
+					->add(
+					'email', 'text', array(
+						'label' => 'Email',
+						'constraints' => array(
+							new Assert\NotBlank(),
+							new Assert\Email(
+								array(
+									'message' => 'Email nie jest poprawny'
+								)
+							),
+							new Assert\Type(
+								array('type' => 'string')
+							)
+						)
+					)
+				)
+				->add(
+					'phone', 'text', array(
+						'constraints' => array(
+							new Assert\NotBlank(), 
+								new Assert\Length(
+									array('min' => 5)
+							),
+							 new Assert\Regex(
+								array(
+									'pattern' => 
+										"/^([0-9]{9})|(([0-9]{3}-){2}[0-9]{3})$/"
+								)
+							)
+						)
+					)
+				)
 				->add('description', 'text', array(
 					'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
 				))
-				->add('website', 'text', array(
-					'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
-				))
+				->add(
+					'website', 'text', array(
+						'constraints' => array(
+							new Assert\NotBlank(),
+							new Assert\Length(
+								array('min' => 5)
+							),
+							new Assert\Url()
+							)
+					)
+				)
 				->add('city', 'text', array(
 					'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 2)))
 				))
@@ -133,21 +167,55 @@ class AboutController implements ControllerProviderInterface{
 		
 			if (count($about)) {
 				$form = $app['form.factory']->createBuilder('form', $about)
-					->add('email', 'text', array(
-						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 3)))
-					))
-					->add('phone', 'text', array(
-						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
-					))
-					->add('description', 'text', array(
-						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
-					))
-					->add('website', 'text', array(
-						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
-					))
-					->add('city', 'text', array(
-						'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 2)))
-					))
+					->add(
+					'email', 'text', array(
+						'label' => 'Email',
+						'constraints' => array(
+							new Assert\NotBlank(),
+							new Assert\Email(
+								array(
+									'message' => 'Email nie jest poprawny'
+								)
+							),
+							new Assert\Type(
+								array('type' => 'string')
+							)
+						)
+					)
+				)
+				->add(
+					'phone', 'text', array(
+						'constraints' => array(
+							new Assert\NotBlank(), 
+								new Assert\Length(
+									array('min' => 5)
+							),
+							new Assert\Regex(
+								array(
+									'pattern' => 
+										"/^([0-9]{9})|(([0-9]{3}-){2}[0-9]{3})$/"
+								)
+							)
+						)
+					)
+				)
+				->add('description', 'text', array(
+					'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
+				))
+				->add(
+					'website', 'text', array(
+						'constraints' => array(
+							new Assert\NotBlank(),
+							new Assert\Length(
+								array('min' => 5)
+							),
+							new Assert\Url()
+							)
+					)
+				)
+				->add('city', 'text', array(
+					'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 2)))
+				))
                
 				->add('save', 'submit')
 				->getForm();
@@ -157,7 +225,7 @@ class AboutController implements ControllerProviderInterface{
 			if ($form->isValid()) {
 					$aboutModel = new AboutModel($app);
 					$data = $form->getData();
-					$aboutModel->saveAbout2($data, $id_user);
+					$aboutModel->editAbout($data, $id_user);
 					
 					$app['session']->getFlashBag()->add(
 						'message',

@@ -35,10 +35,17 @@ class RegistrationController implements ControllerProviderInterface
             ->add(
                 'login', 'text', array(
                     'constraints' => array(
-                        new Assert\NotBlank()
-                    )
-                )
-            )
+                        new Assert\NotBlank(),
+                    
+						new Assert\Length(
+							array('min' => 3)
+						),
+						new Assert\Type(
+							array('type' => 'string')
+						)
+					)
+				)
+			)
             ->add(
                 'email', 'text', array(
                     'label' => 'Email',
@@ -48,23 +55,27 @@ class RegistrationController implements ControllerProviderInterface
                             array(
                                 'message' => 'Email nie jest poprawny'
                             )
-                        )
+                        ),
+						new Assert\Type(
+							array('type' => 'string')
+						)
                     )
                 )
             )
             ->add(
                 'firstname', 'text', array(
-                    'label' => 'Imie',
+                    'label' => 'Imię',
                     'constraints' => array(
                         new Assert\NotBlank(),
                         new Assert\Length(
-                            array(
-                            'min' => 3
-                            )
-                        )
-                    )
-                )
-            )
+                            array('min' => 3)
+                        ),
+						new Assert\Type(
+							array('type' => 'string')
+						)
+					)
+				)	
+			)	
             ->add(
                 'lastname', 'text', array(
                     'label' => 'Nazwisko',
@@ -72,13 +83,16 @@ class RegistrationController implements ControllerProviderInterface
                         new Assert\NotBlank(),
                         new Assert\Length(
                             array('min' => 3)
-                        )
+                        ),
+						new Assert\Type(
+							array('type' => 'string')
+						),
                     )
                 )
             )
             ->add(
                 'password', 'password', array(
-                    'label' => 'Haslo',
+                    'label' => 'Hasło',
                     'constraints' => array(
                         new Assert\NotBlank()
                     )
@@ -86,7 +100,7 @@ class RegistrationController implements ControllerProviderInterface
             )
             ->add(
                 'confirm_password', 'password', array(
-                    'label' => 'Potwierdz haslo',
+                    'label' => 'Potwierdź hasło',
                     'constraints' => array(
                         new Assert\NotBlank()
                     )
