@@ -1,15 +1,14 @@
 <?php
 /**
- * User Provider
+ * Users Provider
  *
  * PHP version 5
  *
  * @category UserProvider
  * @package  UserProvider
- * @author   Radosław Stolarski <stolarz92@gmail.com>
+ * @author   Paulina Serwińska <paulina.serwinska@gmail.com>
  * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
- * @version  SVN: $id$
- * @link     wierzba.wzks.uj.edu.pl/~12_stolarski
+ * @link     wierzba.wzks.uj.edu.pl/~12_serwinska
  */
 namespace User;
 
@@ -22,39 +21,48 @@ use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Model\UsersModel;
 
 /**
- * Class UserProvider
+ * Class UserProvider.
  *
- * @category UserProvider
- * @package  UserProvider
- * @author   Radosław Stolarski <stolarz92@gmail.com>
- * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
- * @version  Release: <package_version>
- * @link     wierzba.wzks.uj.edu.pl/~12_stolarski
- * @uses Symfony\Component\Security\Core\User\UserProviderInterface;
- * @uses Symfony\Component\Security\Core\User\UserInterface;
- * @uses Symfony\Component\Security\Core\User\User;
- * @uses Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
- * @uses Symfony\Component\Security\Core\Exception\UnsupportedUserException;
+ * @author   Paulina Serwińska <paulina.serwinska@gmail.com>
+ * @package Provider
+ * @use Silex\Application
+ * @use Symfony\Component\Security\Core\User\UserProviderInterface
+ * @use Symfony\Component\Security\Core\User\UserInterface
+ * @use Symfony\Component\Security\Core\User\User
+ * @use Symfony\Component\Security\Core\Exception\UsernameNotFoundException
+ * @use Symfony\Component\Security\Core\Exception\UnsupportedUserException
+ * @use Model\UsersModel
  */
 class UserProvider implements UserProviderInterface
 {
-    /**
-     * Database access object.
-     *
-     * @access protected
-     * @var $_app
-     */
+   /**
+    * Silex application.
+    *
+    * @access protected
+    * @var Silex\Application $app
+    */
     protected $_app;
 
-    /**
-     * @param $app
-     */
+   /**
+    * Object constructor.
+    *
+    * @access public
+    * @param Silex\Application $app Silex application
+    */
     public function __construct($app)
     {
         $this->_app = $app;
     }
 
-  
+	
+   /**
+    * Load user by username.
+    *
+    * @access public
+    * @param string $login User login
+    *
+    * @return User Result
+    */
     public function loadUserByUsername($login)
     {
         $userModel = new UsersModel($this->_app);
@@ -66,7 +74,14 @@ class UserProvider implements UserProviderInterface
         );
     }
 
-  
+   /**
+    * Refresh user.
+    *
+    * @access public
+    * @param UserInterface $user User
+    *
+    * @return User Result
+    */
     public function refreshUser(UserInterface $user)
     {
         if (!$user instanceof User) {
@@ -81,6 +96,14 @@ class UserProvider implements UserProviderInterface
         return $this->loadUserByUsername($user->getUsername());
     }
 
+   /**
+    * Check if supports selected class.
+    *
+    * @access public
+    * @param string $class Class name
+    *
+    * @return bool
+    */
     public function supportsClass($class)
     {
         return $class === 'Symfony\Component\Security\Core\User\User';

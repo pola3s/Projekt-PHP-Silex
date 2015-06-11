@@ -1,5 +1,15 @@
 <?php
-
+/**
+ * Registration controller
+ *
+ * PHP version 5
+ *
+ * @category Controller
+ * @package  Controller
+ * @author   Paulina Serwińska <paulina.serwinska@gmail.com>
+ * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
+ * @link     wierzba.wzks.uj.edu.pl/~12_serwinska
+ */
 namespace Controller;
 
 use Silex\Application;
@@ -9,11 +19,33 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Form;
 use Model\UsersModel;
 
-
+/**
+ * Class RegistrationController
+ *
+ * @category Controller
+ * @package  Controller
+ * @author   Paulina Serwińska <paulina.serwinska@gmail.com>
+ * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
+ * @version  Release: <package_version>
+ * @link     wierzba.wzks.uj.edu.pl/~12_serwinska
+ * @uses     Silex\Application;
+ * @uses     Silex\ControllerProviderInterface;
+ * @uses     Symfony\Component\HttpFoundation\Request;
+ * @uses     Symfony\Component\Validator\Constraints as Assert;
+ * @uses     Symfony\Component\Form;
+ * @uses     Model\UsersModel;
+ */     
 class RegistrationController implements ControllerProviderInterface
 {
-    protected $_model;
-
+    protected $model;
+    /**
+    * Connection
+    *
+    * @param Application $app application object
+    *
+    * @access public
+    * @return \Silex\ControllerCollection
+    */
     public function connect(Application $app)
     {
         $this->_model = new UsersModel($app);
@@ -25,27 +57,35 @@ class RegistrationController implements ControllerProviderInterface
         return $authController;
     }
 
-   
+    /**
+    * Add new user to database
+    *
+    * @param Application $app     application object
+    * @param Request     $request request
+    *
+    * @access public
+    * @return mixed Generates page
+    */  
     public function register(Application $app, Request $request)
     {
         $data = array();
         $form = $app['form.factory']->createBuilder('form', $data)
-		
-			
+        
+            
             ->add(
                 'login', 'text', array(
                     'constraints' => array(
                         new Assert\NotBlank(),
                     
-						new Assert\Length(
-							array('min' => 3)
-						),
-						new Assert\Type(
-							array('type' => 'string')
-						)
-					)
-				)
-			)
+                new Assert\Length(
+                    array('min' => 3)
+                ),
+                new Assert\Type(
+                    array('type' => 'string')
+                )
+                    )
+                )
+            )
             ->add(
                 'email', 'text', array(
                     'label' => 'Email',
@@ -56,9 +96,9 @@ class RegistrationController implements ControllerProviderInterface
                                 'message' => 'Email nie jest poprawny'
                             )
                         ),
-						new Assert\Type(
-							array('type' => 'string')
-						)
+                        new Assert\Type(
+                            array('type' => 'string')
+                        )
                     )
                 )
             )
@@ -70,12 +110,12 @@ class RegistrationController implements ControllerProviderInterface
                         new Assert\Length(
                             array('min' => 3)
                         ),
-						new Assert\Type(
-							array('type' => 'string')
-						)
-					)
-				)	
-			)	
+                        new Assert\Type(
+                            array('type' => 'string')
+                        )
+                    )
+                )    
+            )    
             ->add(
                 'lastname', 'text', array(
                     'label' => 'Nazwisko',
@@ -84,9 +124,9 @@ class RegistrationController implements ControllerProviderInterface
                         new Assert\Length(
                             array('min' => 3)
                         ),
-						new Assert\Type(
-							array('type' => 'string')
-						),
+                        new Assert\Type(
+                            array('type' => 'string')
+                        ),
                     )
                 )
             )
@@ -107,7 +147,7 @@ class RegistrationController implements ControllerProviderInterface
                 )
             )
             ->add('save', 'submit', array('label' => 'Zarejestruj'))
-			->getForm();
+        ->getForm();
 
 
         $form->handleRequest($request);
@@ -136,7 +176,7 @@ class RegistrationController implements ControllerProviderInterface
                 $checkLogin = $this->_model->getUserByLogin(
                     $data['login']
                 );
-				
+                
                 if (!$checkLogin) {
                     try
                     {
@@ -145,13 +185,13 @@ class RegistrationController implements ControllerProviderInterface
                             $password
                         );
                
-					return $app->redirect(
-						$app['url_generator']->generate(
-						 '/register/success'
-						)	, 301
-					);
+                        return $app->redirect(
+                            $app['url_generator']->generate(
+                                '/register/success'
+                            ), 301
+                        );
                     }
-				
+                
                     catch (\Exception $e)
                     {
                         $errors[] = 'Rejestracja się nie powiodła,
@@ -161,7 +201,7 @@ class RegistrationController implements ControllerProviderInterface
                     $app['session']->getFlashBag()->add(
                         'message', array(
                             'type' => 'warning', 
-							'content' => 'Login zajęty'
+                        'content' => 'Login zajęty'
                         )
                     );
                     return $app['twig']->render(
@@ -191,7 +231,15 @@ class RegistrationController implements ControllerProviderInterface
             )
         );
     }
-
+    
+    /**
+    * Generates page with information about successful registration
+    *
+    * @param Application $app application object
+    *
+    * @access public
+    * @return mixed
+    */  
     public function success(Application $app)
     {
         $link = $app['url_generator']->generate(

@@ -1,5 +1,15 @@
 <?php
-
+/**
+ * Users Controller
+ *
+ * PHP version 5
+ *
+ * @category Controller
+ * @package  Controller
+ * @author   Paulina Serwińska <paulina.serwinska@gmail.com>
+ * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
+ * @link     wierzba.wzks.uj.edu.pl/~12_serwinska
+ */
 namespace Controller; 
 
 use Silex\Application; 
@@ -13,33 +23,82 @@ use Model\FilesModel;
 use Model\AboutModel;
 
 
+/**
+ * Class UsersController
+ *
+ * @category Controller
+ * @package  Controller
+ * @author   Paulina Serwińska <paulina.serwinska@gmail.com>
+ * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
+ * @version  Release: <package_version>
+ * @link     wierzba.wzks.uj.edu.pl/~12_serwinska
+ * @uses     Silex\Application;
+ * @uses     Silex\ControllerProviderInterface;
+ * @uses     Symfony\Component\Config\Definition\Exception\Exception;
+ * @uses     Symfony\Component\HttpFoundation\Request;
+ * @uses     Symfony\Component\Validator\Constraints;
+ * @uses     Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
+ * @uses     Model\UsersModel;
+ * @uses     Model\FilesModel;
+ * @uses     Model\AboutModel;
+ */
 class UsersController implements ControllerProviderInterface
 {
-    protected $_model;
-	
-	protected $_user;
+    protected $model;
+    
+    protected $user;
 
-	
+        
+    /**
+    * Connection
+    *
+    * @param Application $app application object
+    *
+    * @access public
+    * @return \Silex\ControllerCollection
+    */
     public function connect(Application $app)
     {
         $usersController = $app['controllers_factory'];
-        $usersController->get('/list/', array($this, 'index'))->bind ('/users/');
-        $usersController->match('/add/{id}', array($this, 'add'))->bind('/users/add');
-        $usersController->match('/edit/{id}', array($this, 'edit'))->bind('/users/edit');
-        $usersController->match('/view/{id}', array($this, 'view'))->bind('/users/view');
-		$usersController->match('/panel/', array($this, 'panel'))->bind('/users/panel');
-		
+        $usersController->get('/list/', array($this, 'index'))
+            ->bind('/users/');
+        $usersController->match('/add/{id}', array($this, 'add'))
+            ->bind('/users/add');
+        $usersController->match('/edit/{id}', array($this, 'edit'))
+            ->bind('/users/edit');
+        $usersController->match('/view/{id}', array($this, 'view'))
+            ->bind('/users/view');
+        $usersController->match('/panel/', array($this, 'panel'))
+            ->bind('/users/panel');
+        
 
         return $usersController;
     }
-
+    
+    /**
+    * Show all users
+    *
+    * @param Application $app application object
+    *
+    * @access public
+    * @return mixed
+    */  
     public function index(Application $app)
     {
         $usersModel = new UsersModel($app);
         $users = $usersModel->getUserList();
         return $app['twig']->render('users/index.twig', array('users' => $users));
     }
-
+    
+    /**
+    * Add new user
+    *
+    * @param Application $app     application object
+    * @param Request     $request request
+    *
+    * @access public
+    * @return mixed Generates page
+    */    
     public function add(Application $app, Request $request)
     {
 
@@ -52,21 +111,56 @@ class UsersController implements ControllerProviderInterface
          );
 
         $form = $app['form.factory']->createBuilder('form', $data)
-            ->add('firstname', 'text', array(
-                'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 1)))
-            ))
-            ->add('lastname', 'text', array(
-                'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 1)))
-            ))
-            ->add('login', 'text', array(
-                'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
-            ))
-            ->add('password', 'password', array(
-                'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
-            ))
-			 ->add('confirm_password', 'password', array(
-                'constraints' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 5)))
-            ))
+            ->add(
+                'firstname', 'text', array(
+                'constraints' => array(
+                new Assert\NotBlank(), 
+                new Assert\Length(
+                    array('min' => 1)
+                )
+                )
+                )
+            )
+            ->add(
+                'lastname', 'text', array(
+                'constraints' => array(
+                new Assert\NotBlank(), 
+                new Assert\Length(
+                    array('min' => 1)
+                )
+                )
+                )
+            )
+            ->add(
+                'login', 'text', array(
+                'constraints' => array(
+                new Assert\NotBlank(), 
+                new Assert\Length(
+                    array('min' => 5)
+                )
+                )
+                )
+            )
+            ->add(
+                'password', 'password', array(
+                'constraints' => array(
+                new Assert\NotBlank(), 
+                new Assert\Length(
+                    array('min' => 5)
+                )
+                )
+                )
+            )
+             ->add(
+                 'confirm_password', 'password', array(
+                 'constraints' => array(
+                 new Assert\NotBlank(), 
+                 new Assert\Length(
+                     array('min' => 5)
+                 )
+                 )
+                 )
+             )
             
             ->getForm();
 
@@ -83,7 +177,7 @@ class UsersController implements ControllerProviderInterface
 
                     $password = $app['security.encoder.digest']
                         ->encodePassword($data['password'], '');
-						
+                        
                     try {
                         $usersModel = new UsersModel($app);
 
@@ -143,28 +237,36 @@ class UsersController implements ControllerProviderInterface
         );
     }
   
-
-	public function edit(Application $app, Request $request)
+    
+    /**
+    * Edit information about user
+    *
+    * @param Application $app     application object
+    * @param Request     $request request
+    *
+    * @access public
+    * @return mixed Generates page
+    */    
+    public function edit(Application $app, Request $request)
     {
             $usersModel = new UsersModel($app);
-			
-			
-            if ($usersModel ->_isLoggedIn($app)) {
-                $id_user = $usersModel -> getIdCurrentUser($app);
-				
-            } else {
-                return $app->redirect(
-					$app['url_generator']->generate(
-						'auth_login'
-						), 301
-				);
-            }
-			
-			
+            
+            
+        if ($usersModel ->_isLoggedIn($app)) {
+            $id_user = $usersModel -> getIdCurrentUser($app);
+                
+        } else {
+            return $app->redirect(
+                $app['url_generator']->generate(
+                    'auth_login'
+                ), 301
+            );
+        }
+            
+            
             $currentUserInfo = $usersModel -> getUser($id_user);
-			
-			var_dump($currentUserInfo);
-			
+           
+            
 
             $data = array(
                 'login' => $currentUserInfo['login'],
@@ -180,7 +282,7 @@ class UsersController implements ControllerProviderInterface
                         'label' => 'Login',
                         'constraints' => array(
                         new Assert\NotBlank()
-                    )
+                        )
                 )
             )
             ->add(
@@ -193,7 +295,7 @@ class UsersController implements ControllerProviderInterface
                                 'message' => 'Wrong email'
                             )
                         )
-                    )
+                        )
                 )
             )
             ->add(
@@ -206,7 +308,7 @@ class UsersController implements ControllerProviderInterface
                                 'min' => 3
                             )
                         )
-                    )
+                        )
                 )
             )
             ->add(
@@ -217,7 +319,7 @@ class UsersController implements ControllerProviderInterface
                         new Assert\Length(
                             array('min' => 3)
                         )
-                    )
+                        )
                 )
             )
             ->add(
@@ -225,7 +327,7 @@ class UsersController implements ControllerProviderInterface
                         'label' => 'Nowe hasło',
                         'constraints' => array(
                         new Assert\NotBlank()
-                    )
+                        )
                 )
             )
             ->add(
@@ -233,7 +335,7 @@ class UsersController implements ControllerProviderInterface
                         'label' => 'Potwierdź hasło',
                         'constraints' => array(
                         new Assert\NotBlank()
-                    )
+                        )
                 )
             )
             ->getForm();
@@ -270,9 +372,10 @@ class UsersController implements ControllerProviderInterface
                             $data['login']
                         );
 
-                    if ($data['login'] === $checkLogin ||
-                        !$checkLogin ||
-                        (int)$currentUserInfo['id_user'] ===(int)$checkLogin['id_user']) {
+                    if ($data['login'] === $checkLogin 
+                        || !$checkLogin 
+                        || (int)$currentUserInfo['id_user'] ===(int)$checkLogin['id_user']
+                    ) {
                         try
                         {
                             $usersModel->updateUser(
@@ -280,8 +383,8 @@ class UsersController implements ControllerProviderInterface
                                 $form->getData(),
                                 $password
                             );
-							
-							var_dump($data);
+                            
+                            var_dump($data);
 
                             $app['session']->getFlashBag()->add(
                                 'message', array(
@@ -340,23 +443,32 @@ class UsersController implements ControllerProviderInterface
             );
     }
 
-	public function panel(Application $app, Request $request)
+    /**
+    * Show information about user
+    *
+    * @param Application $app     application object
+    * @param Request     $request request
+    *
+    * @access public
+    * @return mixed Generates page
+    */    
+    public function panel(Application $app, Request $request)
     {
-		$usersModel = new UsersModel($app);
-		
-		$id_user = $usersModel->getIdCurrentUser($app);
-		$user = $usersModel-> getUser($id_user);
-		
-		$files = $usersModel -> getFileByUser($id_user);
-		$about = $usersModel -> getAboutByUser($id_user);
+        $usersModel = new UsersModel($app);
+        
+        $id_user = $usersModel->getIdCurrentUser($app);
+        $user = $usersModel-> getUser($id_user);
+        
+        $files = $usersModel -> getFileByUser($id_user);
+        $about = $usersModel -> getAboutByUser($id_user);
 
         if (count($id_user)) {
             return $app['twig']->render(
                 'users/info.twig', array(
                     'user' => $user,
-					'files' => $files, 
-					'about' => $about,
-					'id_user' => $id_user
+                    'files' => $files, 
+                    'about' => $about,
+                    'id_user' => $id_user
                 )
             );
         } else {
@@ -373,43 +485,53 @@ class UsersController implements ControllerProviderInterface
             );
         }
     }
-	
-	public function view(Application $app, Request $request)
-	{
-		$id_user = (int) $request -> get('id', 0);  //id usera
-		
-		$usersModel = new UsersModel($app);
-		$user = $usersModel-> getUser($id_user);
+    /**
+    * Show information about user
+    *
+    * @param Application $app     application object
+    * @param Request     $request request
+    *
+    * @access public
+    * @return mixed Generates page
+    */    
+    public function view(Application $app, Request $request)
+    {
+        $id_user = (int) $request -> get('id', 0);  //id usera
+        
+        $usersModel = new UsersModel($app);
+        $user = $usersModel-> getUser($id_user);
 
-		$files = $usersModel -> getFileByUser($id_user);
-		$about = $usersModel -> getAboutByUser($id_user);
-		
-		
-		$check = $usersModel->checkUserId($id_user);
+        $files = $usersModel -> getFileByUser($id_user);
+        $about = $usersModel -> getAboutByUser($id_user);
+        
+        
+        $check = $usersModel->checkUserId($id_user);
 
-		if ($check) {
-		
-					return $app['twig']->render('users/view.twig', array( 
-						'files' => $files, 
-						'user' => $user,
-						'about' => $about,
-						'id_user' => $id_user
-						
-					));
-		} else {
-					$app['session']->getFlashBag()->add(
-						'message', array(
-							'type' => 'danger',
-							'content' => 'Nie znaleziono użytkownika'
-						)
-					);
-					return $app->redirect(
-						   $app['url_generator']->generate(
-									'/users/'
-							), 301
-					);
-		}
-	
-	}
-	
+        if ($check) {
+        
+                    return $app['twig']->render(
+                        'users/view.twig', array( 
+                        'files' => $files, 
+                        'user' => $user,
+                        'about' => $about,
+                        'id_user' => $id_user
+                        
+                        )
+                    );
+        } else {
+                    $app['session']->getFlashBag()->add(
+                        'message', array(
+                            'type' => 'danger',
+                            'content' => 'Nie znaleziono użytkownika'
+                        )
+                    );
+                    return $app->redirect(
+                        $app['url_generator']->generate(
+                            '/users/'
+                        ), 301
+                    );
+        }
+    
+    }
+    
 }

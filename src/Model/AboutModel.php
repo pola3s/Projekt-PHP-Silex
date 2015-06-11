@@ -1,27 +1,76 @@
 <?php
-
+/**
+ * About model
+ *
+ * PHP version 5
+ *
+ * @category Model
+ * @package  Model
+ * @author   Paulina Serwińska <paulina.serwinska@gmail.com>
+ * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
+ * @link     wierzba.wzks.uj.edu.pl/~12_serwinska
+ */
  
 namespace Model;
 
+use Doctrine\DBAL\DBALException;
 use Silex\Application;
-
+/**
+ * Class AboutModel
+ *
+ * @category Model
+ * @package  Model
+ * @author   Paulina Serwińska <paulina.serwinska@gmail.com>
+ * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
+ * @version  Release: <package_version>
+ * @link     wierzba.wzks.uj.edu.pl/~12_serwinska
+ * @uses Doctrine\DBAL\DBALException
+ * @uses Silex\Application
+ */
 
 class AboutModel
 {
+	/**
+     * Database access object.
+     *
+     * @access protected
+     * @var $_db Doctrine\DBAL
+     */
     protected $_db;
 
+	/**
+     * Class constructor.
+     *
+     * @param Application $app Silex application object
+     *
+     * @access public
+     */
     public function __construct(Application $app)
     {
         $this->_db = $app['db'];
     }
 
+	/**
+     * Gets about of user
+     *
+     * @param Integer $id
+     * @access public
+     * @return mixed
+     */
     public function getAbout($id)
     {
 		$sql = 'SELECT * FROM abouts WHERE id_user = ?;';
 		return $this->_db->fetchAssoc($sql, array($id));
     }
 	
-	
+	/**
+     * Adds about for user's profile
+     *
+     * @param Array $data
+     *
+     * @access public
+     * @return void
+     */
 	public function addAbout($data)
     {
         $sql = 'INSERT INTO abouts
@@ -41,6 +90,13 @@ class AboutModel
             );
     }
 
+	/**
+     * Checks user's id if exist
+     *
+     * @param Integer $iduser
+     * @access public
+     * @return bool
+     */
 	public function checkUserId($iduser)
     {
         $sql = 'SELECT * FROM users WHERE id_user=?';
@@ -53,6 +109,13 @@ class AboutModel
         }
     }
 
+	/**
+     * Adds about to database
+     *
+     * @param Array $data, Integer $id_user
+     * @access public
+     * @return void
+     */
 	public function saveAbout($data, $id_user)
     {
         $sql = 'INSERT INTO abouts
@@ -72,6 +135,13 @@ class AboutModel
             );
     }
 	
+	/**
+     * Updates about 
+     *
+     * @param Array $data, Integer $id_user
+     * @access public
+     * @return void
+     */
 	public function editAbout($data, $id_user)
 	{
 		if (isset($data['id_user']) && ctype_digit((string)$data['id_user'])) {
@@ -100,6 +170,13 @@ class AboutModel
 		}
 	}
 
+	/**
+     * Checks about id if exist 
+     *
+     * @param Integer $id_about
+     * @access public
+     * @return bool
+     */
 	public function checkAboutId($id_about)
     {
         $sql = 'SELECT * FROM abouts WHERE id_about=?';

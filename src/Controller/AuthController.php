@@ -1,12 +1,16 @@
 <?php
 /**
- * Auth controller.
+ * Auth controller
  *
- * @author EPI <epi@uj.edu.pl>
- * @link http://epi.uj.edu.pl
- * @copyright 2015 EPI
+ * PHP version 5
+ *
+ * @category Controller
+ * @package  Controller
+ * @author   Paulina Serwińska <paulina.serwinska@gmail.com>
+ * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
+ * @link     wierzba.wzks.uj.edu.pl/~12_serwinska
  */
-
+ 
 namespace Controller;
 
 use Silex\Application;
@@ -15,12 +19,33 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 use Model\UsersModel;
 
+/**
+ * Class AuthController
+ *
+ * @category Controller
+ * @package  Controller
+ * @author   Paulina Serwińska <paulina.serwinska@gmail.com>
+ * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
+ * @version  Release: <package_version>
+ * @link     wierzba.wzks.uj.edu.pl/~12_serwinska
+ * @uses     Silex\Application;
+ * @uses     Silex\ControllerProviderInterface;
+ * @uses     Symfony\Component\HttpFoundation\Request;
+ * @uses     Symfony\Component\Validator\Constraints;
+ * @uses     Model\UsersModel;
+ */
 
 class AuthController implements ControllerProviderInterface
 {
-  
-    protected $view = array();
-
+    
+    /**
+    * Connection
+    *
+    * @param Application $app application object
+    *
+    * @access public
+    * @return \Silex\ControllerCollection
+    */
     public function connect(Application $app)
     {
         $authController = $app['controllers_factory'];
@@ -31,14 +56,17 @@ class AuthController implements ControllerProviderInterface
         return $authController;
     }
 
-   
-	public function login(Application $app, Request $request)
+    /**
+     * Logging
+     *
+     * @param Application $app     application object
+     * @param Request     $request request
+     *
+     * @access public
+     * @return mixed Generates page
+     */
+    public function login(Application $app, Request $request)
     {
-	
-		//$user = array(
-        //    'login' => $app['session']->get('_security.last_username')
-        //);
-		
         $data = array();
 
         $form = $app['form.factory']->createBuilder('form')
@@ -58,34 +86,42 @@ class AuthController implements ControllerProviderInterface
             )
             ->add('Zaloguj', 'submit')
             ->getForm();
-			
-			$app['session']->getFlashBag()->add(
-						'message', array(
-							'type' => 'success',
+            
+        $app['session']->getFlashBag()->add(
+            'message', array(
+            'type' => 'success',
                             'content' => 'Zostałeś zalogowany!'
                         )
-            );
-			return $app['twig']->render(
+        );
+        return $app['twig']->render(
             'auth/login.twig', array(
                 'form' =>$form->createView(), 
                 'error' =>$app['security.last_error']($request) 
                 )
         ); 
-			
-	}
+            
+    }
 
-   
+    /**
+     * Logging out
+     *
+     * @param Application $app     application object
+     * @param Request     $request request
+     *
+     * @access public
+     * @return mixed Generates page
+     */
     public function logout(Application $app, Request $request)
     {
-		
+        
         $app['session']->clear();
-		$app['session']->getFlashBag()->add(
-						'message', array(
-							'type' => 'success',
+        $app['session']->getFlashBag()->add(
+            'message', array(
+            'type' => 'success',
                             'content' => 'Zostałeś wylogowany!'
                         )
         );
-		return $app['twig']->render('auth/logout.twig', $this->view);
-		
+        return $app['twig']->render('auth/logout.twig', $this->view);
+        
     }
 }

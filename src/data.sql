@@ -1,12 +1,12 @@
-
-CREATE TABLE `files` (`id_file` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-  `name` CHAR(48) NOT NULL,
+CREATE TABLE `12_serwinska`.`files` (
+  `id_file` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
   `title` VARCHAR(45) NOT NULL,
-  `category` VARCHAR(45) NOT NULL,
-  `date` DATE NOT NULL,
-  `description` TEXT NOT NULL,
-  `id_user` VARCHAR(45) NOT NULL
-);
+  `id_category` VARCHAR(45) NOT NULL,
+  `description` VARCHAR(45) NOT NULL,
+  `id_user` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id_file`));
+
 
 CREATE TABLE `users` (
   `id_user` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,

@@ -9,15 +9,7 @@
     </h2>
     <hr>
 	
-	
-	  {% for flashMessage in app.session.getFlashBag.get('message') %}
-        <div class="alert alert-{{ flashMessage.type }}">
-            {{ flashMessage.content }}
-        </div>
-    {% endfor %}
-	
-	
-    <form action="{{ url('/comments/add', {'id_file': id_file|e}) }}" method="post">
+    <form action="" method="post">
         {{ form_widget(form) }}
     </form>
 {% endblock %}
