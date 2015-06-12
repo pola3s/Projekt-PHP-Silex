@@ -21,6 +21,7 @@ use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
 use Model\UsersModel;
 use Model\FilesModel;
 use Model\AboutModel;
+use Form\UsersForm;
 
 
 /**
@@ -99,143 +100,93 @@ class UsersController implements ControllerProviderInterface
     * @access public
     * @return mixed Generates page
     */    
-    public function add(Application $app, Request $request)
-    {
+    // public function add(Application $app, Request $request)
+    // {
 
-        $usersModel = new UsersModel($app);
-        $data = array(
-          'firstname' => '',
-          'lastname' => '',
-          'login' => '',
-          'password' => ''
-         );
+        // $usersModel = new UsersModel($app);
+        // $data = array(
+          // 'firstname' => '',
+          // 'lastname' => '',
+          // 'login' => '',
+          // 'password' => ''
+         // );
 
-        $form = $app['form.factory']->createBuilder('form', $data)
-            ->add(
-                'firstname', 'text', array(
-                'constraints' => array(
-                new Assert\NotBlank(), 
-                new Assert\Length(
-                    array('min' => 1)
-                )
-                )
-                )
-            )
-            ->add(
-                'lastname', 'text', array(
-                'constraints' => array(
-                new Assert\NotBlank(), 
-                new Assert\Length(
-                    array('min' => 1)
-                )
-                )
-                )
-            )
-            ->add(
-                'login', 'text', array(
-                'constraints' => array(
-                new Assert\NotBlank(), 
-                new Assert\Length(
-                    array('min' => 5)
-                )
-                )
-                )
-            )
-            ->add(
-                'password', 'password', array(
-                'constraints' => array(
-                new Assert\NotBlank(), 
-                new Assert\Length(
-                    array('min' => 5)
-                )
-                )
-                )
-            )
-             ->add(
-                 'confirm_password', 'password', array(
-                 'constraints' => array(
-                 new Assert\NotBlank(), 
-                 new Assert\Length(
-                     array('min' => 5)
-                 )
-                 )
-                 )
-             )
+        // $form = $app['form.factory']
+			// ->createBuilder(new UsersForm(), $data)->getForm();
+		// $form->remove('id_user');
             
-            ->getForm();
+        // $form->handleRequest($request);
 
-        $form->handleRequest($request);
+        // if ($form->isValid()) {
+            // $data = $form->getData();
 
-        if ($form->isValid()) {
-            $data = $form->getData();
+            // $check = $usersModel
+                // ->getUserByLogin($data['login']);
 
-            $check = $usersModel
-                ->getUserByLogin($data['login']);
+            // if (!$check) {
+                // if ($data['password'] === $data['confirm_password']) {
 
-            if (!$check) {
-                if ($data['password'] === $data['confirm_password']) {
-
-                    $password = $app['security.encoder.digest']
-                        ->encodePassword($data['password'], '');
+                    // $password = $app['security.encoder.digest']
+                        // ->encodePassword($data['password'], '');
                         
-                    try {
-                        $usersModel = new UsersModel($app);
+                    // try {
+                        // $usersModel = new UsersModel($app);
 
-                        $usersModel->register($data, $password);
+                        // $usersModel->register($data, $password);
 
 
-                        $app['session']->getFlashBag()->add(
-                            'message', array(
-                                'type' => 'success',
-                                'content' => 'Konto zostało stworzone'
-                            )
-                        );
-                        return $app->redirect(
-                            $app['url_generator']->generate(
-                                '/auth/login'
-                            ), 301
-                        );
+                        // $app['session']->getFlashBag()->add(
+                            // 'message', array(
+                                // 'type' => 'success',
+                                // 'content' => 'Konto zostało stworzone'
+                            // )
+                        // );
+                        // return $app->redirect(
+                            // $app['url_generator']->generate(
+                                // '/auth/login'
+                            // ), 301
+                        // );
 
-                    } catch (\Exception $e) {
+                    // } catch (\Exception $e) {
 
-                        $errors[] = 'Coś poszło niezgodnie z planem';
-                    }
+                        // $errors[] = 'Coś poszło niezgodnie z planem';
+                    // }
 
-                } else {
-                    $app['session']->getFlashBag()->add(
-                        'message', array(
-                            'type' => 'warning',
-                            'content' => 'Hasła nie są takie same'
-                        )
-                    );
-                    return $app['twig']->render(
-                        'users/add.twig', array(
-                            'form' => $form->createView()
-                        )
-                    );
-                }
-            } else {
-                $app['session']->getFlashBag()->add(
-                    'message', array(
-                        'type' => 'danger',
-                        'content' => 'Użytkownik o tym nicku już istnieje'
-                    )
-                );
-                return $app['twig']->render(
-                    'users/add.twig', array(
-                        'form' => $form->createView()
-                    )
-                );
-            }
+                // } else {
+                    // $app['session']->getFlashBag()->add(
+                        // 'message', array(
+                            // 'type' => 'warning',
+                            // 'content' => 'Hasła nie są takie same'
+                        // )
+                    // );
+                    // return $app['twig']->render(
+                        // 'users/add.twig', array(
+                            // 'form' => $form->createView()
+                        // )
+                    // );
+                // }
+            // } else {
+                // $app['session']->getFlashBag()->add(
+                    // 'message', array(
+                        // 'type' => 'danger',
+                        // 'content' => 'Użytkownik o tym nicku już istnieje'
+                    // )
+                // );
+                // return $app['twig']->render(
+                    // 'users/add.twig', array(
+                        // 'form' => $form->createView()
+                    // )
+                // );
+            // }
 
-        }
+        // }
 
-        return $app['twig']->render(
-            'users/add.twig', array(
-                'form' => $form->createView()
-            )
-        );
-    }
+        // return $app['twig']->render(
+            // 'users/add.twig', array(
+                // 'form' => $form->createView()
+            // )
+        // );
+    // }
   
     
     /**
@@ -276,76 +227,16 @@ class UsersController implements ControllerProviderInterface
                 'password' => '',
                 'confirm_password' => ''
             );
-            $form = $app['form.factory']->createBuilder('form', $data)
-            ->add(
-                'login', 'text', array(
-                        'label' => 'Login',
-                        'constraints' => array(
-                        new Assert\NotBlank()
-                        )
-                )
-            )
-            ->add(
-                'email', 'text', array(
-                        'label' => 'Email',
-                        'constraints' => array(
-                        new Assert\NotBlank(),
-                        new Assert\Email(
-                            array(
-                                'message' => 'Wrong email'
-                            )
-                        )
-                        )
-                )
-            )
-            ->add(
-                'firstname', 'text', array(
-                        'label' => 'Imię',
-                        'constraints' => array(
-                        new Assert\NotBlank(),
-                        new Assert\Length(
-                            array(
-                                'min' => 3
-                            )
-                        )
-                        )
-                )
-            )
-            ->add(
-                'lastname', 'text', array(
-                        'label' => 'Nazwisko',
-                        'constraints' => array(
-                        new Assert\NotBlank(),
-                        new Assert\Length(
-                            array('min' => 3)
-                        )
-                        )
-                )
-            )
-            ->add(
-                'password', 'password', array(
-                        'label' => 'Nowe hasło',
-                        'constraints' => array(
-                        new Assert\NotBlank()
-                        )
-                )
-            )
-            ->add(
-                'confirm_password', 'password', array(
-                        'label' => 'Potwierdź hasło',
-                        'constraints' => array(
-                        new Assert\NotBlank()
-                        )
-                )
-            )
-            ->getForm();
+            
+			 $form = $app['form.factory']
+				->createBuilder(new UsersForm(), $data)->getForm();
 
 
             $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $data = $form->getData();
-                var_dump($data);
+                
 
                 $data['login'] = $app
                     ->escape($data['login']);

@@ -19,7 +19,8 @@
 			"Controller" : "src/",
 			"Model" : "src/",
 			"User" : "src/",
-			"Provider" : "src/"
+			"Provider" : "src/",
+			"Form": "src/"
 		}
 	},
         "require-dev": {

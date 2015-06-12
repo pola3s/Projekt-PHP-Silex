@@ -18,6 +18,7 @@ use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
+use Form\AboutForm;
 use Model\UsersModel;
 use Model\FilesModel;
 use Model\AboutModel;
@@ -105,73 +106,13 @@ class AboutController implements ControllerProviderInterface
         
           
 
-            $form = $app['form.factory']->createBuilder('form', $data)
-                ->add(
-                    'email', 'text', array(
-                    'label' => 'Email',
-                    'constraints' => array(
-                        new Assert\NotBlank(),
-                        new Assert\Email(
-                            array(
-                                'message' => 'Email nie jest poprawny'
-                            )
-                        ),
-                        new Assert\Type(
-                            array('type' => 'string')
-                        )
-                    )
-                    )
-                )
-            ->add(
-                'phone', 'text', array(
-                    'constraints' => array(
-                        new Assert\NotBlank(), 
-                            new Assert\Length(
-                                array('min' => 5)
-                            ),
-                             new Assert\Regex(
-                                 array(
-                                 'pattern' => 
-                                    "/^([0-9]{9})|(([0-9]{3}-){2}[0-9]{3})$/"
-                                 )
-                             )
-                    )
-                )
-            )
-            ->add(
-                'description', 'text', array(
-                'constraints' => array(
-                new Assert\NotBlank(), 
-                new Assert\Length(
-                    array('min' => 5)
-                )
-                )
-                )
-            )
-            ->add(
-                'website', 'text', array(
-                    'constraints' => array(
-                        new Assert\NotBlank(),
-                        new Assert\Length(
-                            array('min' => 5)
-                        ),
-                        new Assert\Url()
-                        )
-                )
-            )
-            ->add(
-                'city', 'text', array(
-                'constraints' => array(
-                new Assert\NotBlank(), 
-                new Assert\Length(
-                    array('min' => 2)
-                )
-                )
-                )
-            )
+            $form = $app['form.factory']
+				->createBuilder(new AboutForm(), $data)->getForm();
+			$form->remove('id_about');
+                
                
-            ->add('save', 'submit')
-            ->getForm();
+           // ->add('save', 'submit')
+           // ->getForm();
             
             if ($request->isMethod('POST')) {
                 $form->bind($request);
@@ -270,73 +211,8 @@ class AboutController implements ControllerProviderInterface
         
         
                     if (count($about)) {
-                        $form = $app['form.factory']->createBuilder('form', $about)
-                        ->add(
-                            'email', 'text', array(
-                            'label' => 'Email',
-                            'constraints' => array(
-                            new Assert\NotBlank(),
-                            new Assert\Email(
-                                array(
-                                    'message' => 'Email nie jest poprawny'
-                                )
-                            ),
-                            new Assert\Type(
-                                array('type' => 'string')
-                            )
-                            )
-                            )
-                        )
-                        ->add(
-                            'phone', 'text', array(
-                            'constraints' => array(
-                            new Assert\NotBlank(), 
-                                new Assert\Length(
-                                    array('min' => 5)
-                                ),
-                                new Assert\Regex(
-                                    array(
-                                    'pattern' => 
-                                        "/^([0-9]{9})|(([0-9]{3}-){2}[0-9]{3})$/"
-                                    )
-                                )
-                            )
-                            )
-                        )
-                        ->add(
-                            'description', 'text', array(
-                            'constraints' => array(
-                            new Assert\NotBlank(), 
-                            new Assert\Length(
-                                array('min' => 5)
-                            )
-                            )
-                            )
-                        )
-                        ->add(
-                            'website', 'text', array(
-                            'constraints' => array(
-                            new Assert\NotBlank(),
-                            new Assert\Length(
-                                array('min' => 5)
-                            ),
-                            new Assert\Url()
-                            )
-                            )
-                        )
-                        ->add(
-                            'city', 'text', array(
-                            'constraints' => array(
-                            new Assert\NotBlank(), 
-                            new Assert\Length(
-                                array('min' => 2)
-                            )
-                            )
-                            )
-                        )
-               
-                        ->add('save', 'submit')
-                        ->getForm();
+                        $form = $app['form.factory']
+							->createBuilder(new AboutForm(), $about)->getForm();
                     
                         $form->handleRequest($request);
             

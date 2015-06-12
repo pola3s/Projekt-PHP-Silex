@@ -87,12 +87,12 @@ class AuthController implements ControllerProviderInterface
             ->add('Zaloguj', 'submit')
             ->getForm();
             
-        $app['session']->getFlashBag()->add(
-            'message', array(
-            'type' => 'success',
-                            'content' => 'Zostałeś zalogowany!'
-                        )
-        );
+        // $app['session']->getFlashBag()->add(
+            // 'message', array(
+            // 'type' => 'success',
+                            // 'content' => 'Zostałeś zalogowany!'
+                        // )
+        // );
         return $app['twig']->render(
             'auth/login.twig', array(
                 'form' =>$form->createView(), 

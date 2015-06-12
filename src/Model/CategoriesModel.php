@@ -16,6 +16,10 @@ namespace Model;
 
 use Doctrine\DBAL\DBALException;
 use Silex\Application;
+use Silex\ControllerProviderInterface;
+use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\HttpFoundation\Request;
+
 /**
  * Class CategoriesModel
  *
@@ -235,5 +239,21 @@ class CategoriesModel
         }
     }
 
-	
+	public function addAction(Application $app, $data)
+	{
+		 $this->addCategory($data);
+                  
+            $app['session']->getFlashBag()->add(
+                'message', array(
+                      'type' => 'success',
+                      'content' => 'Kategoria została dodana'
+                  )
+            );
+            return $app->redirect(
+                $app['url_generator']->generate(
+                    'categories'
+                ), 
+                301
+            );
+	}
 }

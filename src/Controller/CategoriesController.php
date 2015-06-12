@@ -20,6 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Model\UsersModel;
 use Model\FilesModel;
 use Model\CategoriesModel;
+use Form\CategoriesForm;
  
 /**
  * Class CategoriesController
@@ -110,19 +111,9 @@ class CategoriesController implements ControllerProviderInterface
     public function add(Application $app, Request $request)
     {
 
-        $form = $app['form.factory']->createBuilder('form', $data)
-            ->add(
-                'name', 'text', array(
-                'constraints' => array(
-                new Assert\NotBlank(), 
-                new Assert\Length(
-                    array('min' => 2)
-                )
-                )
-                )
-            )
-           
-            ->getForm();
+        $form = $app['form.factory']
+			->createBuilder(new CategoriesForm(), $data)->getForm();
+		$form->remove('id_category');
 
        
         $form->handleRequest($request);
@@ -174,21 +165,8 @@ class CategoriesController implements ControllerProviderInterface
         if ($check) {
             
             if (count($category)) {
-                $form = $app['form.factory']->createBuilder('form', $category)
-                            
-                    ->add(
-                        'name', 'text', array(
-                        'constraints' => array(
-                        new Assert\NotBlank(), 
-                        new Assert\Length(
-                            array('min' => 2)
-                        )
-                        )
-                        )
-                    )
-                            
-                    ->add('save', 'submit')
-                    ->getForm();
+                $form = $app['form.factory']
+					->createBuilder(new CategoriesForm(), $category)->getForm();
                             
                 $form->handleRequest($request);
                     

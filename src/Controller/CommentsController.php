@@ -21,6 +21,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Model\CommentsModel;
 use Model\UsersModel;
 use Model\FilesModel;
+use Form\CommentsForm;
+
 
  /**
  * Class CategoriesController
@@ -135,25 +137,16 @@ class CommentsController implements ControllerProviderInterface
             );
         }
             
-        $data = array(
+	    $data = array(
                 'published_date' => date('Y-m-d'),
                 'id_file' => $id_file,
                 'id_user' => $id_user,
-            );
+        );	
 
-        $form = $app['form.factory']->createBuilder('form', $data)
-        ->add(
-            'content', 'textarea', array(
-            'constraints' => array(
-            new Assert\NotBlank(), 
-            new Assert\Length(
-                array('min' => 1)
-            )
-            )
-            )
-        )
-        ->add('save', 'submit')
-        ->getForm();
+        $form = $app['form.factory']
+			->createBuilder(new CommentsForm(), $data)->getForm();
+		$form->remove('id_comment');
+        
                 
         $form->handleRequest($request);
         if ($form->isValid()) {
@@ -356,19 +349,8 @@ class CommentsController implements ControllerProviderInterface
 
 
                 if (count($comment)) {
-                    $form = $app['form.factory']->createBuilder('form', $comment)
-                    ->add(
-                        'content', 'textarea', array(
-                        'constraints' => array(
-                        new Assert\NotBlank(),
-                        new Assert\Length(
-                            array('min' => 1)
-                            )
-                        )
-                        )
-                    )
-					->add('save', 'submit')
-                    ->getForm();
+                     $form = $app['form.factory']
+						->createBuilder(new CommentsForm(), $comment)->getForm();
 
                     $form->handleRequest($request);
 

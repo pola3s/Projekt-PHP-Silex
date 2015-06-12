@@ -31,6 +31,7 @@ return array(
     'Provider' => array($baseDir . '/src'),
     'Pimple' => array($vendorDir . '/pimple/pimple/lib'),
     'Model' => array($baseDir . '/src'),
+    'Form' => array($baseDir . '/src'),
     'Doctrine\\DBAL' => array($vendorDir . '/doctrine/dbal/lib'),
     'Doctrine\\Common' => array($vendorDir . '/doctrine/common/lib'),
     'Controller' => array($baseDir . '/src'),

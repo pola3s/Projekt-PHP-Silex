@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Model\FilesModel;
 use Model\UsersModel;
 use Model\CategoriesModel;
-
+use Form\FilesForm;
  
 /**
  * Class FilesController
@@ -235,53 +235,10 @@ class FilesController implements ControllerProviderInterface
         $CategoriesModel = new CategoriesModel($app);
         $categories = $CategoriesModel->getCategoriesDict();
   
-        $form = $app['form.factory']->createBuilder('form', $data)
-        ->add(
-            'title', 'text', array(
-            'constraints' => array(
-            new Assert\NotBlank(), 
-            new Assert\Length(
-                array('min' => 3)
-            )
-            )
-            )
-        )
-        ->add(
-            'category', 'choice', array(
-             'choices' => $categories,
-            )
-        )
-        ->add(
-            'description', 'textarea', array(
-            'constraints' => array(
-            new Assert\NotBlank(), 
-            new Assert\Length(
-                array('min' => 5)
-            )
-            )
-            )
-        )
+         $form = $app['form.factory']
+			->createBuilder(new FilesForm(), $data)->getForm();
+		 $form->remove('id_file');
         
-        ->add(
-            'file', 'file', array(
-                    'label' => 'Choose file',
-                    'constraints' => array(
-                        new Assert\File(
-                            array(
-                                'maxSize' => '1024k',
-                                'mimeTypes' => array(
-                                    'image/jpeg',
-                                    'image/png',
-                                    'image/gif',
-                                ),
-                            )
-                        )
-                    )
-                )
-        )
-        ->add('save', 'submit', array('label' => 'Upload file'))
-        ->getForm();
-            
         if ($request->isMethod('POST')) {
             $form->bind($request);
             
@@ -422,18 +379,6 @@ class FilesController implements ControllerProviderInterface
                 if ($form->isValid()) {
                 
                     $data = $form->getData();
-                    // $id_category = $data['category'];
-                
-                    // $categoriesModel = new CategoriesModel($app);
-                    // $category = $categoriesModel->getCategoriesList();
-                    // $category = $category[$id_category];
-                        
-                    // $category_name_array = $categoriesModel->getCategoryName($id_category);
-                    
-                    // $category_name=$category_name_array['name'];
-                        
-                    // $data['category']=$category_name;
-                        
                 
                     $filesModel = new FilesModel($app);
                     $filesModel->editFile($filename, $data);
@@ -607,7 +552,7 @@ class FilesController implements ControllerProviderInterface
         $data = array();
         $categoriesModel = new CategoriesModel($app);
         $choiceCategories = $categoriesModel->getCategoriesDict2();
-	
+		
 		$form = $app['form.factory']->createBuilder('form', $data)
             ->add(
                 'category', 'choice', array(
@@ -652,15 +597,22 @@ class FilesController implements ControllerProviderInterface
     {
         $data = $app['request']->get('data');
         
-        $name = (string)$data['category'];
+        $id_category = (string)$data['category'];
+	
         
         $filesModel = new FilesModel($app);
-        $files = $filesModel->searchFile($name);
+        $files = $filesModel->searchFile($id_category);
+
+		$categoriesModel = new CategoriesModel($app);
+		$categoryName = $categoriesModel -> getCategoryName($id_category);
+		
+		
         return $app['twig']
             ->render(
                 'files/results.twig', array(
-                'files' => $files, 
-                'name' => $name
+                'files' => $files,
+				'name' => $categoryName['name']
+                
                 )
             );
     }
