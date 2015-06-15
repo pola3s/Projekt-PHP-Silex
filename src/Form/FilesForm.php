@@ -12,7 +12,24 @@ use Model\CategoriesModel;
 
 class FilesForm extends AbstractType
 {
-    
+	protected $_app;
+	
+	public function __construct(Application $app)
+    {
+        $this->_app = $app;
+       
+    }
+	
+	
+	
+	
+	protected function getCategories($app)
+	{
+		$CategoriesModel = new CategoriesModel($app);
+		$categories = $CategoriesModel->getCategoriesDict();
+		return $categories;
+    }
+	
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
 	

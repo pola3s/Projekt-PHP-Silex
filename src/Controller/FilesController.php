@@ -232,8 +232,7 @@ class FilesController implements ControllerProviderInterface
             );
 
    
-        $CategoriesModel = new CategoriesModel($app);
-        $categories = $CategoriesModel->getCategoriesDict();
+       
   
          $form = $app['form.factory']
 			->createBuilder(new FilesForm(), $data)->getForm();
