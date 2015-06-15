@@ -68,12 +68,21 @@ class CategoriesModel
         return $this->_db->fetchAll($sql);
     }
 	
+	//public function getCategoriesList()
+   // {
+    //    $sql = 'SELECT name FROM categories';
+   //     return $this->_db->fetchAll($sql);
+  //  }
+	
 	public function getCategoriesList()
     {
-        $sql = 'SELECT name FROM categories';
-        return $this->_db->fetchAll($sql);
+
+        $sql = 'SELECT id_category, `name` FROM categories';
+        $categories = $this->_db->fetchAll($sql);
+        $categoriesArray = $this->makeArrayFromCategories($categories);
+        return $categoriesArray;
+
     }
-	
 	
 	/**
      * Adds new category
@@ -256,4 +265,17 @@ class CategoriesModel
                 301
             );
 	}
+	
+	
+
+    public function makeArrayFromCategories($categories)
+    {
+        (array)$categoriesArray;
+
+        foreach ($categories as $category) {
+            $categoriesArray[$category['id_category']] = $category['name'];
+        }
+        return $categoriesArray;
+    }
+	
 }

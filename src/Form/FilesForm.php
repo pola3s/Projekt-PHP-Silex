@@ -3,32 +3,20 @@
 
 namespace Form;
 
+use Silex\Application;
 use Symfony\Component\Form\AbstractType;
+use Doctrine\DBAL\DBALException;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 use Model\CategoriesModel; 
 
+	
+	
+	
 class FilesForm extends AbstractType
 {
-	protected $_app;
-	
-	public function __construct(Application $app)
-    {
-        $this->_app = $app;
-       
-    }
-	
-	
-	
-	
-	protected function getCategories($app)
-	{
-		$CategoriesModel = new CategoriesModel($app);
-		$categories = $CategoriesModel->getCategoriesDict();
-		return $categories;
-    }
 	
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -46,7 +34,7 @@ class FilesForm extends AbstractType
         )
         ->add(
             'category', 'choice', array(
-             'choices' => $categories,
+             'choices' => $options['data']['categories'],
             )
         )
         ->add(

@@ -44,6 +44,7 @@ class FilesController implements ControllerProviderInterface
 {
     protected $model;
     protected $user;
+	protected $categories;
     
     /**
     * Connection
@@ -72,7 +73,7 @@ class FilesController implements ControllerProviderInterface
             ->bind('/files/search');
         $filesController->match('files/results/', array($this, 'results'))
             ->bind('/files/results');
-            
+        $this->categories = new CategoriesModel($app);
         return $filesController;
     }
         
@@ -231,11 +232,18 @@ class FilesController implements ControllerProviderInterface
                 'id_user' => $id_user,
             );
 
+        $categories = $this->categories->getCategoriesList();
+        var_dump($categories);
+		var_dump($id_user);
    
        
   
          $form = $app['form.factory']
-			->createBuilder(new FilesForm(), $data)->getForm();
+			->createBuilder(new FilesForm($app), 
+				array('categories' => $categories,
+					'id_user' => $id_user
+				)
+			)->getForm();
 		 $form->remove('id_file');
         
         if ($request->isMethod('POST')) {
@@ -245,6 +253,7 @@ class FilesController implements ControllerProviderInterface
                 try {
                     $files = $request->files->get($form->getName());
                     $data = $form->getData();
+
 					
 					// $id_category = $data['category'];
 
