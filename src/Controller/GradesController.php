@@ -44,11 +44,11 @@ use Model\GradesModel;
 class GradesController implements ControllerProviderInterface
 {
    
-    protected $model;
+    protected $_model;
 
-    protected $user;
+    protected $_user;
 
-    protected $files;
+    protected $_files;
 
     /**
     * Connection
@@ -130,8 +130,8 @@ class GradesController implements ControllerProviderInterface
                  ), 301
              );
         }
-        
-        if ($file['id_user'] == $id_user) {
+      
+        if ($file['id_user'] == $id_current_user) {
             
             $app['session']->getFlashBag()->add(
                 'message', array(

@@ -43,11 +43,12 @@ use Form\CategoriesForm;
 class CategoriesController implements ControllerProviderInterface
 {
    
-    protected $model;
+    protected $_model;
 
-    protected $user;
+    protected $_user;
 
-    protected $files;
+    protected $_files;
+
 
     /**
     * Connection
@@ -233,81 +234,177 @@ class CategoriesController implements ControllerProviderInterface
     public function delete(Application $app, Request $request)
     {
         $id_category = (int) $request -> get('id', 0);
-        
+   
         $categoriesModel = new CategoriesModel($app);
         $check = $categoriesModel->checkCategoryId($id_category);
-    
+ 
         if ($check) {
-            $data = array();
+		
+			 $files = $categoriesModel->getFilesByCategory($id_category);
+			
+			 
+			   if (!$files) {
+                $category = $categoriesModel->getCategory($id_category);
+		
 
-            if (count($id_category)) {
-                $form = $app['form.factory']->createBuilder('form', $data)
-                    ->add(
-                        'id_category', 'hidden', array(
-                        'data' => $id,
+                $data = array();
+
+                if (count($category)) {
+                    $form = $app['form.factory']->createBuilder('form', $data)
+                        ->add(
+                            'id_category', 'hidden', array(
+                            'data' => $id,
+                            )
                         )
-                    )
-                    ->add('Yes', 'submit')
-                    ->add('No', 'submit')
-                    ->getForm();
+                        ->add('Yes', 'submit')
+                        ->add('No', 'submit')
+                        ->getForm();
 
-                $form->handleRequest($request);
+                    $form->handleRequest($request);
 
-                if ($form->isValid()) {
-                    if ($form->get('Yes')->isClicked()) {
-                        $data = $form->getData();
-                        try {
-                            $model = $this->_model->deleteCategory($id_category);
+                    if ($form->isValid()) {
+                        if ($form->get('Yes')->isClicked()) {
+                            $data = $form->getData();
+                            try {
+                                $model = $this->_model->deleteCategory($id_category);
 
-                            $app['session']->getFlashBag()->add(
-                                'message', array(
-                                    'type' => 'success',
-                                    'content' => 
-                                        'Kategoria została usunięta'
-                                )
-                            );
+                                $app['session']->getFlashBag()->add(
+                                    'message', array(
+                                        'type' => 'success',
+                                        'content' => 
+                                            'Kategoria została usunięta'
+                                    )
+                                );
+                                return $app->redirect(
+                                    $app['url_generator']->generate(
+                                        'categories'
+                                    ), 301
+                                );
+                            } catch (\Exception $e) {
+                                $errors[] = 'Coś poszło niezgodnie z planem';
+                            }
+                        } else {
                             return $app->redirect(
                                 $app['url_generator']->generate(
                                     'categories'
                                 ), 301
                             );
-                        } catch (\Exception $e) {
-                            $errors[] = 'Coś poszło niezgodnie z planem';
                         }
-                    } else {
-                        return $app->redirect(
-                            $app['url_generator']->generate(
-                                'categories'
-                            ), 301
-                        );
                     }
+                    return $app['twig']->render(
+                        'categories/delete.twig', array(
+                            'form' => $form->createView()
+                        )
+                    );
+                } else {
+                    $app['session']->getFlashBag()->add(
+                        'message', array(
+                            'type' => 'danger',
+                            'content' => 'Nie znaleziono kategorii'
+                        )
+                    );
+                    return $app->redirect(
+                        $app['url_generator']->generate(
+                            'categories'
+                        ), 301
+                    );
                 }
-                return $app['twig']->render(
-                    'categories/delete.twig', array(
-                        'form' => $form->createView()
+            } else {
+                $app['session']->getFlashBag()->add(
+                    'message', array(
+                        'type' => 'danger',
+                        'content' => 'Nie można usunąć niepustej kategorii'
                     )
                 );
-            } 
-           
-       
+                return $app->redirect(
+                    $app['url_generator']->generate(
+                        'categories'
+                    ), 301
+                );
+            }
+        } else {
+            $app['session']->getFlashBag()->add(
+                'message', array(
+                    'type' => 'danger',
+                    'content' => 'Nie znaleziono kategorii'
+                )
+            );
             return $app->redirect(
                 $app['url_generator']->generate(
                     'categories'
                 ), 301
             );
-        } else {
-                        $app['session']->getFlashBag()->add(
-                            'message', array(
-                                'type' => 'danger',
-                                'content' => 'Nie znaleziono kategorii!'
-                            )
-                        );
-                        return $app->redirect(
-                            $app['url_generator']->generate(
-                                '/users/panel' 
-                            ), 301
-                        );
         }
+            // $data = array();
+
+            // if (count($id_category)) {
+                // $form = $app['form.factory']->createBuilder('form', $data)
+                    // ->add(
+                        // 'id_category', 'hidden', array(
+                        // 'data' => $id,
+                        // )
+                    // )
+                    // ->add('Yes', 'submit')
+                    // ->add('No', 'submit')
+                    // ->getForm();
+
+                // $form->handleRequest($request);
+
+                // if ($form->isValid()) {
+                    // if ($form->get('Yes')->isClicked()) {
+                        // $data = $form->getData();
+                        // try {
+                            // $model = $this->_model->deleteCategory($id_category);
+
+                            // $app['session']->getFlashBag()->add(
+                                // 'message', array(
+                                    // 'type' => 'success',
+                                    // 'content' => 
+                                        // 'Kategoria została usunięta'
+                                // )
+                            // );
+                            // return $app->redirect(
+                                // $app['url_generator']->generate(
+                                    // 'categories'
+                                // ), 301
+                            // );
+                        // } catch (\Exception $e) {
+                            // $errors[] = 'Coś poszło niezgodnie z planem';
+                        // }
+                    // } else {
+                        // return $app->redirect(
+                            // $app['url_generator']->generate(
+                                // 'categories'
+                            // ), 301
+                        // );
+                    // }
+                // }
+                // return $app['twig']->render(
+                    // 'categories/delete.twig', array(
+                        // 'form' => $form->createView()
+                    // )
+                // );
+            // } 
+           
+       
+            // return $app->redirect(
+                // $app['url_generator']->generate(
+                    // 'categories'
+                // ), 301
+            // );
+        // } else {
+                        // $app['session']->getFlashBag()->add(
+                            // 'message', array(
+                                // 'type' => 'danger',
+                                // 'content' => 'Nie znaleziono kategorii!'
+                            // )
+                        // );
+                        // return $app->redirect(
+                            // $app['url_generator']->generate(
+                                // '/users/panel' 
+                            // ), 301
+                        // );
+        // }
     }
         
 }

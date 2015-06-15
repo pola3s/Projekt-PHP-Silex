@@ -38,7 +38,7 @@ use Form\RegistrationForm;
  */     
 class RegistrationController implements ControllerProviderInterface
 {
-    protected $model;
+    protected $_model;
     /**
     * Connection
     *

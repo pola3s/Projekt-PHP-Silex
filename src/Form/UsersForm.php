@@ -39,7 +39,7 @@ class UsersForm extends AbstractType
                 'constraints' => array(
                 new Assert\NotBlank(), 
                 new Assert\Length(
-                    array('min' => 5)
+                    array('min' => 3)
                 )
                 )
                 )

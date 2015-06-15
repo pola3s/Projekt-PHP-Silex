@@ -45,11 +45,11 @@ use Form\CommentsForm;
 class CommentsController implements ControllerProviderInterface
 {
    
-    protected $model;
+    protected $_model;
 
-    protected $user;
+    protected $_user;
 
-    protected $files;
+    protected $_files;
     
     /**
     * Connection

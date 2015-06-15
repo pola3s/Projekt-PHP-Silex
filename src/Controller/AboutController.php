@@ -46,9 +46,9 @@ class AboutController implements ControllerProviderInterface
 {
 
 
-    protected $model;
+    protected $_model;
     
-    protected $user;
+    protected $_user;
 
      
     /**
@@ -110,10 +110,6 @@ class AboutController implements ControllerProviderInterface
 				->createBuilder(new AboutForm(), $data)->getForm();
 			$form->remove('id_about');
                 
-               
-           // ->add('save', 'submit')
-           // ->getForm();
-            
             if ($request->isMethod('POST')) {
                 $form->bind($request);
             
@@ -217,29 +213,34 @@ class AboutController implements ControllerProviderInterface
                         $form->handleRequest($request);
             
                         if ($form->isValid()) {
-                            $aboutModel = new AboutModel($app);
-                            $data = $form->getData();
-                            $aboutModel->editAbout($data, $id_user);
-                    
-                            $app['session']->getFlashBag()->add(
-                                'message',
-                                array(
-                                'type' => 'success',
-                                'content' => 'Edytowano "o mnie".'
-                                )
-                            );
-        
-                    
-                            return $app->redirect(
-                                $app['url_generator']->generate(
-                                    '/users/panel', 
-                                    array(
-                                        'id' => $id_user,
-                                    )   
-                                ), 301
-                            );
-                        }
-                        return $app['twig']->render(
+						
+							try {
+							
+							
+								$aboutModel = new AboutModel($app);
+								$data = $form->getData();
+								$aboutModel->editAbout($data, $id_user);
+						
+								$app['session']->getFlashBag()->add(
+									'message',
+									array(
+									'type' => 'success',
+									'content' => 'Edytowano "o mnie".'
+									)
+								);
+								return $app->redirect(
+									$app['url_generator']->generate(
+										'/users/panel', 
+										array(
+											'id' => $id_user,
+										)   
+									), 301
+								);
+							} catch (\Exception $e) {
+								$errors[] = 'Coś poszło niezgodnie z planem';
+							}		
+						}
+						return $app['twig']->render(
                             'about/edit.twig', array(
                             'form' => $form->createView(), 
                             'about' => $about)

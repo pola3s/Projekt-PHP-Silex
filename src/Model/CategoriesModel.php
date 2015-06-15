@@ -278,4 +278,12 @@ class CategoriesModel
         return $categoriesArray;
     }
 	
+	public function getFilesByCategory($id_category)
+    {
+        $sql = 'SELECT * FROM files WHERE id_category = ?';
+        return $this->_db->fetchAll($sql, array($id_category));
+    }
+	
+	
+	
 }

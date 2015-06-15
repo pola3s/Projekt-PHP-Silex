@@ -45,9 +45,9 @@ use Form\UsersForm;
  */
 class UsersController implements ControllerProviderInterface
 {
-    protected $model;
+    protected $_model;
     
-    protected $user;
+    protected $_user;
 
         
     /**
