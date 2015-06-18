@@ -41,7 +41,7 @@ class UserProvider implements UserProviderInterface
     * @access protected
     * @var Silex\Application $app
     */
-    protected $_app;
+    protected $app;
 
    /**
     * Object constructor.
@@ -54,7 +54,7 @@ class UserProvider implements UserProviderInterface
         $this->_app = $app;
     }
 
-	
+    
    /**
     * Load user by username.
     *
@@ -70,7 +70,11 @@ class UserProvider implements UserProviderInterface
         return new User(
             $user['login'],
             $user['password'],
-            $user['roles'], true, true, true, true
+            $user['roles'],
+            true,
+            true,
+            true,
+            true
         );
     }
 
@@ -87,7 +91,8 @@ class UserProvider implements UserProviderInterface
         if (!$user instanceof User) {
             throw new UnsupportedUserException(
                 sprintf(
-                    'Instances of "%s" are not supported.', get_class(
+                    'Instances of "%s" are not supported.',
+                    get_class(
                         $user
                     )
                 )

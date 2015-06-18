@@ -35,10 +35,11 @@ use Form\RegistrationForm;
  * @uses     Symfony\Component\Validator\Constraints as Assert;
  * @uses     Symfony\Component\Form;
  * @uses     Model\UsersModel;
- */     
+ */
 class RegistrationController implements ControllerProviderInterface
 {
-    protected $_model;
+ 
+    
     /**
     * Connection
     *
@@ -66,14 +67,14 @@ class RegistrationController implements ControllerProviderInterface
     *
     * @access public
     * @return mixed Generates page
-    */  
+    */
     public function register(Application $app, Request $request)
     {
         $data = array();
         
-		$form = $app['form.factory']
-			->createBuilder(new RegistrationForm(), $data)->getForm();
-		$form->remove('id_user');
+        $form = $app['form.factory']
+        ->createBuilder(new RegistrationForm(), $data)->getForm();
+        $form->remove('id_user');
 
 
         $form->handleRequest($request);
@@ -95,7 +96,6 @@ class RegistrationController implements ControllerProviderInterface
                 ->escape($data['confirm_password']);
 
             if ($data['password'] === $data['confirm_password']) {
-
                 $password = $app['security.encoder.digest']
                     ->encodePassword($data['password'], '');
 
@@ -104,8 +104,7 @@ class RegistrationController implements ControllerProviderInterface
                 );
                 
                 if (!$checkLogin) {
-                    try
-                    {
+                    try {
                         $this->_model->register(
                             $form->getData(),
                             $password
@@ -114,37 +113,39 @@ class RegistrationController implements ControllerProviderInterface
                         return $app->redirect(
                             $app['url_generator']->generate(
                                 '/register/success'
-                            ), 301
+                            ),
+                            301
                         );
-                    }
-                
-                    catch (\Exception $e)
-                    {
+                    } catch (\Exception $e) {
                         $errors[] = 'Rejestracja się nie powiodła,
                         spróbuj jeszcze raz';
                     }
                 } else {
                     $app['session']->getFlashBag()->add(
-                        'message', array(
-                            'type' => 'warning', 
+                        'message',
+                        array(
+                            'type' => 'warning',
                         'content' => 'Login zajęty'
                         )
                     );
                     return $app['twig']->render(
-                        'users/register.twig', array(
+                        'users/register.twig',
+                        array(
                             'form' => $form->createView()
                         )
                     );
                 }
             } else {
                 $app['session']->getFlashBag()->add(
-                    'message', array(
+                    'message',
+                    array(
                         'type' => 'warning',
                         'content' => 'Hasła różnią się między sobą!'
                     )
                 );
                 return $app['twig']->render(
-                    'users/register.twig', array(
+                    'users/register.twig',
+                    array(
                         'form' => $form->createView()
                     )
                 );
@@ -152,7 +153,8 @@ class RegistrationController implements ControllerProviderInterface
         }
 
         return $app['twig']->render(
-            'users/register.twig', array(
+            'users/register.twig',
+            array(
                 'form' => $form->createView()
             )
         );
@@ -165,14 +167,15 @@ class RegistrationController implements ControllerProviderInterface
     *
     * @access public
     * @return mixed
-    */  
+    */
     public function success(Application $app)
     {
         $link = $app['url_generator']->generate(
             'auth_login'
         );
         return $app['twig']->render(
-            'users/successfulRegistration.twig', array(
+            'users/successfulRegistration.twig',
+            array(
                 'auth_login' => $link
             )
         );

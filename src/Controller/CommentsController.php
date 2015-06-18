@@ -23,7 +23,6 @@ use Model\UsersModel;
 use Model\FilesModel;
 use Form\CommentsForm;
 
-
  /**
  * Class CategoriesController
  *
@@ -44,12 +43,29 @@ use Form\CommentsForm;
  */
 class CommentsController implements ControllerProviderInterface
 {
-   
-    protected $_model;
+    /**
+    * CommentsModel object.
+    *
+    * @var    $model
+    * @access protected
+    */
+    protected $model;
 
-    protected $_user;
+    /**
+    * UsersModel object.
+    *
+    * @var    $user
+    * @access protected
+    */
+    protected $user;
 
-    protected $_files;
+    /**
+    * FilesModel object.
+    *
+    * @var    $files
+    * @access protected
+    */
+    protected $files;
     
     /**
     * Connection
@@ -85,8 +101,8 @@ class CommentsController implements ControllerProviderInterface
     * @param Request     $request request
     *
     * @access public
-    * @return page 
-    */ 
+    * @return page
+    */
     public function index(Application $app, Request $request)
     {
         $id_file = (int)$request->get('id_file', 0);
@@ -97,18 +113,19 @@ class CommentsController implements ControllerProviderInterface
         
         $usersModel = new UsersModel($app);
         
-        if ($usersModel ->_isLoggedIn($app)) {
+        if ($usersModel ->isLoggedIn($app)) {
                 $idLoggedUser = $usersModel ->getIdCurrentUser($app);
         }
                         
         return $app['twig']->render(
-            'comments/index.twig', array(
-                'comments' => $comments, 
-				'id_file' => $id_file,
-				'idLoggedUser' => $idLoggedUser
+            'comments/index.twig',
+            array(
+                'comments' => $comments,
+            'id_file' => $id_file,
+            'idLoggedUser' => $idLoggedUser
                 )
         );
-    } 
+    }
     
     /**
     * Add comment
@@ -117,8 +134,8 @@ class CommentsController implements ControllerProviderInterface
     * @param Request     $request request
     *
     * @access public
-    * @return mixed Generates page 
-    */ 
+    * @return mixed Generates page
+    */
     public function add(Application $app, Request $request)
     {
         
@@ -126,49 +143,51 @@ class CommentsController implements ControllerProviderInterface
         $id_file = (int)$request->get('id_file', 0);
     
 
-        if ($usersModel ->_isLoggedIn($app)) {
+        if ($usersModel ->isLoggedIn($app)) {
             $id_user = $usersModel -> getIdCurrentUser($app);
                 
         } else {
             return $app->redirect(
                 $app['url_generator']->generate(
                     'auth_login'
-                ), 301
+                ),
+                301
             );
         }
             
-	    $data = array(
+        $data = array(
                 'published_date' => date('Y-m-d'),
                 'id_file' => $id_file,
                 'id_user' => $id_user,
-        );	
+        );
 
         $form = $app['form.factory']
-			->createBuilder(new CommentsForm(), $data)->getForm();
-		$form->remove('id_comment');
+        ->createBuilder(new CommentsForm(), $data)->getForm();
+        $form->remove('id_comment');
         
                 
         $form->handleRequest($request);
         if ($form->isValid()) {
-               
-                
-            try { 
+            try {
                 $data = $form->getData();
                     
                 $model = $this->_model->addComment($data);
                     
                 $app['session']->getFlashBag()->add(
-                    'message', array(
+                    'message',
+                    array(
                       'type' => 'success',
                       'content' => 'Komentarz został dodany'
                     )
                 );
                 return $app->redirect(
                     $app['url_generator']->generate(
-                        'view', array(
+                        'view',
+                        array(
                         'id' => $id_file,
                         )
-                    ), 301
+                    ),
+                    301
                 );
             } catch (Exception $e) {
                 $app['session']->getFlashBag()->add(
@@ -179,7 +198,7 @@ class CommentsController implements ControllerProviderInterface
                     )
                 );
             }
-        } 
+        }
         return $app['twig']->render(
             'comments/add.twig',
             array(
@@ -189,6 +208,84 @@ class CommentsController implements ControllerProviderInterface
             )
         );
         
+    }
+    
+    /**
+    * Edit comment
+    *
+    * @param Application $app     application object
+    * @param Request     $request request
+    *
+    * @access public
+    * @return mixed Generates page
+    */
+    public function edit(Application $app, Request $request)
+    {
+    
+        $id_comment = (int) $request->get('id', 0);
+        $commentsModel = new CommentsModel($app);
+        $comment = $commentsModel->getComment($id_comment);
+
+        $id_file = $comment['id_file'];
+
+        if (!$comment || !isset($comment) || !count($comment)) {
+            $app['session']->getFlashBag()->add(
+                'message',
+                array(
+                'type' => 'danger',
+                'content' => 'Nie znaleziono komentarza'
+                )
+            );
+            return $app->redirect(
+                $app['url_generator']->generate(
+                    'files',
+                    array()
+                ),
+                301
+            );
+        } else {
+            $user = new UsersModel($app);
+            $idLoggedUser = $user->getIdCurrentUser($app);
+
+            if ($idLoggedUser == $comment['id_user'] || $app['security']->isGranted('ROLE_ADMIN')) {
+                $form = $app['form.factory']
+                ->createBuilder(new CommentsForm(), $comment)->getForm();
+                $form->handleRequest($request);
+                
+                if ($form->isValid()) {
+                    try {
+                        $data = $form->getData();
+                            
+                        $model = $this->_model->editComment($data, $id_comment);
+
+                        $app['session']->getFlashBag()->add(
+                            'message',
+                            array(
+                                'type' => 'success',
+                                'content' => 'Komanetarz został zmieniony'
+                            )
+                        );
+                        return $app->redirect(
+                            $app['url_generator']->generate(
+                                'view',
+                                array(
+                                'id' => $id_file,
+                                )
+                            ),
+                            301
+                        );
+                    } catch (Exception $e) {
+                        $errors[] = 'Nie udało się edytować komentarza';
+                    }
+                }
+            }
+        }
+        return $app['twig']->render(
+            'comments/edit.twig',
+            array(
+                        'form' => $form->createView()
+                    )
+        );
     }
     
     /**
@@ -205,14 +302,14 @@ class CommentsController implements ControllerProviderInterface
          
         $id_comment = (int) $request->get('id', 0);
  
-		$commentsModel = new CommentsModel($app);
+        $commentsModel = new CommentsModel($app);
         $comment = $commentsModel->getComment($id_comment);
         $id_file = $comment['id_file'];
 
         if (!$comment || !isset($comment) || !count($comment)) {
-
             $app['session']->getFlashBag()->add(
-                'message', array(
+                'message',
+                array(
                     'type' => 'danger',
                     'content' => 'Nie znaleziono komentarza'
                 )
@@ -221,110 +318,99 @@ class CommentsController implements ControllerProviderInterface
                 $app['url_generator']->generate(
                     'files',
                     array()
-                ), 301
+                ),
+                301
             );
         }
 
-		if (count($comment)) {
-                    
+        if (count($comment)) {
                 $usersModel = new UsersModel($app);
                 $idLoggedUser = $usersModel->getIdCurrentUser($app);
                         
-                if ($idLoggedUser == $comment['id_user']  
-                    || $app['security']->isGranted('ROLE_ADMIN')
-                ) { 
-                        
-                        
-                    $form = $app['form.factory']->createBuilder('form', $data)
-                    ->add(
-                        'id_comment', 
-                        'hidden', 
-                        array(
-                        'data' => $id,
-                        )
+            if ($idLoggedUser == $comment['id_user']
+                || $app['security']->isGranted('ROLE_ADMIN')
+            ) {
+                $form = $app['form.factory']->createBuilder('form', $data)
+                ->add(
+                    'id_comment',
+                    'hidden',
+                    array(
+                    'data' => $id_comment,
                     )
-                    ->add('Yes', 'submit')
-                    ->add('No', 'submit')
-                    ->getForm();
+                )
+                ->add('Tak', 'submit')
+                ->add('Nie', 'submit')
+                ->getForm();
 
-                    $form->handleRequest($request);
+                $form->handleRequest($request);
 
-                    if ($form->isValid()) {
-                        if ($form->get('Yes')->isClicked()) {
-                            $data = $form->getData();
+                if ($form->isValid()) {
+                    if ($form->get('Tak')->isClicked()) {
+                        $data = $form->getData();
+                            
+                        try {
                             $model = $this->_model->deleteComment($data);
-                            if (!$model) {
-                                $app['session']->getFlashBag()->add(
-                                    'message',
-                                    array(
-                                    'type' => 'success',
-                                    'content' => 'Komentarz został usunięty'
-                                    )
-                                );    
-                                    
-                                return $app->redirect(
-                                    $app['url_generator']->generate(
-                                        'view', 
-                                        array(
-											'id' => $id_file,
-                                        )    
-                                    ), 301
-                                );
-                            } else {
-                                $app['session']
-                                ->getFlashBag()
-                                ->set(
-                                    'danger', 
-                                    'Nie udało się usunąć komentarza.'
-                                );
-                                return $app->redirect(
-                                    $app['url_generator']->generate(
-                                        'view', 
-                                        array(
-                                           'id' => $id_file,
-                                        )    
-                                    ), 301
-                                );
-                            }
-                        } else {
+                                
+
+                            $app['session']->getFlashBag()->add(
+                                'message',
+                                array(
+                                'type' => 'success',
+                                'content' => 'Komantarz został usunięty'
+                                )
+                            );
                             return $app->redirect(
                                 $app['url_generator']->generate(
-                                    'files'
-                                ), 301
+                                    'view',
+                                    array(
+                                    'id' => $id_file,
+                                    )
+                                ),
+                                301
                             );
+                        } catch (\Exception $e) {
+                            $errors[] = 'Nie udało się usunąć komentarza';
                         }
+                    } else {
+                        return $app->redirect(
+                            $app['url_generator']->generate(
+                                'files',
+                                array(
+                                'id' => $id_file,
+                                )
+                            ),
+                            301
+                        );
                     }
-                    return $app['twig']->render(
-                        'comments/delete.twig', 
-                        array('form' => $form->createView())
-                    );
                 }
-            } 
-         
-    }
-
-    /**
-    * Edit comment
-    *
-    * @param Application $app     application object
-    * @param Request     $request request
-    *
-    * @access public
-    * @return mixed Generates page 
-    */ 
-    public function edit(Application $app, Request $request)
-    {
-        
-        $id_comment = (int) $request->get('id', 0);
- 
-		$commentsModel = new CommentsModel($app);
-        $comment = $commentsModel->getComment($id_comment);
-        $id_file = $comment['id_file'];
-
-        if (!$comment || !isset($comment) || !count($comment)) {
-
+                return $app['twig']->render(
+                    'comments/delete.twig',
+                    array(
+                    'form' => $form->createView()
+                    )
+                );
+            } else {
+                $app['session']->getFlashBag()->add(
+                    'message',
+                    array(
+                    'type' => 'danger',
+                    'content' => 'Nie znaleziono komentarza'
+                    )
+                );
+                return $app->redirect(
+                    $app['url_generator']->generate(
+                        'files',
+                        array(
+                        'id' => $id_file,
+                        )
+                    ),
+                    301
+                );
+            }
+        } else {
             $app['session']->getFlashBag()->add(
-                'message', array(
+                'message',
+                array(
                     'type' => 'danger',
                     'content' => 'Nie znaleziono komentarza'
                 )
@@ -332,70 +418,13 @@ class CommentsController implements ControllerProviderInterface
             return $app->redirect(
                 $app['url_generator']->generate(
                     'files',
-                    array()
-                ), 301
+                    array(
+                    'id' => $id_file,
+                    )
+                ),
+                301
             );
+
         }
-
-		if (count($comment)) {
-
-            $user = new UsersModel($app);
-
-            $idLoggedUser = $user->getIdCurrentUser($app);
-
-            if ($idLoggedUser == $comment['id_user']
-                || $app['security']->isGranted('ROLE_ADMIN')
-            ) {
-
-
-                if (count($comment)) {
-                     $form = $app['form.factory']
-						->createBuilder(new CommentsForm(), $comment)->getForm();
-
-                    $form->handleRequest($request);
-
-                    if ($form->isValid()) {
-                        $commentsModel = new CommentsModel($app);
-                        $data = $form->getData();
-                        $commentsModel->editComment($data, $id_comment);
-
-                        $app['session']->getFlashBag()->add(
-                            'message',
-                            array(
-                            'type' => 'success',
-                            'content' => 'Komentarz został zmieniony'
-                            )
-                        );
-                        return $app->redirect(
-                            $app['url_generator']->generate(
-                                'view',
-                                array(
-                                    'id' => $id_file,
-                                )
-                            ), 301
-                        );
-                    }
-                    return $app['twig']->render(
-                        'comments/edit.twig', array(
-                        'form' => $form->createView(),
-                        'comment' => $comment
-                        )
-                    );
-
-                } else {
-
-                      return $app->redirect(
-                          $app['url_generator']->generate(
-                              '/comments/add'
-                          ),
-                          301
-                      );
-                }
-            }
-        } 
-
     }
-   
-    
-
 }

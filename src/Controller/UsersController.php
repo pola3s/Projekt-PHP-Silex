@@ -10,9 +10,9 @@
  * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
  * @link     wierzba.wzks.uj.edu.pl/~12_serwinska
  */
-namespace Controller; 
+namespace Controller;
 
-use Silex\Application; 
+use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +22,6 @@ use Model\UsersModel;
 use Model\FilesModel;
 use Model\AboutModel;
 use Form\UsersForm;
-
 
 /**
  * Class UsersController
@@ -45,9 +44,21 @@ use Form\UsersForm;
  */
 class UsersController implements ControllerProviderInterface
 {
-    protected $_model;
+    /**
+    * UsersModel object.
+    *
+    * @var    $model
+    * @access protected
+    */
+    protected $model;
     
-    protected $_user;
+    /**
+    * UsersModel object.
+    *
+    * @var    $user
+    * @access protected
+    */
+    protected $user;
 
         
     /**
@@ -83,7 +94,7 @@ class UsersController implements ControllerProviderInterface
     *
     * @access public
     * @return mixed
-    */  
+    */
     public function index(Application $app)
     {
         $usersModel = new UsersModel($app);
@@ -91,104 +102,7 @@ class UsersController implements ControllerProviderInterface
         return $app['twig']->render('users/index.twig', array('users' => $users));
     }
     
-    /**
-    * Add new user
-    *
-    * @param Application $app     application object
-    * @param Request     $request request
-    *
-    * @access public
-    * @return mixed Generates page
-    */    
-    // public function add(Application $app, Request $request)
-    // {
-
-        // $usersModel = new UsersModel($app);
-        // $data = array(
-          // 'firstname' => '',
-          // 'lastname' => '',
-          // 'login' => '',
-          // 'password' => ''
-         // );
-
-        // $form = $app['form.factory']
-			// ->createBuilder(new UsersForm(), $data)->getForm();
-		// $form->remove('id_user');
-            
-        // $form->handleRequest($request);
-
-        // if ($form->isValid()) {
-            // $data = $form->getData();
-
-            // $check = $usersModel
-                // ->getUserByLogin($data['login']);
-
-            // if (!$check) {
-                // if ($data['password'] === $data['confirm_password']) {
-
-                    // $password = $app['security.encoder.digest']
-                        // ->encodePassword($data['password'], '');
-                        
-                    // try {
-                        // $usersModel = new UsersModel($app);
-
-                        // $usersModel->register($data, $password);
-
-
-                        // $app['session']->getFlashBag()->add(
-                            // 'message', array(
-                                // 'type' => 'success',
-                                // 'content' => 'Konto zostało stworzone'
-                            // )
-                        // );
-                        // return $app->redirect(
-                            // $app['url_generator']->generate(
-                                // '/auth/login'
-                            // ), 301
-                        // );
-
-                    // } catch (\Exception $e) {
-
-                        // $errors[] = 'Coś poszło niezgodnie z planem';
-                    // }
-
-                // } else {
-                    // $app['session']->getFlashBag()->add(
-                        // 'message', array(
-                            // 'type' => 'warning',
-                            // 'content' => 'Hasła nie są takie same'
-                        // )
-                    // );
-                    // return $app['twig']->render(
-                        // 'users/add.twig', array(
-                            // 'form' => $form->createView()
-                        // )
-                    // );
-                // }
-            // } else {
-                // $app['session']->getFlashBag()->add(
-                    // 'message', array(
-                        // 'type' => 'danger',
-                        // 'content' => 'Użytkownik o tym nicku już istnieje'
-                    // )
-                // );
-                // return $app['twig']->render(
-                    // 'users/add.twig', array(
-                        // 'form' => $form->createView()
-                    // )
-                // );
-            // }
-
-        // }
-
-        // return $app['twig']->render(
-            // 'users/add.twig', array(
-                // 'form' => $form->createView()
-            // )
-        // );
-    // }
   
-    
     /**
     * Edit information about user
     *
@@ -197,20 +111,21 @@ class UsersController implements ControllerProviderInterface
     *
     * @access public
     * @return mixed Generates page
-    */    
+    */
     public function edit(Application $app, Request $request)
     {
-            $usersModel = new UsersModel($app);
+        $usersModel = new UsersModel($app);
             
             
-        if ($usersModel ->_isLoggedIn($app)) {
+        if ($usersModel ->isLoggedIn($app)) {
             $id_user = $usersModel -> getIdCurrentUser($app);
                 
         } else {
             return $app->redirect(
                 $app['url_generator']->generate(
                     'auth_login'
-                ), 301
+                ),
+                301
             );
         }
             
@@ -228,8 +143,8 @@ class UsersController implements ControllerProviderInterface
                 'confirm_password' => ''
             );
             
-			 $form = $app['form.factory']
-				->createBuilder(new UsersForm(), $data)->getForm();
+            $form = $app['form.factory']
+            ->createBuilder(new UsersForm(), $data)->getForm();
 
 
             $form->handleRequest($request);
@@ -254,7 +169,8 @@ class UsersController implements ControllerProviderInterface
                 if ($data['password'] === $data['confirm_password']) {
                     $password = $app['security.encoder.digest']
                         ->encodePassword(
-                            $data['password'], ''
+                            $data['password'],
+                            ''
                         );
 
 
@@ -263,22 +179,21 @@ class UsersController implements ControllerProviderInterface
                             $data['login']
                         );
 
-                    if ($data['login'] === $checkLogin 
-                        || !$checkLogin 
-                        || (int)$currentUserInfo['id_user'] ===(int)$checkLogin['id_user']
+                    if ($data['login'] === $checkLogin
+                        || !$checkLogin
+                        || (int)$currentUserInfo['id_user']===(int)$checkLogin['id_user']
                     ) {
-                        try
-                        {
+                        try {
                             $usersModel->updateUser(
                                 $currentUserInfo['id_user'],
                                 $form->getData(),
                                 $password
                             );
                             
-                            var_dump($data);
-
+                            
                             $app['session']->getFlashBag()->add(
-                                'message', array(
+                                'message',
+                                array(
                                     'type' => 'success',
                                     'content' => 'Edycja konta udała się,
                                     możesz się teraz ponownie zalogować'
@@ -288,23 +203,24 @@ class UsersController implements ControllerProviderInterface
                                 $app['url_generator']
                                     ->generate(
                                         'files'
-                                    ), 301
+                                    ),
+                                301
                             );
-                        }
-                        catch (\Exception $e)
-                        {
+                        } catch (\Exception $e) {
                             $errors[] = 'Edycja konta nie powiodła się';
                         }
 
                     } else {
                         $app['session']->getFlashBag()->add(
-                            'message', array(
+                            'message',
+                            array(
                                 'type' => 'warning',
                                 'content' => 'Login zajęty'
                             )
                         );
                         return $app['twig']->render(
-                            'users/edit.twig', array(
+                            'users/edit.twig',
+                            array(
                                 'form' => $form->createView(),
                                 'login' => $currentUser
                             )
@@ -312,13 +228,15 @@ class UsersController implements ControllerProviderInterface
                     }
                 } else {
                     $app['session']->getFlashBag()->add(
-                        'message', array(
+                        'message',
+                        array(
                             'type' => 'warning',
                             'content' => 'Hasła różnią się'
                         )
                     );
                     return $app['twig']->render(
-                        'users/edit.twig', array(
+                        'users/edit.twig',
+                        array(
                             'form' => $form->createView(),
                             'login' => $currentUser
                         )
@@ -327,7 +245,8 @@ class UsersController implements ControllerProviderInterface
                 }
             }
             return $app['twig']->render(
-                'users/edit.twig', array(
+                'users/edit.twig',
+                array(
                     'form' => $form->createView(),
                     'login' => $currentUser
                 )
@@ -342,7 +261,7 @@ class UsersController implements ControllerProviderInterface
     *
     * @access public
     * @return mixed Generates page
-    */    
+    */
     public function panel(Application $app, Request $request)
     {
         $usersModel = new UsersModel($app);
@@ -355,16 +274,18 @@ class UsersController implements ControllerProviderInterface
 
         if (count($id_user)) {
             return $app['twig']->render(
-                'users/info.twig', array(
+                'users/info.twig',
+                array(
                     'user' => $user,
-                    'files' => $files, 
+                    'files' => $files,
                     'about' => $about,
                     'id_user' => $id_user
                 )
             );
         } else {
             $app['session']->getFlashBag()->add(
-                'message', array(
+                'message',
+                array(
                     'type' => 'danger',
                     'content' => 'Nie znaleziono użytkownika'
                 )
@@ -372,10 +293,12 @@ class UsersController implements ControllerProviderInterface
             return $app->redirect(
                 $app['url_generator']->generate(
                     '/files'
-                ), 301
+                ),
+                301
             );
         }
     }
+    
     /**
     * Show information about user
     *
@@ -384,7 +307,7 @@ class UsersController implements ControllerProviderInterface
     *
     * @access public
     * @return mixed Generates page
-    */    
+    */
     public function view(Application $app, Request $request)
     {
         $id_user = (int) $request -> get('id', 0);  //id usera
@@ -399,10 +322,10 @@ class UsersController implements ControllerProviderInterface
         $check = $usersModel->checkUserId($id_user);
 
         if ($check) {
-        
                     return $app['twig']->render(
-                        'users/view.twig', array( 
-                        'files' => $files, 
+                        'users/view.twig',
+                        array(
+                        'files' => $files,
                         'user' => $user,
                         'about' => $about,
                         'id_user' => $id_user
@@ -411,7 +334,8 @@ class UsersController implements ControllerProviderInterface
                     );
         } else {
                     $app['session']->getFlashBag()->add(
-                        'message', array(
+                        'message',
+                        array(
                             'type' => 'danger',
                             'content' => 'Nie znaleziono użytkownika'
                         )
@@ -419,10 +343,10 @@ class UsersController implements ControllerProviderInterface
                     return $app->redirect(
                         $app['url_generator']->generate(
                             '/users/'
-                        ), 301
+                        ),
+                        301
                     );
         }
     
     }
-    
 }

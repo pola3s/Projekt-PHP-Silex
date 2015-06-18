@@ -3,6 +3,8 @@ require_once __DIR__.'/../vendor/autoload.php';
 $app = new Silex\Application();
 $app['debug'] = true;
 
+use Symfony\Component\Translation\Loader\YamlFileLoader;
+
 $app->register(new \nymo\Silex\Provider\BreadCrumbServiceProvider());
 
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
@@ -21,10 +23,20 @@ $app['twig'] = $app->share(
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Silex\Provider\FormServiceProvider());
 $app->register(new Silex\Provider\ValidatorServiceProvider());
-$app->register(new Silex\Provider\TranslationServiceProvider(), array(
-    'translator.domains' => array(),
-));
 
+$app->register(
+    new Silex\Provider\TranslationServiceProvider(), array(
+        'locale' => 'pl',
+        'locale_fallbacks' => array('pl'),
+		
+    )
+);
+
+$app['translator'] = $app->share($app->extend('translator', function($translator, $app) {
+    $translator->addLoader('yaml', new YamlFileLoader());
+    $translator->addResource('yaml', dirname(dirname(__FILE__)) . '/config/locales/pl.yml', 'pl');
+    return $translator;
+}));
 
 
 $app->register(new Silex\Provider\SessionServiceProvider());

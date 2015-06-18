@@ -15,6 +15,7 @@ namespace Model;
 
 use Doctrine\DBAL\DBALException;
 use Silex\Application;
+
 /**
  * Class GradesModel
  *
@@ -29,16 +30,18 @@ use Silex\Application;
  */
 
 class GradesModel
-{	
+{
+
+   
 /**
      * Database access object.
      *
      * @access protected
      * @var $_db Doctrine\DBAL
      */
-    protected $_db;
-	
-	/**
+    protected $db;
+    
+    /**
      * Class constructor.
      *
      * @param Application $app Silex application object
@@ -49,28 +52,28 @@ class GradesModel
     {
         $this->_db = $app['db'];
     }
-	
-	/**
+    
+    /**
      * Gets all grades of one file
      *
      * @param Integer $id
      * @access public
-     * @return mixed
+     * @return Array
      */
     public function getGrades($id)
     {
-		$sql = 'SELECT AVG(grade) FROM grades WHERE id_file = ?;';
-		return $this->_db->fetchAssoc($sql, array($id));
+        $sql = 'SELECT AVG(grade) FROM grades WHERE id_file = ?;';
+        return $this->_db->fetchAssoc($sql, array($id));
     }
-	
-	
+    
+    
     /**
      * Change key in grades array
      *
      * @access public
-     * @return Array 
+     * @return Array
      */
-	public function getGradesDict()
+    public function getGradesDict()
     {
         $grades = $this->getGradesList();
         $data = array();
@@ -79,36 +82,36 @@ class GradesModel
         }
         return $data;
     }
-	
-		
-	/**
+    
+        
+    /**
      * Gets all grades
      *
      * @access public
      * @return Array
      */
-	public function getGradesList()
+    public function getGradesList()
     {
         $sql = 'SELECT * FROM 12_serwinska.values;';
         return $this->_db->fetchAll($sql);
     }
-	
-	/**
+    
+    /**
      * Checks if grade is added by one user to one file
      *
      * @param Integer $id_file
-	 * @param Integer $id_user
-	 *
+     * @param Integer $id_user
+     *
      * @access public
-     * @return mixed
+     * @return Array
      */
-	public function checkGrade($id_file, $id_user)
-	{
-		 $sql = 'SELECT * FROM grades WHERE id_file = ? AND id_user = ? ';
-		 return $this->_db->fetchAssoc($sql, array($id_file, $id_user));
-	}
-	
-	/**
+    public function checkGrade($id_file, $id_user)
+    {
+         $sql = 'SELECT * FROM grades WHERE id_file = ? AND id_user = ? ';
+         return $this->_db->fetchAssoc($sql, array($id_file, $id_user));
+    }
+    
+    /**
      * Adds grade to one file
      *
      * @param Array $data
@@ -116,13 +119,13 @@ class GradesModel
      * @access public
      * @return void
      */
-	public function addGrade($data)
+    public function addGrade($data)
     {
         $sql = 'INSERT INTO grades VALUES (?,?,?,?)';
         $this->_db->executeQuery(
-            $sql, array($data['id_grade'], $data['grade'], $data['id_user'],
+            $sql,
+            array($data['id_grade'], $data['grade'], $data['id_user'],
             $data['id_file'])
         );
     }
-	
 }

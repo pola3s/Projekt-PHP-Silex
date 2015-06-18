@@ -40,15 +40,32 @@ use Model\GradesModel;
  * @uses     Model\UsersModel;
  * @uses     Model\FilesModel;
  * @uses     Model\GradesModel;
- */     
+ */
 class GradesController implements ControllerProviderInterface
 {
-   
-    protected $_model;
+    /**
+    * GradesModel object.
+    *
+    * @var    $model
+    * @access protected
+    */
+    protected $model;
 
-    protected $_user;
+    /**
+    * UsersModel object.
+    *
+    * @var    $user
+    * @access protected
+    */
+    protected $user;
 
-    protected $_files;
+    /**
+    * FilesModel object.
+    *
+    * @var    $files
+    * @access protected
+    */
+    protected $files;
 
     /**
     * Connection
@@ -81,7 +98,7 @@ class GradesController implements ControllerProviderInterface
     *
     * @access public
     * @return page
-    */  
+    */
     public function index(Application $app, Request $request)
     {
         $id = (int)$request->get('id_file', 0);
@@ -92,7 +109,8 @@ class GradesController implements ControllerProviderInterface
         $roundGrade = round($averageGrade['AVG(grade)'], 2);
 
         return $app['twig']->render(
-            'grades/index.twig', array(
+            'grades/index.twig',
+            array(
                 'roundGrade' => $roundGrade,
                 'id_file' => $id
             )
@@ -107,7 +125,7 @@ class GradesController implements ControllerProviderInterface
     *
     * @access public
     * @return mixed Generates page
-    */  
+    */
     public function add(Application $app, Request $request)
     {
         $id_file = (int)$request->get('id_file');
@@ -120,35 +138,36 @@ class GradesController implements ControllerProviderInterface
         
         $usersModel = new UsersModel($app);
         
-        if ($usersModel ->_isLoggedIn($app)) {
+        if ($usersModel ->isLoggedIn($app)) {
             $id_current_user = $usersModel -> getIdCurrentUser($app);
                 
         } else {
              return $app->redirect(
                  $app['url_generator']->generate(
                      'auth_login'
-                 ), 301
+                 ),
+                 301
              );
         }
       
         if ($file['id_user'] == $id_current_user) {
-            
             $app['session']->getFlashBag()->add(
-                'message', array(
+                'message',
+                array(
                             'type' => 'warning',
                             'content' => 'Nie możesz ocenić własnego zdjęcia!'
                         )
             );
             return $app->redirect(
                 $app['url_generator']->generate(
-                    'view', 
+                    'view',
                     array(
                                     'id' => $id_file,
-                                )    
-                ), 301
+                                )
+                ),
+                301
             );
         } else {
-        
             $data = array(
             'id_file' => $id_file,
             'id_user' => $id_current_user
@@ -157,28 +176,28 @@ class GradesController implements ControllerProviderInterface
             $grade = $gradesModel->checkGrade($id_file, $id_current_user);
             
             if ($grade) {
-                
                 $app['session']->getFlashBag()->add(
-                    'message', array(
+                    'message',
+                    array(
                     'type' => 'warning',
                     'content' => 'Dodałeś już ocenę do tego zdjęcia!'
                     )
                 );
                 return $app->redirect(
                     $app['url_generator']->generate(
-                        'view', 
+                        'view',
                         array(
                                         'id' => $id_file,
-                                    )    
-                    ), 301
+                                    )
+                    ),
+                    301
                 );
             } else {
-            
-            
                 $form = $app['form.factory']->createBuilder('form', $data)
                 ->add(
                     'grade',
-                    'choice', array(
+                    'choice',
+                    array(
                     'choices' => $choiceGrade
                     )
                 )
@@ -187,28 +206,35 @@ class GradesController implements ControllerProviderInterface
                 $form->handleRequest($request);
 
                 if ($form->isValid()) {
-                    $gradesModel = new GradesModel($app);
-                    $data = $form->getData();
-                  
-                    $gradesModel->addGrade($data);
-                    $app['session']->getFlashBag()->add(
-                        'message', array(
-                        'type' => 'success',
-                        'content' => 'Ocena została dodana'
-                        )
-                    );
-                    return $app->redirect(
-                        $app['url_generator']->generate(
-                            'view', 
+                    try {
+                        $gradesModel = new GradesModel($app);
+                        $data = $form->getData();
+                      
+                        $gradesModel->addGrade($data);
+                        $app['session']->getFlashBag()->add(
+                            'message',
                             array(
-                                            'id' => $id_file,
-                                        )    
-                        ), 301
-                    );
+                            'type' => 'success',
+                            'content' => 'Ocena została dodana'
+                            )
+                        );
+                        return $app->redirect(
+                            $app['url_generator']->generate(
+                                'view',
+                                array(
+                                'id' => $id_file,
+                                )
+                            ),
+                            301
+                        );
+                    } catch (Exception $e) {
+                        $errors[] = 'Nie udało się dodać oceny';
+                    }
                 }
                 return $app['twig']
                 ->render(
-                    'grades/add.twig', array(
+                    'grades/add.twig',
+                    array(
                     'form' => $form->createView(), 'file' => $file
                     )
                 );
@@ -216,12 +242,4 @@ class GradesController implements ControllerProviderInterface
     
         }
     }
-        
-        
-        
-        
-        
-        
 }
-    
-?>

@@ -42,12 +42,30 @@ use Form\CategoriesForm;
  */
 class CategoriesController implements ControllerProviderInterface
 {
-   
-    protected $_model;
+    /**
+    * CategoriesModel object.
+    *
+    * @var    $model
+    * @access protected
+    */
+    protected $model;
 
-    protected $_user;
+    /**
+    * UsersModel object.
+    *
+    * @var    $user
+    * @access protected
+    */
+    protected $user;
 
-    protected $_files;
+    
+    /**
+    * FilesModel object.
+    *
+    * @var    $files
+    * @access protected
+    */
+    protected $files;
 
 
     /**
@@ -86,14 +104,14 @@ class CategoriesController implements ControllerProviderInterface
     *
     * @access public
     * @return mixed Generates page
-    */  
+    */
     public function index(Application $app)
     {
         $categoriesModel = new CategoriesModel($app);
         $categories = $categoriesModel->getCategories();
         
         return $app['twig']->render(
-            'categories/index.twig', 
+            'categories/index.twig',
             array(
                 'categories' => $categories
             )
@@ -108,42 +126,49 @@ class CategoriesController implements ControllerProviderInterface
     *
     * @access public
     * @return mixed Generates page
-    */  
+    */
     public function add(Application $app, Request $request)
     {
 
         $form = $app['form.factory']
-			->createBuilder(new CategoriesForm(), $data)->getForm();
-		$form->remove('id_category');
+            ->createBuilder(new CategoriesForm(), $data)->getForm();
+        $form->remove('id_category');
 
        
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $categoriesModel = new CategoriesModel($app);
-            $data = $form->getData();
-                
-            $categoriesModel->addCategory($data);
-                  
-            $app['session']->getFlashBag()->add(
-                'message', array(
-                      'type' => 'success',
-                      'content' => 'Kategoria została dodana'
-                  )
-            );
-            return $app->redirect(
-                $app['url_generator']->generate(
-                    'categories'
-                ), 
-                301
-            );
+            try {
+                $categoriesModel = new CategoriesModel($app);
+                $data = $form->getData();
+                    
+                $categoriesModel->addCategory($data);
+                      
+                $app['session']->getFlashBag()->add(
+                    'message',
+                    array(
+                          'type' => 'success',
+                          'content' => 'Kategoria została dodana'
+                      )
+                );
+                return $app->redirect(
+                    $app['url_generator']->generate(
+                        'categories'
+                    ),
+                    301
+                );
+            } catch (\Exception $e) {
+                    $errors[] = 'Nie udało się dodać kategorii';
+            }
         }
-                  return $app['twig']
-                    ->render(
-                        '/categories/add.twig', array(
-                        'form' => $form->createView()
-                        )
-                    );
+            return $app['twig']
+                 ->render(
+                     '/categories/add.twig',
+                     array(
+                      'form' => $form->createView()
+                      )
+                 );
+        
     }
     
     /**
@@ -154,7 +179,7 @@ class CategoriesController implements ControllerProviderInterface
     *
     * @access public
     * @return mixed Generates page
-    */  
+    */
     public function edit(Application $app, Request $request)
     {
             $categoriesModel = new CategoriesModel($app);
@@ -164,20 +189,21 @@ class CategoriesController implements ControllerProviderInterface
             $check = $categoriesModel->checkCategoryId($id_category);
     
         if ($check) {
-            
             if (count($category)) {
                 $form = $app['form.factory']
-					->createBuilder(new CategoriesForm(), $category)->getForm();
+                    ->createBuilder(new CategoriesForm(), $category)->getForm();
                             
                 $form->handleRequest($request);
                     
                 if ($form->isValid()) {
+                    try {
                         $categoriesModel = new CategoriesModel($app);
                         $data = $form->getData();
                         $categoriesModel->editCategory($data, $id_category);
                             
                         $app['session']->getFlashBag()->add(
-                            'message', array(
+                            'message',
+                            array(
                                 'type' => 'success',
                                 'content' => 'Kategoria została zmieniona'
                             )
@@ -186,37 +212,43 @@ class CategoriesController implements ControllerProviderInterface
                         return $app->redirect(
                             $app['url_generator']->generate(
                                 'categories'
-                            ), 
+                            ),
                             301
                         );
-                }       
+                    } catch (\Exception $e) {
+                        $errors[] = 'Nie udało się dodać kategorii';
+                    }
+                }
+                   
                     return $app['twig']->render(
-                        'categories/edit.twig', array(
-                        'form' => $form->createView(), 
+                        'categories/edit.twig',
+                        array(
+                        'form' => $form->createView(),
                         'category' => $category
                         )
                     );
                             
             } else {
-                    
                     return $app->redirect(
                         $app['url_generator']->generate(
                             '/categories/add'
-                        ), 
+                        ),
                         301
                     );
             }
         } else {
                     $app['session']->getFlashBag()->add(
-                        'message', array(
+                        'message',
+                        array(
                             'type' => 'danger',
-                            'content' => 'Nie znaleziono kategroii!'
+                            'content' => 'Nie znaleziono kategorii!'
                         )
                     );
                     return $app->redirect(
                         $app['url_generator']->generate(
                             'categories'
-                        ), 301
+                        ),
+                        301
                     );
         }
 
@@ -230,7 +262,7 @@ class CategoriesController implements ControllerProviderInterface
     *
     * @access public
     * @return mixed Generates page
-    */  
+    */
     public function delete(Application $app, Request $request)
     {
         $id_category = (int) $request -> get('id', 0);
@@ -239,66 +271,72 @@ class CategoriesController implements ControllerProviderInterface
         $check = $categoriesModel->checkCategoryId($id_category);
  
         if ($check) {
-		
-			 $files = $categoriesModel->getFilesByCategory($id_category);
-			
-			 
-			   if (!$files) {
+             $files = $categoriesModel->getFilesByCategory($id_category);
+            
+             
+            if (!$files) {
                 $category = $categoriesModel->getCategory($id_category);
-		
+        
 
                 $data = array();
 
                 if (count($category)) {
                     $form = $app['form.factory']->createBuilder('form', $data)
                         ->add(
-                            'id_category', 'hidden', array(
+                            'id_category',
+                            'hidden',
+                            array(
                             'data' => $id,
                             )
                         )
-                        ->add('Yes', 'submit')
-                        ->add('No', 'submit')
+                        ->add('Tak', 'submit')
+                        ->add('Nie', 'submit')
                         ->getForm();
 
                     $form->handleRequest($request);
 
                     if ($form->isValid()) {
-                        if ($form->get('Yes')->isClicked()) {
+                        if ($form->get('Tak')->isClicked()) {
                             $data = $form->getData();
                             try {
                                 $model = $this->_model->deleteCategory($id_category);
 
                                 $app['session']->getFlashBag()->add(
-                                    'message', array(
+                                    'message',
+                                    array(
                                         'type' => 'success',
-                                        'content' => 
+                                        'content' =>
                                             'Kategoria została usunięta'
                                     )
                                 );
                                 return $app->redirect(
                                     $app['url_generator']->generate(
                                         'categories'
-                                    ), 301
+                                    ),
+                                    301
                                 );
                             } catch (\Exception $e) {
-                                $errors[] = 'Coś poszło niezgodnie z planem';
+                                $errors[] = 'Nie udało się usunąć kategorii';
                             }
                         } else {
                             return $app->redirect(
                                 $app['url_generator']->generate(
                                     'categories'
-                                ), 301
+                                ),
+                                301
                             );
                         }
                     }
                     return $app['twig']->render(
-                        'categories/delete.twig', array(
+                        'categories/delete.twig',
+                        array(
                             'form' => $form->createView()
                         )
                     );
                 } else {
                     $app['session']->getFlashBag()->add(
-                        'message', array(
+                        'message',
+                        array(
                             'type' => 'danger',
                             'content' => 'Nie znaleziono kategorii'
                         )
@@ -306,12 +344,14 @@ class CategoriesController implements ControllerProviderInterface
                     return $app->redirect(
                         $app['url_generator']->generate(
                             'categories'
-                        ), 301
+                        ),
+                        301
                     );
                 }
             } else {
                 $app['session']->getFlashBag()->add(
-                    'message', array(
+                    'message',
+                    array(
                         'type' => 'danger',
                         'content' => 'Nie można usunąć niepustej kategorii'
                     )
@@ -319,12 +359,14 @@ class CategoriesController implements ControllerProviderInterface
                 return $app->redirect(
                     $app['url_generator']->generate(
                         'categories'
-                    ), 301
+                    ),
+                    301
                 );
             }
         } else {
             $app['session']->getFlashBag()->add(
-                'message', array(
+                'message',
+                array(
                     'type' => 'danger',
                     'content' => 'Nie znaleziono kategorii'
                 )
@@ -332,80 +374,9 @@ class CategoriesController implements ControllerProviderInterface
             return $app->redirect(
                 $app['url_generator']->generate(
                     'categories'
-                ), 301
+                ),
+                301
             );
         }
-            // $data = array();
-
-            // if (count($id_category)) {
-                // $form = $app['form.factory']->createBuilder('form', $data)
-                    // ->add(
-                        // 'id_category', 'hidden', array(
-                        // 'data' => $id,
-                        // )
-                    // )
-                    // ->add('Yes', 'submit')
-                    // ->add('No', 'submit')
-                    // ->getForm();
-
-                // $form->handleRequest($request);
-
-                // if ($form->isValid()) {
-                    // if ($form->get('Yes')->isClicked()) {
-                        // $data = $form->getData();
-                        // try {
-                            // $model = $this->_model->deleteCategory($id_category);
-
-                            // $app['session']->getFlashBag()->add(
-                                // 'message', array(
-                                    // 'type' => 'success',
-                                    // 'content' => 
-                                        // 'Kategoria została usunięta'
-                                // )
-                            // );
-                            // return $app->redirect(
-                                // $app['url_generator']->generate(
-                                    // 'categories'
-                                // ), 301
-                            // );
-                        // } catch (\Exception $e) {
-                            // $errors[] = 'Coś poszło niezgodnie z planem';
-                        // }
-                    // } else {
-                        // return $app->redirect(
-                            // $app['url_generator']->generate(
-                                // 'categories'
-                            // ), 301
-                        // );
-                    // }
-                // }
-                // return $app['twig']->render(
-                    // 'categories/delete.twig', array(
-                        // 'form' => $form->createView()
-                    // )
-                // );
-            // } 
-           
-       
-            // return $app->redirect(
-                // $app['url_generator']->generate(
-                    // 'categories'
-                // ), 301
-            // );
-        // } else {
-                        // $app['session']->getFlashBag()->add(
-                            // 'message', array(
-                                // 'type' => 'danger',
-                                // 'content' => 'Nie znaleziono kategorii!'
-                            // )
-                        // );
-                        // return $app->redirect(
-                            // $app['url_generator']->generate(
-                                // '/users/panel' 
-                            // ), 301
-                        // );
-        // }
     }
-        
 }
-    

@@ -20,8 +20,8 @@
         <thead>
         <tr>
             <th>Id</th>
-            <th>Firstname</th>
-            <th>Lastname</th>
+            <th>Imię</th>
+            <th>Nazwisko</th>
             <th>Login</th>
 		
             
@@ -37,7 +37,7 @@
 					<td>{{ user.lastname|e }}</td>
 					<td>{{ user.login|e }}</td>
 					<td>
-						<p><a href="{{ url('/users/view', {'id': user.id_user}) }}" title="User's profile">See full profile</a></p>
+						<p><a href="{{ url('/users/view', {'id': user.id_user}) }}">Zobacz profil</a></p>
 					</td>
 				</tr>
 				

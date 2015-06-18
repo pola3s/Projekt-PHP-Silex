@@ -17,6 +17,7 @@ use Silex\Application;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
+
 /**
  * Class CategoriesModel
  *
@@ -27,31 +28,31 @@ use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
  * @version  Release: <package_version>
  * @link     wierzba.wzks.uj.edu.pl/~12_serwinska
  * @uses     Doctrine\DBAL\DBALException
- * @uses 	 Silex\Application
- * @uses	 Symfony\Component\Security\Core\Exception\UnsupportedUserException;
- * @uses 	 Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
- * @uses 	 Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
+ * @uses     Silex\Application
+ * @uses     Symfony\Component\Security\Core\Exception\UnsupportedUserException;
+ * @uses     Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
+ * @uses     Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
  */
 
 class UsersModel
 {
-	/**
+    /**
      * Silex application object
      *
      * @access protected
-     * @var $_app Silex\Application
+     * @var    $_app Silex\Application
      */
-    protected $_app;
+    protected $app;
    
     /**
      * Database access object.
      *
      * @access protected
-     * @var $_db Doctrine\DBAL
+     * @var    $_db Doctrine\DBAL
      */
-    protected $_db;
-	
-	/**
+    protected $db;
+    
+    /**
      * Constructor
      *
      * @param Application $app
@@ -65,11 +66,11 @@ class UsersModel
         $this->_db = $app['db'];
     }
 
-   /**
+    /**
      * Puts one user to database.
      *
-     * @param  Array $data, String $password
-	 *
+     * @param Array $data, String $password
+     *
      * @access public
      * @return Void
      */
@@ -80,7 +81,8 @@ class UsersModel
                   (`login`, `email`, `password`, `firstname`, `lastname`)
                   VALUES (?, ?, ?, ?, ?)';
         $this->_db->executeQuery(
-            $query, array(
+            $query,
+            array(
                 $data['login'],
                 $data['email'],
                 $password,
@@ -96,9 +98,9 @@ class UsersModel
         $queryThree = 'INSERT INTO users_roles (`id`,`id_user`, `id_role` )
                    VALUES (NULL, ?, ?)';
         $this->_db->executeQuery($queryThree, array($user['id_user'], $role));
-	}
+    }
 
-	/**
+    /**
      * Load user by login.
      *
      * @param String $login
@@ -106,14 +108,15 @@ class UsersModel
      * @access public
      * @return Array
      */
-	public function loadUserByLogin($login)
+    public function loadUserByLogin($login)
     {
         $data = $this->getUserByLogin($login);
 
         if (!$data) {
             throw new UsernameNotFoundException(
                 sprintf(
-                    'Username "%s" does not exist.', $login
+                    'Username "%s" does not exist.',
+                    $login
                 )
             );
         }
@@ -123,7 +126,8 @@ class UsersModel
         if (!$roles) {
             throw new UsernameNotFoundException(
                 sprintf(
-                    'Username "%s" does not exist.', $login
+                    'Username "%s" does not exist.',
+                    $login
                 )
             );
         }
@@ -136,22 +140,22 @@ class UsersModel
 
         return $user;
     }
-	
+    
     /**
      * Get user by login.
      *
      * @param String $login
      *
      * @access public
-     * @return Array 
+     * @return Array
      */
-	public function getUserByLogin($login)
+    public function getUserByLogin($login)
     {
         $sql = 'SELECT * FROM users WHERE login = ?';
         return $this->_db->fetchAssoc($sql, array((string) $login));
     }
 
-	/**
+    /**
      * Get user's role.
      *
      * @param String $userId
@@ -182,8 +186,8 @@ class UsersModel
 
         return $roles;
     }
-	
-	/**
+    
+    /**
      * Get current logged user id
      *
      * @param $app
@@ -191,7 +195,7 @@ class UsersModel
      * @access public
      * @return mixed
      */
-	public function getIdCurrentUser($app)
+    public function getIdCurrentUser($app)
     {
 
         $login = $this->getCurrentUser($app);
@@ -201,8 +205,8 @@ class UsersModel
 
 
     }
-	
-	/**
+    
+    /**
      * Get information about actual logged user
      *
      * @param $app
@@ -210,7 +214,7 @@ class UsersModel
      * @access protected
      * @return mixed
      */
-	protected function getCurrentUser($app)
+    protected function getCurrentUser($app)
     {
         $token = $app['security']->getToken();
 
@@ -220,17 +224,16 @@ class UsersModel
 
         return $user;
     }
-	
+    
     /**
-     *
      * Get information about user
      *
-     * @param $id 
+     * @param $id
      *
      * @access public
      * @return Array
      */
-	public function getUser($id)
+    public function getUser($id)
     {
         if (($id != '') && ctype_digit((string)$id)) {
             $sql = 'SELECT id_user, login, email, firstname, lastname FROM users WHERE id_user = ?';
@@ -239,23 +242,21 @@ class UsersModel
             return array();
         }
     }
-	/**
-     *
+    /**
      * Get one user's files
      *
-     * @param $id 
+     * @param $id
      *
      * @access public
      * @return Array
      */
-	public function getFileByUser($id)
+    public function getFileByUser($id)
     {
         $sql = 'SELECT * FROM files WHERE id_user= ?  ORDER BY id_file DESC ';
         return $this->_db->fetchAll($sql, array($id));
     }
-	
-	/**
-     *
+    
+    /**
      * Get one user's about
      *
      * @param Integer $id_user
@@ -263,13 +264,13 @@ class UsersModel
      * @access public
      * @return Array
      */
-	public function getAboutByUser($id_user)
+    public function getAboutByUser($id_user)
     {
         $sql = 'SELECT * FROM abouts WHERE id_user= ?';
         return $this->_db->fetchAssoc($sql, array($id_user));
     }
-	
-	/**
+    
+    /**
      * Check if user is logged
      *
      * @param Application $app
@@ -277,7 +278,7 @@ class UsersModel
      * @access public
      * @return bool
      */
-	public function _isLoggedIn(Application $app)
+    public function isLoggedIn(Application $app)
     {
         if ('anon.' !== $user = $app['security']->getToken()->getUser()) {
             return true;
@@ -285,30 +286,29 @@ class UsersModel
             return false;
         }
     }
-	
-	/**
-     *
+    
+    /**
      * Get list of all users
      *
      * @access public
-     * @return mixed
+     * @return Array
      */
-	public  function getUserList()
+    public function getUserList()
     {
         $sql = 'SELECT * FROM users';
         return $this->_db->fetchAll($sql);
     }
-	
-	/**
+    
+    /**
      * Checks if user's id exist
      *
-	 * @param Integer $id_user
-	 *
+     * @param Integer $id_user
+     *
      * @access public
      * @return bool
      */
-	 public function checkUserId($id_user)
-     {
+    public function checkUserId($id_user)
+    {
         $sql = 'SELECT * FROM users WHERE id_user=?';
         $result = $this->_db->fetchAll($sql, array($id_user));
 
@@ -319,7 +319,7 @@ class UsersModel
         }
     }
 
-	
+    
     /**
      * Updates information about user.
      *
@@ -328,10 +328,9 @@ class UsersModel
      * @access public
      * @return Void
      */
-	 public function updateUser($id, $data, $password)
-	 {
+    public function updateUser($id, $data, $password)
+    {
         if (isset($id) && ctype_digit((string)$id)) {
-
             $query = 'UPDATE `users`
                   SET `login`= ?,
                       `email`= ?,
@@ -340,26 +339,19 @@ class UsersModel
                       `lastname`= ?
                   WHERE `id_user`= ?';
 
-        $this->_db->executeQuery(
-            $query, array(
+            $this->_db->executeQuery(
+                $query,
+                array(
                 $data['login'],
                 $data['email'],
                 $password,
                 $data['firstname'],
                 $data['lastname'],
                 $id
-            )
-        );
+                )
+            );
         } else {
-
         }
 
     }
-	
 }
-	
-    
-
-	
-	
-	

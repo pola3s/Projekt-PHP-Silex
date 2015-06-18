@@ -71,7 +71,9 @@ class AuthController implements ControllerProviderInterface
 
         $form = $app['form.factory']->createBuilder('form')
             ->add(
-                'username', 'text', array(
+                'username',
+                'text',
+                array(
                     'label' => 'Login',
                     'data' => $app['session']
                             ->get(
@@ -80,25 +82,22 @@ class AuthController implements ControllerProviderInterface
                 )
             )
             ->add(
-                'password', 'password', array(
+                'password',
+                'password',
+                array(
                     'label' => 'Haslo'
                 )
             )
             ->add('Zaloguj', 'submit')
             ->getForm();
-            
-        // $app['session']->getFlashBag()->add(
-            // 'message', array(
-            // 'type' => 'success',
-                            // 'content' => 'Zostałeś zalogowany!'
-                        // )
-        // );
+          
         return $app['twig']->render(
-            'auth/login.twig', array(
-                'form' =>$form->createView(), 
-                'error' =>$app['security.last_error']($request) 
+            'auth/login.twig',
+            array(
+                'form' =>$form->createView(),
+                'error' =>$app['security.last_error']($request)
                 )
-        ); 
+        );
             
     }
 
@@ -116,10 +115,11 @@ class AuthController implements ControllerProviderInterface
         
         $app['session']->clear();
         $app['session']->getFlashBag()->add(
-            'message', array(
+            'message',
+            array(
             'type' => 'success',
-                            'content' => 'Zostałeś wylogowany!'
-                        )
+            'content' => 'Zostałeś wylogowany!'
+            )
         );
         return $app['twig']->render('auth/logout.twig', $this->view);
         

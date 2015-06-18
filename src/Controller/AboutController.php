@@ -12,7 +12,7 @@
  */
 namespace Controller;
 
-use Silex\Application; 
+use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,11 +44,21 @@ use Model\AboutModel;
  */
 class AboutController implements ControllerProviderInterface
 {
-
-
-    protected $_model;
+    /**
+    * AboutModel object.
+    *
+    * @var    $model
+    * @access protected
+    */
+    protected $model;
     
-    protected $_user;
+    /**
+    * UsersModel object
+    *
+    * @var    $user
+    * @access protected
+    */
+    protected $user;
 
      
     /**
@@ -65,11 +75,11 @@ class AboutController implements ControllerProviderInterface
             $this->_user = new UsersModel($app);
           
             $AboutController = $app['controllers_factory'];
-            $AboutController->get('view/{id_user}', array($this, 'index'))  
+            $AboutController->get('view/{id_user}', array($this, 'index'))
                 ->bind('/about/');
-             $AboutController->match('edit/{id}', array($this, 'edit'))  
+             $AboutController->match('edit/{id}', array($this, 'edit'))
                  ->bind('/about/edit');
-            $AboutController->match('add/{id}', array($this, 'add'))          
+            $AboutController->match('add/{id}', array($this, 'add'))
                 ->bind('/about/add');
             return $AboutController;
     }
@@ -90,32 +100,29 @@ class AboutController implements ControllerProviderInterface
         
 
             $usersModel = new UsersModel($app);
-        if ($usersModel ->_isLoggedIn($app)) {
+        if ($usersModel ->isLoggedIn($app)) {
             $id_current_user = $usersModel -> getIdCurrentUser($app);
                 
         } else {
             return $app->redirect(
                 $app['url_generator']->generate(
                     'auth_login'
-                ), 301
+                ),
+                301
             );
         }
             
             
         if ($id_user == $id_current_user) {
-        
-          
-
             $form = $app['form.factory']
-				->createBuilder(new AboutForm(), $data)->getForm();
-			$form->remove('id_about');
+            ->createBuilder(new AboutForm(), $data)->getForm();
+            $form->remove('id_about');
                 
             if ($request->isMethod('POST')) {
                 $form->bind($request);
             
                 if ($form->isValid()) {
                     try {
-            
                         $data = $form->getData();
             
                         $aboutModel = new AboutModel($app);
@@ -130,11 +137,12 @@ class AboutController implements ControllerProviderInterface
                         );
                         return $app->redirect(
                             $app['url_generator']->generate(
-                                '/users/panel', 
+                                '/users/panel',
                                 array(
                                     'id' => $id_user,
-                                )   
-                            ), 301
+                                )
+                            ),
+                            301
                         );
                     } catch (Exception $e) {
                         $app['session']->getFlashBag()->add(
@@ -189,65 +197,61 @@ class AboutController implements ControllerProviderInterface
             $check = $aboutModel->checkAboutId($id_about);
         
             if ($check) {
-            
                 $usersModel = new UsersModel($app);
-                if ($usersModel ->_isLoggedIn($app)) {
+                if ($usersModel ->isLoggedIn($app)) {
                     $id_current_user = $usersModel -> getIdCurrentUser($app);
-                
+                        
                 } else {
                     return $app->redirect(
                         $app['url_generator']->generate(
                             'auth_login'
-                        ), 301
+                        ),
+                        301
                     );
                 }
             
             
                 if ($id_user == $id_current_user) {
-        
-        
                     if (count($about)) {
                         $form = $app['form.factory']
-							->createBuilder(new AboutForm(), $about)->getForm();
+                        ->createBuilder(new AboutForm(), $about)->getForm();
                     
                         $form->handleRequest($request);
             
                         if ($form->isValid()) {
-						
-							try {
-							
-							
-								$aboutModel = new AboutModel($app);
-								$data = $form->getData();
-								$aboutModel->editAbout($data, $id_user);
-						
-								$app['session']->getFlashBag()->add(
-									'message',
-									array(
-									'type' => 'success',
-									'content' => 'Edytowano "o mnie".'
-									)
-								);
-								return $app->redirect(
-									$app['url_generator']->generate(
-										'/users/panel', 
-										array(
-											'id' => $id_user,
-										)   
-									), 301
-								);
-							} catch (\Exception $e) {
-								$errors[] = 'Coś poszło niezgodnie z planem';
-							}		
-						}
-						return $app['twig']->render(
-                            'about/edit.twig', array(
-                            'form' => $form->createView(), 
+                            try {
+                                $aboutModel = new AboutModel($app);
+                                $data = $form->getData();
+                                $aboutModel->editAbout($data, $id_user);
+                        
+                                $app['session']->getFlashBag()->add(
+                                    'message',
+                                    array(
+                                    'type' => 'success',
+                                    'content' => 'Edytowano "o mnie".'
+                                    )
+                                );
+                                return $app->redirect(
+                                    $app['url_generator']->generate(
+                                        '/users/panel',
+                                        array(
+                                        'id' => $id_user,
+                                        )
+                                    ),
+                                    301
+                                );
+                            } catch (\Exception $e) {
+                                $errors[] = 'Nie udało się dodać "o mnie".';
+                            }
+                        }
+                        return $app['twig']->render(
+                            'about/edit.twig',
+                            array(
+                            'form' => $form->createView(),
                             'about' => $about)
                         );
                     
                     } else {
-            
                         return $app->redirect(
                             $app['url_generator']->generate(
                                 '/about/add'
@@ -263,20 +267,21 @@ class AboutController implements ControllerProviderInterface
                 );
             } else {
                         $app['session']->getFlashBag()->add(
-                            'message', array(
+                            'message',
+                            array(
                                 'type' => 'danger',
                                 'content' => 'Nie znaleziono "o mnie"!'
                             )
                         );
                         return $app->redirect(
                             $app['url_generator']->generate(
-                                '/users/panel', 
+                                '/users/panel',
                                 array(
-                                                'id' => $id_user,
-                                            )   
-                            ), 301
+                                'id' => $id_user,
+                                )
+                            ),
+                            301
                         );
             }
         }
-            
 }
