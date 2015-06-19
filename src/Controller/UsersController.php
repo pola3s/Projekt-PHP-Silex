@@ -78,6 +78,8 @@ class UsersController implements ControllerProviderInterface
             ->bind('/users/add');
         $usersController->match('/edit/{id}', array($this, 'edit'))
             ->bind('/users/edit');
+		$usersController->match('/edit_role/{id}', array($this, 'edit_role'))
+            ->bind('/users/edit_role');
         $usersController->match('/view/{id}', array($this, 'view'))
             ->bind('/users/view');
         $usersController->match('/panel/', array($this, 'panel'))
@@ -100,6 +102,7 @@ class UsersController implements ControllerProviderInterface
         $usersModel = new UsersModel($app);
         $users = $usersModel->getUserList();
         return $app['twig']->render('users/index.twig', array('users' => $users));
+		
     }
     
   
@@ -253,6 +256,105 @@ class UsersController implements ControllerProviderInterface
             );
     }
 
+	public function edit_role(Application $app, Request $request)
+    {
+		$id_user = (int)$request->get('id');
+		 
+        $usersModel = new UsersModel($app);
+            
+        var_dump($id_user);
+        
+		$user_role = $usersModel -> getUserRole($id_user);
+		$role = $usersModel -> getRoleName($user_role['id_role']);
+		
+		var_dump($role);		
+            
+            $currentUserInfo = $usersModel -> getUser($id_user);
+           
+            
+
+            $data = array(
+                'name' => $role['name']
+            );
+            
+             $form = $app['form.factory']->createBuilder('form', $data)
+                ->add(
+                    'name',
+					
+                    'choice',
+                    array(
+                     'choices' => array(
+						'ROLE_ADMIN'   => 'Administrator',
+						'ROLE_USER' => 'Użytkownik',
+						)
+					)
+                )
+			
+                ->getForm();
+                
+            $form->handleRequest($request);
+
+           if ($form->isValid()) {
+                    try {
+                        $categoriesModel = new usersModel($app);
+                        $data = $form->getData();
+                        $usersModel->editRole($data, $id_user);
+                            
+                        $app['session']->getFlashBag()->add(
+                            'message',
+                            array(
+                                'type' => 'success',
+                                'content' => 'Kategoria została zmieniona'
+                            )
+                        );
+                            
+                        return $app->redirect(
+                            $app['url_generator']->generate(
+                                'categories'
+                            ),
+                            301
+                        );
+                    } catch (\Exception $e) {
+                        $errors[] = 'Nie udało się dodać kategorii';
+                    }
+                }
+                   
+                    return $app['twig']->render(
+                        'categories/edit.twig',
+                        array(
+                        'form' => $form->createView(),
+                        'category' => $category
+                        )
+                    );
+                            
+            } else {
+                    return $app->redirect(
+                        $app['url_generator']->generate(
+                            '/categories/add'
+                        ),
+                        301
+                    );
+            }
+        } else {
+                    $app['session']->getFlashBag()->add(
+                        'message',
+                        array(
+                            'type' => 'danger',
+                            'content' => 'Nie znaleziono kategorii!'
+                        )
+                    );
+                    return $app->redirect(
+                        $app['url_generator']->generate(
+                            'categories'
+                        ),
+                        301
+                    );
+        }
+                
+
+                
+    }
+	
     /**
     * Show information about user
     *
@@ -272,6 +374,11 @@ class UsersController implements ControllerProviderInterface
         $files = $usersModel -> getFileByUser($id_user);
         $about = $usersModel -> getAboutByUser($id_user);
 
+		$user_role = $usersModel -> getUserRole($id_user);
+		$role = $usersModel -> getRoleName($user_role['id_role']);
+		
+		var_dump($role);
+		
         if (count($id_user)) {
             return $app['twig']->render(
                 'users/info.twig',
@@ -279,7 +386,8 @@ class UsersController implements ControllerProviderInterface
                     'user' => $user,
                     'files' => $files,
                     'about' => $about,
-                    'id_user' => $id_user
+                    'id_user' => $id_user,
+					'role' => $role
                 )
             );
         } else {
@@ -311,13 +419,15 @@ class UsersController implements ControllerProviderInterface
     public function view(Application $app, Request $request)
     {
         $id_user = (int) $request -> get('id', 0);  //id usera
-        
+        var_dump($id_user);
         $usersModel = new UsersModel($app);
         $user = $usersModel-> getUser($id_user);
 
         $files = $usersModel -> getFileByUser($id_user);
         $about = $usersModel -> getAboutByUser($id_user);
-        
+		
+        $user_role = $usersModel -> getUserRole($id_user);
+		$role = $usersModel -> getRoleName($user_role['id_role']);
         
         $check = $usersModel->checkUserId($id_user);
 
@@ -328,7 +438,8 @@ class UsersController implements ControllerProviderInterface
                         'files' => $files,
                         'user' => $user,
                         'about' => $about,
-                        'id_user' => $id_user
+                        'id_user' => $id_user,
+						'role' => $role
                         
                         )
                     );

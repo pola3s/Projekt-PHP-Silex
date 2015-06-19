@@ -16,6 +16,7 @@
 		
 		<h4>{{ user.firstname }} {{ user.lastname }} </h4>
 		<h4>{{ user.login }} </h4>
+		<h4>{{ role.name }} </h4>
 	{% if about %}
 		<h2>O mnie:</h2>
 		<p>{{ about.email }} </p>
@@ -26,7 +27,14 @@
 	{% else %}
 		<small>Użytkownik nie dodał jeszcze "o mnie"</small>
 	{% endif %}
-		
+	
+	
+	{% if is_granted ('ROLE_ADMIN') %}		
+		<a href=" {{ url('/users/edit', {'id': id_user }) }}" class="btn btn-primary" role="button">Edytuj dane logowania</a>
+		<a href="{{ url('/users/edit_role', {'id': id_user}) }}"> <button type="button" class="btn btn-success">Zmień rolę</button></a>
+
+	{% endif %}
+	
 	</div>
 	
 		{% for file in files %}

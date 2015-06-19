@@ -121,8 +121,8 @@ class CommentsController implements ControllerProviderInterface
             'comments/index.twig',
             array(
                 'comments' => $comments,
-            'id_file' => $id_file,
-            'idLoggedUser' => $idLoggedUser
+				'id_file' => $id_file,
+				'idLoggedUser' => $idLoggedUser
                 )
         );
     }

@@ -298,6 +298,19 @@ class UsersModel
         $sql = 'SELECT * FROM users';
         return $this->_db->fetchAll($sql);
     }
+	
+	 public function getUserRole($id_user)
+    {
+        $sql = 'SELECT * FROM users_roles WHERE id_user =?';
+         return $this->_db->fetchAssoc($sql, array($id_user));
+    }
+	
+	 public function getRoleName($id_role)
+    {
+        $sql = 'SELECT * FROM roles WHERE id_role =?';
+         return $this->_db->fetchAssoc($sql, array($id_role));
+    }
+	
     
     /**
      * Checks if user's id exist

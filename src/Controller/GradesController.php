@@ -107,12 +107,31 @@ class GradesController implements ControllerProviderInterface
         $averageGrade = $gradesModel ->getGrades($id);
         
         $roundGrade = round($averageGrade['AVG(grade)'], 2);
+		
+		$id_user = $filesModel -> checkUserId($id);
 
+		
+		$usersModel = new UsersModel($app);
+        
+        if ($usersModel ->isLoggedIn($app)) {
+            $id_current_user = $usersModel -> getIdCurrentUser($app);
+                
+        } else {
+            return $app->redirect(
+                $app['url_generator']->generate(
+                    'auth_login'
+                ),
+                301
+            );
+        }
+		
+		
         return $app['twig']->render(
             'grades/index.twig',
             array(
                 'roundGrade' => $roundGrade,
-                'id_file' => $id
+                'id_file' => $id,
+				'id_user' => $id_user
             )
         );
     }
