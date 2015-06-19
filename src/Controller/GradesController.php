@@ -109,7 +109,6 @@ class GradesController implements ControllerProviderInterface
         $roundGrade = round($averageGrade['AVG(grade)'], 2);
 		
 		$id_user = $filesModel -> checkUserId($id);
-
 		
 		$usersModel = new UsersModel($app);
         
@@ -124,14 +123,16 @@ class GradesController implements ControllerProviderInterface
                 301
             );
         }
+	
+		$gradeAdded = $gradesModel->checkGradeAdded($id, $id_current_user);
 		
-		
-        return $app['twig']->render(
+		return $app['twig']->render(
             'grades/index.twig',
             array(
                 'roundGrade' => $roundGrade,
                 'id_file' => $id,
-				'id_user' => $id_user
+				'id_user' => $id_user,
+				'gradeAdded' => $gradeAdded
             )
         );
     }

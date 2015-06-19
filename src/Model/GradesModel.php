@@ -111,6 +111,25 @@ class GradesModel
          return $this->_db->fetchAssoc($sql, array($id_file, $id_user));
     }
     
+	  public function checkGradeAdded($id, $id_user)
+    {
+         $sql = 'SELECT * FROM grades WHERE id_file = ? AND id_user = ? ';
+         return $this->_db->fetchAssoc($sql, array($id, $id_user));
+    }
+	
+	
+	public function checkUserId($id_user)
+    {
+        $sql = 'SELECT * FROM users WHERE id_user=?';
+        $result = $this->_db->fetchAll($sql, array($id_user));
+
+        if ($result) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+	
     /**
      * Adds grade to one file
      *

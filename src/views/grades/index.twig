@@ -6,21 +6,22 @@
 
 				<h3>Ocena:{{ roundGrade }}</h3>
 
+	{% if gradeAdded == NULL %}	
+		{% if is_granted ('ROLE_ADMIN') %}
 
-	{% if is_granted ('ROLE_ADMIN') %}
-
-			<a href="{{ url('/grades/add', {'id_file': id_file|e}) }}" title="Add grade">
-			   <button type="button" class="btn btn-success">Dodaj ocenę</button>
-			</a> 
-		
-					 
-	{% elseif is_granted('ROLE_USER') %}
-	
-			<a href="{{ url('/grades/add', {'id_file': id_file|e}) }}" title="Add grade">
-				<button type="button" class="btn btn-success">Dodaj ocenę</button>
-			</a> 
-	
-
+				<a href="{{ url('/grades/add', {'id_file': id_file|e}) }}" title="Add grade">
+				   <button type="button" class="btn btn-success">Dodaj ocenę</button>
+				</a> 
+			
+						 
+		{% elseif is_granted('ROLE_USER') %}
+			
+				<a href="{{ url('/grades/add', {'id_file': id_file|e}) }}" title="Add grade">
+					<button type="button" class="btn btn-success">Dodaj ocenę</button>
+				</a> 
+		{% endif %}
 	{% endif %}
+
+
 
 {% endblock %}
