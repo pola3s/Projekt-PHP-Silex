@@ -299,6 +299,8 @@ class UsersModel
         return $this->_db->fetchAll($sql);
     }
 	
+
+	
 	 public function getUserRole($id_user)
     {
         $sql = 'SELECT * FROM users_roles WHERE id_user =?';
@@ -367,4 +369,20 @@ class UsersModel
         }
 
     }
+	
+	  public function editRole($id_role, $id_user)
+    {
+      
+            $sql = 'UPDATE users_roles SET id_role = ? WHERE id_user = ?';
+            $this->_db->executeQuery(
+                $sql,
+                array(	
+						$id_role,
+                        $id_user
+
+                        )
+            );
+       
+    }
+	
 }

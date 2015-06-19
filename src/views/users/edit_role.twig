@@ -6,7 +6,6 @@
 
     {% if is_granted('ROLE_ADMIN') %}
 
-        <h2>Zmień rolę {{ login }}</h2>
     {% for flashMessage in app.session.getFlashBag.get('message') %}
         {{ flashMessage.content }}
     {% endfor %}

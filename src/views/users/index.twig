@@ -23,6 +23,7 @@
             <th>Imię</th>
             <th>Nazwisko</th>
             <th>Login</th>
+			
 		
             
             <th colspan="7">&nbsp;</th>
@@ -36,6 +37,7 @@
 					<td>{{ user.firstname|e }}</td>
 					<td>{{ user.lastname|e }}</td>
 					<td>{{ user.login|e }}</td>
+				
 				{% if is_granted ('ROLE_ADMIN') %}		
 					<td>
 						<p><a href="{{ url('/users/view', {'id': user.id_user}) }}">

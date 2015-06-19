@@ -101,7 +101,14 @@ class UsersController implements ControllerProviderInterface
     {
         $usersModel = new UsersModel($app);
         $users = $usersModel->getUserList();
-        return $app['twig']->render('users/index.twig', array('users' => $users));
+		
+		
+        return $app['twig']->render('users/index.twig', 
+			array(
+				'users' => $users
+			)
+		);
+		 
 		
     }
     
@@ -265,95 +272,76 @@ class UsersController implements ControllerProviderInterface
         var_dump($id_user);
         
 		$user_role = $usersModel -> getUserRole($id_user);
-		$role = $usersModel -> getRoleName($user_role['id_role']);
-		
-		var_dump($role);		
-            
-            $currentUserInfo = $usersModel -> getUser($id_user);
-           
-            
+		//$role = $usersModel -> getRoleName($user_role['id_role']);
 
-            $data = array(
-                'name' => $role['name']
-            );
-            
-             $form = $app['form.factory']->createBuilder('form', $data)
+		$currentUserInfo = $usersModel -> getUser($id_user);
+           
+        // $user_role = array(
+            // '' => $user_role['id'],
+			// '' => $user_role['id_user'],
+		    // '' => $user_role['id_role']
+        // );
+			
+		var_dump($user_role);	
+	 
+             $form = $app['form.factory']->createBuilder('form', $user_role)
                 ->add(
-                    'name',
-					
-                    'choice',
+                    'id_role',
+					'choice',
                     array(
                      'choices' => array(
-						'ROLE_ADMIN'   => 'Administrator',
-						'ROLE_USER' => 'Użytkownik',
+						'1'   => 'Administrator',
+						'2' => 'Użytkownik',
 						)
 					)
                 )
 			
                 ->getForm();
+				
+			
                 
             $form->handleRequest($request);
 
            if ($form->isValid()) {
                     try {
                         $categoriesModel = new usersModel($app);
-                        $data = $form->getData();
-                        $usersModel->editRole($data, $id_user);
-                            
+                        $user_role = $form->getData();
+						$id_role =  $user_role['id_role'];
+                        $usersModel->editRole($id_role, $id_user);
+                      
                         $app['session']->getFlashBag()->add(
                             'message',
                             array(
                                 'type' => 'success',
-                                'content' => 'Kategoria została zmieniona'
+                                'content' => 'Rola została edytowana'
                             )
                         );
                             
                         return $app->redirect(
                             $app['url_generator']->generate(
-                                'categories'
+                                'users'
                             ),
                             301
                         );
                     } catch (\Exception $e) {
-                        $errors[] = 'Nie udało się dodać kategorii';
+                        $errors[] = 'Nie udało się dodać roli';
                     }
                 }
                    
-                    return $app['twig']->render(
-                        'categories/edit.twig',
+                return $app['twig']->render(
+                        'users/edit_role.twig',
                         array(
                         'form' => $form->createView(),
-                        'category' => $category
+                        'role' => $role
                         )
                     );
                             
-            } else {
-                    return $app->redirect(
-                        $app['url_generator']->generate(
-                            '/categories/add'
-                        ),
-                        301
-                    );
-            }
-        } else {
-                    $app['session']->getFlashBag()->add(
-                        'message',
-                        array(
-                            'type' => 'danger',
-                            'content' => 'Nie znaleziono kategorii!'
-                        )
-                    );
-                    return $app->redirect(
-                        $app['url_generator']->generate(
-                            'categories'
-                        ),
-                        301
-                    );
+                   
         }
                 
 
                 
-    }
+    
 	
     /**
     * Show information about user
