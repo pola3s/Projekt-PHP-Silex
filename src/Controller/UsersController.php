@@ -268,79 +268,135 @@ class UsersController implements ControllerProviderInterface
 		$id_user = (int)$request->get('id');
 		 
         $usersModel = new UsersModel($app);
-            
-        var_dump($id_user);
+    
+        $user = $usersModel-> getUser($id_user);
         
+        $files = $usersModel -> getFileByUser($id_user);
+        $about = $usersModel -> getAboutByUser($id_user);
+
 		$user_role = $usersModel -> getUserRole($id_user);
-		//$role = $usersModel -> getRoleName($user_role['id_role']);
+		
+		$user_role = $usersModel -> getUserRole($id_user);
+
 
 		$currentUserInfo = $usersModel -> getUser($id_user);
-           
-        // $user_role = array(
-            // '' => $user_role['id'],
-			// '' => $user_role['id_user'],
-		    // '' => $user_role['id_role']
-        // );
+		
+		if ($usersModel ->isLoggedIn($app)) {
+                $idLoggedUser = $usersModel ->getIdCurrentUser($app);
+        }
+		var_dump($id_user);
+		var_dump($idLoggedUser);
+		
+		if($idLoggedUser != $id_user){
+		
 			
-		var_dump($user_role);	
-	 
-             $form = $app['form.factory']->createBuilder('form', $user_role)
-                ->add(
-                    'id_role',
-					'choice',
-                    array(
-                     'choices' => array(
-						'1'   => 'Administrator',
-						'2' => 'Użytkownik',
-						)
-					)
-                )
 			
-                ->getForm();
+			
+			
+				$check = $usersModel->checkUserId($id);
+			 
+				$idRoleAdmin = 1;
 				
+				$count = $usersModel->checkAdminCount($idRoleAdmin);
 			
-                
-            $form->handleRequest($request);
+				$rowsnumber = count($count);
+				
+				if($rowsnumber > 1){
+					 $form = $app['form.factory']->createBuilder('form', $user_role)
+						->add(
+							'id_role',
+							'choice',
+							array(
+							 'label' => 'Rola',
+							 'choices' => array(
+								'1'   => 'Administrator',
+								'2' => 'Użytkownik',
+								)
+							)
+						)
+					
+						->getForm();
+				} else {
+					 $form = $app['form.factory']->createBuilder('form', $user_role)
+						->add(
+							'id_role',
+							'choice',
+							array(
+							 'label' => 'Rola',
+							 'choices' => array(
+								'1'   => 'Administrator'
+								)
+							)
+						)
+					
+						->getForm();
+				}
+				
+					
+						
+					$form->handleRequest($request);
 
-           if ($form->isValid()) {
-                    try {
-                        $categoriesModel = new usersModel($app);
-                        $user_role = $form->getData();
-						$id_role =  $user_role['id_role'];
-                        $usersModel->editRole($id_role, $id_user);
-                      
-                        $app['session']->getFlashBag()->add(
-                            'message',
-                            array(
-                                'type' => 'success',
-                                'content' => 'Rola została edytowana'
-                            )
-                        );
-                            
-                        return $app->redirect(
-                            $app['url_generator']->generate(
-                                'users'
-                            ),
-                            301
-                        );
-                    } catch (\Exception $e) {
-                        $errors[] = 'Nie udało się dodać roli';
-                    }
-                }
-                   
-                return $app['twig']->render(
-                        'users/edit_role.twig',
+				   if ($form->isValid()) {
+							try {
+								$categoriesModel = new usersModel($app);
+								$user_role = $form->getData();
+								$id_role =  $user_role['id_role'];
+							
+								$usersModel->editRole($id_role, $id_user);
+							
+								$role = $usersModel -> getRoleName($id_role);
+								
+								
+								$app['session']->getFlashBag()->add(
+									'message',
+									array(
+										'type' => 'success',
+										'content' => 'Rola została edytowana'
+									)
+								);
+									
+								return $app['twig']->render(
+								'users/view.twig',
+									array(
+									'files' => $files,
+									'user' => $user,
+									'about' => $about,
+									'id_user' => $id_user,
+									'role' => $role
+								)
+							);
+							} catch (\Exception $e) {
+								$errors[] = 'Nie udało się zmienić roli';
+							}
+						}
+						   
+						return $app['twig']->render(
+								'users/edit_role.twig',
+								array(
+								'form' => $form->createView(),
+								'role' => $role
+								)
+							);
+									
+						   
+        
+		}
+		$app['session']->getFlashBag()->add(
+                        'message',
                         array(
-                        'form' => $form->createView(),
-                        'role' => $role
+                            'type' => 'danger',
+                            'content' => 'Nie możesz zmienić swojej roli!'
                         )
                     );
-                            
-                   
-        }
+                    return $app->redirect(
+                        $app['url_generator']->generate(
+                            '/users/'
+                        ),
+                        301
+                    );
                 
 
-                
+    }            
     
 	
     /**

@@ -310,7 +310,7 @@ class UsersModel
 	 public function getRoleName($id_role)
     {
         $sql = 'SELECT * FROM roles WHERE id_role =?';
-         return $this->_db->fetchAssoc($sql, array($id_role));
+        return $this->_db->fetchAssoc($sql, array($id_role));
     }
 	
     
@@ -334,6 +334,14 @@ class UsersModel
         }
     }
 
+	public function checkAdminCount($idRoleAdmin)
+    {
+        
+		$sql = 'SELECT * FROM users_roles WHERE id_role = ?';
+        return $this->_db->fetchAll($sql, (array)$idRoleAdmin);
+		
+		
+    }
     
     /**
      * Updates information about user.

@@ -29,25 +29,38 @@
 								<h6>Opis: {{ file.description }}</h6>
 							
 						</div>
-						
-						{% block grades %}
-		
-								{{ render( path('/grades/', {'id_file': file.id_file})) }}
 
+			
+						{% block grades %}
+							{% if is_granted ('ROLE_USER') %}	
+								{{ render( path('/grades/', {'id_file': file.id_file})) }}
+							{% elseif is_granted ('ROLE_USER') %}
+								{{ render( path('/grades/', {'id_file': file.id_file})) }}
+							{% endif %}
 						{% endblock %}
 		
 				</div>
 		
-	
-	
+				</div>
 						{% block comments %}
-
-							<div>
-								{{ render( path('/comments/', {'id_file': file.id_file})) }}
-							</div>
-							
+							{% if is_granted ('ROLE_USER') %}	
+								<div>
+									{{ render( path('/comments/', {'id_file': file.id_file})) }}
+								</div>
+							{% elseif is_granted ('ROLE_USER') %}
+								<div>
+									{{ render( path('/comments/', {'id_file': file.id_file})) }}
+								</div>
+							{% endif %}
 						{% endblock %}
-			
+		
+		
+		
+				</div>
+		
+				</div>
+						
+	
 			
 			{% else %}
 			

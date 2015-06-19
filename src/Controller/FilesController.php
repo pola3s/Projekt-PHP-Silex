@@ -182,33 +182,37 @@ class FilesController implements ControllerProviderInterface
         $check = $filesModel->checkFileId($id);
 
         if ($check) {
-            $FilesModel = new FilesModel($app);
-            $file = $FilesModel -> getFile($id);
+			try{
+				$FilesModel = new FilesModel($app);
+				$file = $FilesModel -> getFile($id);
 
-            $id_category = $FilesModel -> checkCategoryId($id);
-            $category = $FilesModel -> getCategory($id_category);
+				$id_category = $FilesModel -> checkCategoryId($id);
+				$category = $FilesModel -> getCategory($id_category);
 
-            $id_user = $FilesModel-> checkUserId($id);
-            $user = $FilesModel -> getFileUploaderName($id_user['id_user']);
+				$id_user = $FilesModel-> checkUserId($id);
+				$user = $FilesModel -> getFileUploaderName($id_user['id_user']);
 
-            // $app['breadcrumbs']->addItem('A complex route',array(
-            // 'route' => 'complex_named_route',
-            // 'params' => array(
-            // 'name' => "John",
-            // 'id' => 3
-            // )
-            // ));
+				// $app['breadcrumbs']->addItem('A complex route',array(
+				// 'route' => 'complex_named_route',
+				// 'params' => array(
+				// 'name' => "John",
+				// 'id' => 3
+				// )
+				// ));
 
-            return $app['twig']->render(
-                'files/view.twig',
-                array(
-                'file' => $file,
-                'user' => $user,
-                'id_user' => $id_user,
-                'id_category' => $id_category,
-                'page' => $page
-                )
-            );
+				return $app['twig']->render(
+					'files/view.twig',
+					array(
+					'file' => $file,
+					'user' => $user,
+					'id_user' => $id_user,
+					'id_category' => $id_category,
+					'page' => $page
+					)
+				);
+			} catch (Exception $e) {
+                        $errors[] = 'Błąd';
+            }
         } else {
             $app['session']->getFlashBag()->add(
                 'message',

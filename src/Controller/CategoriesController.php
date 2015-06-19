@@ -182,11 +182,11 @@ class CategoriesController implements ControllerProviderInterface
     */
     public function edit(Application $app, Request $request)
     {
-            $categoriesModel = new CategoriesModel($app);
-            $id_category = (int) $request->get('id', 0);
+        $categoriesModel = new CategoriesModel($app);
+        $id_category = (int) $request->get('id', 0);
             
-            $category = $categoriesModel->getCategory($id_category);
-            $check = $categoriesModel->checkCategoryId($id_category);
+        $category = $categoriesModel->getCategory($id_category);
+        $check = $categoriesModel->checkCategoryId($id_category);
     
         if ($check) {
             if (count($category)) {

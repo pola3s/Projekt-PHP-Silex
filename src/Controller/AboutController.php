@@ -93,13 +93,14 @@ class AboutController implements ControllerProviderInterface
         * @access public
         * @return mixed Generates page
         */
-        public function add(Application $app, Request $request)
-        {
+    public function add(Application $app, Request $request)
+    {
         
-            $id_user = (int)$request->get('id', 0);
+		$id_user = (int)$request->get('id', 0);
         
 
-            $usersModel = new UsersModel($app);
+        $usersModel = new UsersModel($app);
+		
         if ($usersModel ->isLoggedIn($app)) {
             $id_current_user = $usersModel -> getIdCurrentUser($app);
                 
