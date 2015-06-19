@@ -54,7 +54,7 @@ class AboutModel
     /**
     * Gets about of user
     *
-    * @parameter Integer $id
+    * @parameter String $id
     * @access    public
     * @return    Array
     */
@@ -70,7 +70,7 @@ class AboutModel
     * @parameter Array $data
     *
     * @access public
-    * @return void
+    * @return Void
     */
     public function addAbout($data)
     {
@@ -94,7 +94,7 @@ class AboutModel
     /**
     * Checks user's id if exist
     *
-    * @parameter Integer $iduser
+    * @parameter String $iduser
     * @access    public
     * @return    bool
     */
@@ -178,7 +178,7 @@ class AboutModel
     /**
      * Checks about id if exist
      *
-     * @parameter Integer $id_about
+     * @parameter String $id_about
      * @access    public
      * @return    bool
      */

@@ -41,7 +41,9 @@
 				{% if is_granted ('ROLE_ADMIN') %}		
 					<td>
 						<p><a href="{{ url('/users/view', {'id': user.id_user}) }}">
-						<button type="button" class="btn btn-success">Zobacz</button></a></p>
+						<button type="button" class="btn btn-success">Zobacz</button></a>
+						
+		
 					</td>
 				{% endif %}
 				</tr>

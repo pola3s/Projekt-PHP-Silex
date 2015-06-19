@@ -6,7 +6,7 @@
 
     {% if is_granted('ROLE_USER') %}
 
-        <h2>Update user {{ login }}</h2>
+        <h2>Edytuj dane</h2>
     {% for flashMessage in app.session.getFlashBag.get('message') %}
         {{ flashMessage.content }}
     {% endfor %}

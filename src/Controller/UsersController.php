@@ -78,7 +78,7 @@ class UsersController implements ControllerProviderInterface
             ->bind('/users/add');
         $usersController->match('/edit/{id}', array($this, 'edit'))
             ->bind('/users/edit');
-		$usersController->match('/edit_role/{id}', array($this, 'edit_role'))
+        $usersController->match('/edit_role/{id}', array($this, 'editRole'))
             ->bind('/users/edit_role');
         $usersController->match('/view/{id}', array($this, 'view'))
             ->bind('/users/view');
@@ -99,17 +99,23 @@ class UsersController implements ControllerProviderInterface
     */
     public function index(Application $app)
     {
-        $usersModel = new UsersModel($app);
-        $users = $usersModel->getUserList();
-		
-		
-        return $app['twig']->render('users/index.twig', 
-			array(
-				'users' => $users
-			)
-		);
-		 
-		
+        try {
+            $usersModel = new UsersModel($app);
+            $users = $usersModel->getUserList();
+            
+        } catch (\Exception $e) {
+            $errors[] = 'Wystąpił błąd. Spróbuj ponownie później';
+        }
+        
+        return $app['twig']->render(
+            'users/index.twig',
+            array(
+                'users' => $users
+                
+            )
+        );
+         
+        
     }
     
   
@@ -263,10 +269,20 @@ class UsersController implements ControllerProviderInterface
             );
     }
 
-	public function edit_role(Application $app, Request $request)
+    
+    /**
+    * Edit user's role
+    *
+    * @param Application $app     application object
+    * @param Request     $request request
+    *
+    * @access public
+    * @return mixed Generates page
+    */
+    public function editRole(Application $app, Request $request)
     {
-		$id_user = (int)$request->get('id');
-		 
+        $id_user = (int)$request->get('id');
+         
         $usersModel = new UsersModel($app);
     
         $user = $usersModel-> getUser($id_user);
@@ -274,120 +290,114 @@ class UsersController implements ControllerProviderInterface
         $files = $usersModel -> getFileByUser($id_user);
         $about = $usersModel -> getAboutByUser($id_user);
 
-		$user_role = $usersModel -> getUserRole($id_user);
-		
-		$user_role = $usersModel -> getUserRole($id_user);
+        $user_role = $usersModel -> getUserRole($id_user);
+        
+        $user_role = $usersModel -> getUserRole($id_user);
 
 
-		$currentUserInfo = $usersModel -> getUser($id_user);
-		
-		if ($usersModel ->isLoggedIn($app)) {
+        $currentUserInfo = $usersModel -> getUser($id_user);
+        
+        if ($usersModel ->isLoggedIn($app)) {
                 $idLoggedUser = $usersModel ->getIdCurrentUser($app);
         }
-		var_dump($id_user);
-		var_dump($idLoggedUser);
-		
-		if($idLoggedUser != $id_user){
-		
-			
-			
-			
-			
-				$check = $usersModel->checkUserId($id);
-			 
-				$idRoleAdmin = 1;
-				
-				$count = $usersModel->checkAdminCount($idRoleAdmin);
-			
-				$rowsnumber = count($count);
-				
-				if($rowsnumber > 1){
-					 $form = $app['form.factory']->createBuilder('form', $user_role)
-						->add(
-							'id_role',
-							'choice',
-							array(
-							 'label' => 'Rola',
-							 'choices' => array(
-								'1'   => 'Administrator',
-								'2' => 'Użytkownik',
-								)
-							)
-						)
-					
-						->getForm();
-				} else {
-					 $form = $app['form.factory']->createBuilder('form', $user_role)
-						->add(
-							'id_role',
-							'choice',
-							array(
-							 'label' => 'Rola',
-							 'choices' => array(
-								'1'   => 'Administrator'
-								)
-							)
-						)
-					
-						->getForm();
-				}
-				
-					
-						
-					$form->handleRequest($request);
-
-				   if ($form->isValid()) {
-							try {
-								$categoriesModel = new usersModel($app);
-								$user_role = $form->getData();
-								$id_role =  $user_role['id_role'];
-							
-								$usersModel->editRole($id_role, $id_user);
-							
-								$role = $usersModel -> getRoleName($id_role);
-								
-								
-								$app['session']->getFlashBag()->add(
-									'message',
-									array(
-										'type' => 'success',
-										'content' => 'Rola została edytowana'
-									)
-								);
-									
-								return $app['twig']->render(
-								'users/view.twig',
-									array(
-									'files' => $files,
-									'user' => $user,
-									'about' => $about,
-									'id_user' => $id_user,
-									'role' => $role
-								)
-							);
-							} catch (\Exception $e) {
-								$errors[] = 'Nie udało się zmienić roli';
-							}
-						}
-						   
-						return $app['twig']->render(
-								'users/edit_role.twig',
-								array(
-								'form' => $form->createView(),
-								'role' => $role
-								)
-							);
-									
-						   
+    
         
-		}
-		$app['session']->getFlashBag()->add(
+        if ($idLoggedUser != $id_user) {
+                $check = $usersModel->checkUserId($id);
+             
+                $idRoleAdmin = 1;
+                
+                $adminUsers = $usersModel->checkAdminCount($idRoleAdmin);
+                var_dump($adminUsers);
+                $rowsnumber = count($adminUsers);
+                
+            if ($rowsnumber > 1) {
+                 $form = $app['form.factory']->createBuilder('form', $user_role)
+                    ->add(
+                        'id_role',
+                        'choice',
+                        array(
+                         'label' => 'Rola',
+                         'choices' => array(
+                            '1'   => 'Administrator',
+                            '2' => 'Użytkownik',
+                            )
+                        )
+                    )
+                    
+                    ->getForm();
+            } else {
+                 $form = $app['form.factory']->createBuilder('form', $user_role)
+                    ->add(
+                        'id_role',
+                        'choice',
+                        array(
+                         'label' => 'Rola',
+                         'choices' => array(
+                            '1'   => 'Administrator'
+                            )
+                        )
+                    )
+                    
+                    ->getForm();
+            }
+                
+                    
+                        
+                    $form->handleRequest($request);
+
+            if ($form->isValid()) {
+                try {
+                    $categoriesModel = new usersModel($app);
+                    $user_role = $form->getData();
+                    $id_role =  $user_role['id_role'];
+                            
+                    $usersModel->editRole($id_role, $id_user);
+                            
+                    $role = $usersModel -> getRoleName($id_role);
+                                
+                                
+                    $app['session']->getFlashBag()->add(
                         'message',
                         array(
+                            'type' => 'success',
+                            'content' => 'Rola została edytowana'
+                        )
+                    );
+                                    
+                    return $app['twig']->render(
+                        'users/view.twig',
+                        array(
+                        'files' => $files,
+                        'user' => $user,
+                        'about' => $about,
+                        'id_user' => $id_user,
+                        'role' => $role
+                        )
+                    );
+                } catch (\Exception $e) {
+                    $errors[] = 'Nie udało się zmienić roli';
+                }
+            }
+                           
+                        return $app['twig']->render(
+                            'users/edit_role.twig',
+                            array(
+                                'form' => $form->createView(),
+                                'role' => $role
+                                )
+                        );
+                                    
+                           
+        
+        }
+        $app['session']->getFlashBag()->add(
+            'message',
+            array(
                             'type' => 'danger',
                             'content' => 'Nie możesz zmienić swojej roli!'
                         )
-                    );
+        );
                     return $app->redirect(
                         $app['url_generator']->generate(
                             '/users/'
@@ -396,9 +406,9 @@ class UsersController implements ControllerProviderInterface
                     );
                 
 
-    }            
+    }
     
-	
+    
     /**
     * Show information about user
     *
@@ -418,22 +428,32 @@ class UsersController implements ControllerProviderInterface
         $files = $usersModel -> getFileByUser($id_user);
         $about = $usersModel -> getAboutByUser($id_user);
 
-		$user_role = $usersModel -> getUserRole($id_user);
-		$role = $usersModel -> getRoleName($user_role['id_role']);
-		
-		var_dump($role);
-		
+        $user_role = $usersModel -> getUserRole($id_user);
+        $role = $usersModel -> getRoleName($user_role['id_role']);
+        
+        
+        
         if (count($id_user)) {
-            return $app['twig']->render(
-                'users/info.twig',
-                array(
-                    'user' => $user,
-                    'files' => $files,
-                    'about' => $about,
-                    'id_user' => $id_user,
-					'role' => $role
-                )
-            );
+            try {
+                return $app['twig']->render(
+                    'users/info.twig',
+                    array(
+                        'user' => $user,
+                        'files' => $files,
+                        'about' => $about,
+                        'id_user' => $id_user,
+                        'role' => $role
+                    )
+                );
+            } catch (Exception $e) {
+                    $app['session']->getFlashBag()->add(
+                        'message',
+                        array(
+                        'type' => 'error',
+                        'content' => 'Nie znaleziono użytkownika'
+                        )
+                    );
+            }
         } else {
             $app['session']->getFlashBag()->add(
                 'message',
@@ -469,13 +489,33 @@ class UsersController implements ControllerProviderInterface
 
         $files = $usersModel -> getFileByUser($id_user);
         $about = $usersModel -> getAboutByUser($id_user);
-		
+        
         $user_role = $usersModel -> getUserRole($id_user);
-		$role = $usersModel -> getRoleName($user_role['id_role']);
+        $role = $usersModel -> getRoleName($user_role['id_role']);
         
         $check = $usersModel->checkUserId($id_user);
 
         if ($check) {
+            try {
+                return $app['twig']->render(
+                    'users/info.twig',
+                    array(
+                        'user' => $user,
+                        'files' => $files,
+                        'about' => $about,
+                        'id_user' => $id_user,
+                        'role' => $role
+                    )
+                );
+            } catch (Exception $e) {
+                    $app['session']->getFlashBag()->add(
+                        'message',
+                        array(
+                        'type' => 'error',
+                        'content' => 'Nie znaleziono użytkownika'
+                        )
+                    );
+            }
                     return $app['twig']->render(
                         'users/view.twig',
                         array(
@@ -483,7 +523,7 @@ class UsersController implements ControllerProviderInterface
                         'user' => $user,
                         'about' => $about,
                         'id_user' => $id_user,
-						'role' => $role
+                        'role' => $role
                         
                         )
                     );

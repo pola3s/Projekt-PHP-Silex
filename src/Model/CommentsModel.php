@@ -95,7 +95,7 @@ class CommentsModel
     /**
      * Check if comment id exists
      *
-     * @param $idcomment
+     * @param Integer $idcomment
      *
      * @access public
      * @return bool

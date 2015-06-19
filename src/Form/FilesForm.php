@@ -83,10 +83,10 @@ class FilesForm extends AbstractType
             'textarea',
             array(
                 'label' => 'Opis',
-				'attr' => array(
-					'cols' => '120', 
-					'rows' => '5'
-				),
+                'attr' => array(
+                    'cols' => '120',
+                    'rows' => '5'
+                ),
                 'constraints' => array(
                 new Assert\NotBlank(
                     array(

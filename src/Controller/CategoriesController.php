@@ -107,14 +107,17 @@ class CategoriesController implements ControllerProviderInterface
     */
     public function index(Application $app)
     {
-        $categoriesModel = new CategoriesModel($app);
-        $categories = $categoriesModel->getCategories();
-        
+        try {
+            $categoriesModel = new CategoriesModel($app);
+            $categories = $categoriesModel->getCategories();
+        } catch (\Exception $e) {
+                    $errors[] = 'Wystąpił błąd. Spróbuj ponownie później';
+        }
         return $app['twig']->render(
             'categories/index.twig',
             array(
-                'categories' => $categories
-            )
+                    'categories' => $categories
+                )
         );
     }
     

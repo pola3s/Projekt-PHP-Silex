@@ -27,16 +27,13 @@
 	{% else %}
 		<small>Użytkownik nie dodał jeszcze "o mnie"</small>
 	{% endif %}
-	
-	
-	{% if is_granted ('ROLE_ADMIN') %}
+		
 		<hr>
 		<h4>{{ role.name }} </h4>
 		<p><a href=" {{ url('/users/edit', {'id': id_user }) }}" class="btn btn-primary" role="button">Edytuj dane logowania</a></p>
 		<p><a href="{{ url('/users/edit_role', {'id': id_user}) }}"> <button type="button" class="btn btn-success">Zmień rolę</button></a></p>
 
-	{% endif %}
-	
+
 	</div>
 	
 		{% for file in files %}

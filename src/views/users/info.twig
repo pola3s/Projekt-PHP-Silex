@@ -32,7 +32,11 @@
 		{% endif %}
 	
 		<a href=" {{ url('/users/edit', {'id': user.id_user }) }}" class="btn btn-primary" role="button">Edytuj dane logowania</a>
-		
+			<hr>
+		{% if is_granted ('ROLE_ADMIN') %}
+			<h4>{{ role.name }} </h4>
+			<p><a href="{{ url('/users/edit_role', {'id': id_user}) }}"> <button type="button" class="btn btn-success">Zmień rolę</button></a></p>
+		{% endif %}
 		
 				
 	</div>

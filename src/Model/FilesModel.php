@@ -170,7 +170,7 @@ class FilesModel
     /**
      * Create new name file
      *
-     * @param $name
+     * @param String $name
      *
      * @access public
      * @return string
@@ -209,7 +209,7 @@ class FilesModel
     /**
      * Check if name id unique
      *
-     * @param $name
+     * @param String $name
      *
      * @access public
      * @return bool
@@ -240,9 +240,8 @@ class FilesModel
     /**
      * Save file
      *
-     * @param $name new file name
-     * @param $name
-     * @param $data
+     * @param
+     * $name String $name Array $data
      *
      * @access public
      * @return void
@@ -261,7 +260,7 @@ class FilesModel
     /**
      * Updates file
      *
-     * @param Array $data, Integer $name
+     * @param Array $data, String $name
      *
      * @access public
      * @return void
@@ -297,7 +296,7 @@ class FilesModel
     /**
      * Check if photo name exists
      *
-     * @param $name
+     * @param String $name
      *
      * @access public
      * @return bool
@@ -317,7 +316,7 @@ class FilesModel
     /**
      * Get file by name
      *
-     * @param $name
+     * @param String $name
      *
      * @access public
      * @return Array
@@ -331,7 +330,7 @@ class FilesModel
     /**
      * Remove file
      *
-     * @param $name
+     * @param String $name
      *
      * @access public
      * @return void
@@ -347,7 +346,7 @@ class FilesModel
      *
      * Search one file
      *
-     * @param $data
+     * @param String $name
      *
      * @access public
      * @return Array
@@ -361,7 +360,7 @@ class FilesModel
     /**
      * Check if file id exists
      *
-     * @param $id
+     * @param Integer $id
      *
      * @access public
      * @return bool

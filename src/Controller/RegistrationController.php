@@ -109,7 +109,7 @@ class RegistrationController implements ControllerProviderInterface
                             $form->getData(),
                             $password
                         );
-						
+                        
                         return $app->redirect(
                             $app['url_generator']->generate(
                                 '/register/success'

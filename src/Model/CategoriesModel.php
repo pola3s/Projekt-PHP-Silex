@@ -231,6 +231,7 @@ class CategoriesModel
      /**
      * Gets categories name
      *
+     * @param Integer $categoryId
      * @access public
      * @return Array
      */

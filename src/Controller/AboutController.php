@@ -96,11 +96,11 @@ class AboutController implements ControllerProviderInterface
     public function add(Application $app, Request $request)
     {
         
-		$id_user = (int)$request->get('id', 0);
+        $id_user = (int)$request->get('id', 0);
         
 
         $usersModel = new UsersModel($app);
-		
+        
         if ($usersModel ->isLoggedIn($app)) {
             $id_current_user = $usersModel -> getIdCurrentUser($app);
                 
@@ -113,7 +113,7 @@ class AboutController implements ControllerProviderInterface
             );
         }
             
-            
+          
         if ($id_user == $id_current_user) {
             $form = $app['form.factory']
             ->createBuilder(new AboutForm(), $data)->getForm();
@@ -176,7 +176,7 @@ class AboutController implements ControllerProviderInterface
             return $app['twig']->render(
                 '403.twig'
             );
-        }
+    }
         
         /**
         * Edit about
@@ -194,95 +194,95 @@ class AboutController implements ControllerProviderInterface
             
             $about = $aboutModel->getAbout($id_user);
             $id_about = $about['id_about'];
-        
+            
             $check = $aboutModel->checkAboutId($id_about);
         
-            if ($check) {
-                $usersModel = new UsersModel($app);
-                if ($usersModel ->isLoggedIn($app)) {
-                    $id_current_user = $usersModel -> getIdCurrentUser($app);
+        if ($check) {
+            $usersModel = new UsersModel($app);
+            if ($usersModel ->isLoggedIn($app)) {
+                $id_current_user = $usersModel -> getIdCurrentUser($app);
                         
+            } else {
+                return $app->redirect(
+                    $app['url_generator']->generate(
+                        'auth_login'
+                    ),
+                    301
+                );
+            }
+            
+            
+            if ($id_user == $id_current_user) {
+                if (count($about)) {
+                    $form = $app['form.factory']
+                    ->createBuilder(new AboutForm(), $about)->getForm();
+                    
+                    $form->handleRequest($request);
+            
+                    if ($form->isValid()) {
+                        try {
+                            $aboutModel = new AboutModel($app);
+                            $data = $form->getData();
+                            $aboutModel->editAbout($data, $id_user);
+                        
+                            $app['session']->getFlashBag()->add(
+                                'message',
+                                array(
+                                'type' => 'success',
+                                'content' => 'Edytowano "o mnie".'
+                                )
+                            );
+                            return $app->redirect(
+                                $app['url_generator']->generate(
+                                    '/users/panel',
+                                    array(
+                                    'id' => $id_user,
+                                    )
+                                ),
+                                301
+                            );
+                        } catch (\Exception $e) {
+                            $errors[] = 'Nie udało się dodać "o mnie".';
+                        }
+                    }
+                    return $app['twig']->render(
+                        'about/edit.twig',
+                        array(
+                        'form' => $form->createView(),
+                        'about' => $about)
+                    );
+                    
                 } else {
                     return $app->redirect(
                         $app['url_generator']->generate(
-                            'auth_login'
+                            '/about/add'
                         ),
                         301
                     );
                 }
             
-            
-                if ($id_user == $id_current_user) {
-                    if (count($about)) {
-                        $form = $app['form.factory']
-                        ->createBuilder(new AboutForm(), $about)->getForm();
-                    
-                        $form->handleRequest($request);
-            
-                        if ($form->isValid()) {
-                            try {
-                                $aboutModel = new AboutModel($app);
-                                $data = $form->getData();
-                                $aboutModel->editAbout($data, $id_user);
-                        
-                                $app['session']->getFlashBag()->add(
-                                    'message',
-                                    array(
-                                    'type' => 'success',
-                                    'content' => 'Edytowano "o mnie".'
-                                    )
-                                );
-                                return $app->redirect(
-                                    $app['url_generator']->generate(
-                                        '/users/panel',
-                                        array(
-                                        'id' => $id_user,
-                                        )
-                                    ),
-                                    301
-                                );
-                            } catch (\Exception $e) {
-                                $errors[] = 'Nie udało się dodać "o mnie".';
-                            }
-                        }
-                        return $app['twig']->render(
-                            'about/edit.twig',
-                            array(
-                            'form' => $form->createView(),
-                            'about' => $about)
-                        );
-                    
-                    } else {
-                        return $app->redirect(
-                            $app['url_generator']->generate(
-                                '/about/add'
-                            ),
-                            301
-                        );
-                    }
-            
         
 
-                }return $app['twig']->render(
-                    '403.twig'
-                );
-            } else {
-                        $app['session']->getFlashBag()->add(
-                            'message',
+            }return $app['twig']->render(
+                '403.twig'
+            );
+        } else {
+                    $app['session']->getFlashBag()->add(
+                        'message',
+                        array(
+                            'type' => 'danger',
+                            'content' => 'Nie znaleziono "o mnie"!'
+                        )
+                    );
+                    return $app->redirect(
+                        $app['url_generator']->generate(
+                            '/users/panel',
                             array(
-                                'type' => 'danger',
-                                'content' => 'Nie znaleziono "o mnie"!'
+                            'id' => $id_user,
                             )
-                        );
-                        return $app->redirect(
-                            $app['url_generator']->generate(
-                                '/users/panel',
-                                array(
-                                'id' => $id_user,
-                                )
-                            ),
-                            301
-                        );
-            }
+                        ),
+                        301
+                    );
+        }
         }
 }

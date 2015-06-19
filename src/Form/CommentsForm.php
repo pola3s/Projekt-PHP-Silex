@@ -46,13 +46,13 @@ class CommentsForm extends AbstractType
         return  $builder
             ->add(
                 'content',
-                'textarea', 
+                'textarea',
                 array(
                 'label' => 'Treść',
-				'attr' => array(
-					'cols' => '120', 
-					'rows' => '5'
-				),
+                'attr' => array(
+                    'cols' => '120',
+                    'rows' => '5'
+                ),
                 'constraints' => array(
                     new Assert\NotBlank(
                         array(

@@ -122,7 +122,7 @@ class UsersModel
         }
 
         $roles = $this->getUserRoles($data['id_user']);
-	
+    
         if (!$roles) {
             throw new UsernameNotFoundException(
                 sprintf(
@@ -165,7 +165,7 @@ class UsersModel
      */
     public function getUserRoles($userId)
     {
-			 $sql = '
+             $sql = '
 			SELECT
 					roles.name
 			FROM
@@ -176,14 +176,14 @@ class UsersModel
 			WHERE
 					users_roles.id_user = ?
 			';
-		
+        
         $result = $this->_db->fetchAll($sql, array((string) $userId));
-		
+        
         $roles = array();
         foreach ($result as $row) {
             $roles[] = $row['name'];
         }
-		
+        
         return $roles;
     }
     
@@ -228,7 +228,7 @@ class UsersModel
     /**
      * Get information about user
      *
-     * @param $id
+     * @param Integer $id
      *
      * @access public
      * @return Array
@@ -245,7 +245,7 @@ class UsersModel
     /**
      * Get one user's files
      *
-     * @param $id
+     * @param Integer $id
      *
      * @access public
      * @return Array
@@ -288,7 +288,7 @@ class UsersModel
     }
     
     /**
-     * Get list of all users
+     * Gets list of all users
      *
      * @access public
      * @return Array
@@ -298,21 +298,46 @@ class UsersModel
         $sql = 'SELECT * FROM users';
         return $this->_db->fetchAll($sql);
     }
-	
+    
+    
+    /**
+     * Get list of all  roles
+     *
+     * @access public
+     * @return Array
+     */
+    public function getRolesList()
+    {
+        $sql = 'SELECT * FROM users_roles';
+        return $this->_db->fetchAll($sql);
+    }
 
-	
-	 public function getUserRole($id_user)
+    /**
+     * Gets role of one user
+     *
+     * @param Integer $id_user
+     * @access public
+     * @return Array
+     */
+    public function getUserRole($id_user)
     {
         $sql = 'SELECT * FROM users_roles WHERE id_user =?';
-         return $this->_db->fetchAssoc($sql, array($id_user));
+        return $this->_db->fetchAssoc($sql, array($id_user));
     }
-	
-	 public function getRoleName($id_role)
+    
+     /**
+     * Gets name of role
+     *
+     * @param Integer $id_role
+     * @access public
+     * @return Array
+     */
+    public function getRoleName($id_role)
     {
         $sql = 'SELECT * FROM roles WHERE id_role =?';
         return $this->_db->fetchAssoc($sql, array($id_role));
     }
-	
+    
     
     /**
      * Checks if user's id exist
@@ -334,19 +359,25 @@ class UsersModel
         }
     }
 
-	public function checkAdminCount($idRoleAdmin)
+    /**
+     * Get's users with ADMIN_ROLE
+     *
+     * @param Integer $idRoleAdmin
+     *
+     * @access public
+     * @return Array
+     */
+    public function checkAdminCount($idRoleAdmin)
     {
         
-		$sql = 'SELECT * FROM users_roles WHERE id_role = ?';
+        $sql = 'SELECT id_user FROM users_roles WHERE id_role = ?';
         return $this->_db->fetchAll($sql, (array)$idRoleAdmin);
-		
-		
     }
     
     /**
      * Updates information about user.
      *
-     * @param Array $data Associative array contains all necessary information
+     * @param String $id Array $data String $password
      *
      * @access public
      * @return Void
@@ -355,42 +386,46 @@ class UsersModel
     {
         if (isset($id) && ctype_digit((string)$id)) {
             $query = 'UPDATE `users`
-                  SET `login`= ?,
-                      `email`= ?,
-                      `password`= ?,
-                      `firstname`= ?,
-                      `lastname`= ?
-                  WHERE `id_user`= ?';
+			SET `login`= ?,
+            `email`= ?,
+            `password`= ?,
+            `firstname`= ?,
+            `lastname`= ?
+            WHERE `id_user`= ?';
 
-            $this->_db->executeQuery(
-                $query,
-                array(
-                $data['login'],
-                $data['email'],
-                $password,
-                $data['firstname'],
-                $data['lastname'],
-                $id
-                )
-            );
-        } else {
+                $this->_db->executeQuery(
+                    $query,
+                    array(
+                    $data['login'],
+                    $data['email'],
+                    $password,
+                    $data['firstname'],
+                    $data['lastname'],
+                    $id
+                    )
+                );
         }
-
     }
-	
-	  public function editRole($id_role, $id_user)
+    
+    
+    /**
+     * Updates user's role
+     *
+     * @param String $id_role String $id_user
+     *
+     * @access public
+     * @return Void
+     */
+    public function editRole($id_role, $id_user)
     {
       
-            $sql = 'UPDATE users_roles SET id_role = ? WHERE id_user = ?';
-            $this->_db->executeQuery(
-                $sql,
-                array(	
-						$id_role,
-                        $id_user
-
-                        )
-            );
-       
+        $sql = 'UPDATE users_roles SET id_role = ? WHERE id_user = ?';
+        $this->_db->executeQuery(
+            $sql,
+            array(
+                $id_role,
+                $id_user
+             )
+        );
     }
-	
 }

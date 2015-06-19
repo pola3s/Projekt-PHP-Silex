@@ -128,29 +128,31 @@ class FilesController implements ControllerProviderInterface
     public function index(Application $app, Request $request)
     {
 
+        try {
+            $pageLimit = 6;
+            $page = (int)$request->get('page', 1);
+            $FilesModel = new FilesModel($app);
+            $pagesCount = $this->_model ->countFilesPages($pageLimit);
 
-        $pageLimit = 6;
-        $page = (int)$request->get('page', 1);
-        $FilesModel = new FilesModel($app);
-        $pagesCount = $this->_model ->countFilesPages($pageLimit);
-
-        if (($page < 1) || ($page > $pagesCount)) {
-            $page = 1;
-        }
-
-
-        $files = $this->_model ->getFilesPage($page, $pageLimit, $pagesCount);
-        $paginator = array('page' => $page, 'pagesCount' => $pagesCount);
-
-        $app->before(
-            function (Request $request) use ($app) {
-                $app['twig']->addGlobal(
-                    'current_page_name',
-                    $request->getRequestUri()
-                );
+            if (($page < 1) || ($page > $pagesCount)) {
+                $page = 1;
             }
-        );
 
+
+            $files = $this->_model ->getFilesPage($page, $pageLimit, $pagesCount);
+            $paginator = array('page' => $page, 'pagesCount' => $pagesCount);
+
+            $app->before(
+                function (Request $request) use ($app) {
+                    $app['twig']->addGlobal(
+                        'current_page_name',
+                        $request->getRequestUri()
+                    );
+                }
+            );
+        } catch (\Exception $e) {
+                    $errors[] = 'Wystąpił błąd. Spróbuj ponownie później';
+        }
         return $app['twig']->render(
             'files/index.twig',
             array(
@@ -182,35 +184,35 @@ class FilesController implements ControllerProviderInterface
         $check = $filesModel->checkFileId($id);
 
         if ($check) {
-			try{
-				$FilesModel = new FilesModel($app);
-				$file = $FilesModel -> getFile($id);
+            try {
+                $FilesModel = new FilesModel($app);
+                $file = $FilesModel -> getFile($id);
 
-				$id_category = $FilesModel -> checkCategoryId($id);
-				$category = $FilesModel -> getCategory($id_category);
+                $id_category = $FilesModel -> checkCategoryId($id);
+                $category = $FilesModel -> getCategory($id_category);
 
-				$id_user = $FilesModel-> checkUserId($id);
-				$user = $FilesModel -> getFileUploaderName($id_user['id_user']);
+                $id_user = $FilesModel-> checkUserId($id);
+                $user = $FilesModel -> getFileUploaderName($id_user['id_user']);
 
-				// $app['breadcrumbs']->addItem('A complex route',array(
-				// 'route' => 'complex_named_route',
-				// 'params' => array(
-				// 'name' => "John",
-				// 'id' => 3
-				// )
-				// ));
+                // $app['breadcrumbs']->addItem('A complex route',array(
+                // 'route' => 'complex_named_route',
+                // 'params' => array(
+                // 'name' => "John",
+                // 'id' => 3
+                // )
+                // ));
 
-				return $app['twig']->render(
-					'files/view.twig',
-					array(
-					'file' => $file,
-					'user' => $user,
-					'id_user' => $id_user,
-					'id_category' => $id_category,
-					'page' => $page
-					)
-				);
-			} catch (Exception $e) {
+                return $app['twig']->render(
+                    'files/view.twig',
+                    array(
+                    'file' => $file,
+                    'user' => $user,
+                    'id_user' => $id_user,
+                    'id_category' => $id_category,
+                    'page' => $page
+                    )
+                );
+            } catch (Exception $e) {
                         $errors[] = 'Błąd';
             }
         } else {
@@ -289,9 +291,10 @@ class FilesController implements ControllerProviderInterface
                     $filesModel = new FilesModel($app);
 
                     $originalFilename = $files['file']->getClientOriginalName();
+                    var_dump($originalFilename);
                     $newFilename = $filesModel->createName($originalFilename);
                     $files['file']->move($path, $newFilename);
-
+                    
                     $filesModel->saveFile($newFilename, $data);
 
                     $app['session']->getFlashBag()->add(
@@ -407,28 +410,32 @@ class FilesController implements ControllerProviderInterface
                 $form->handleRequest($request);
 
                 if ($form->isValid()) {
-                    $data = $form->getData();
+                    try {
+                        $data = $form->getData();
 
-                    $filesModel = new FilesModel($app);
-                    $filesModel->editFile($filename, $data);
+                        $filesModel = new FilesModel($app);
+                        $filesModel->editFile($filename, $data);
 
-                    $app['session']->getFlashBag()->add(
-                        'message',
-                        array(
-                        'type' => 'success',
-                        'content' => 'Zdjęcie zostało edytowane!'
-                        )
-                    );
-
-                    return $app->redirect(
-                        $app['url_generator']->generate(
-                            'view',
+                        $app['session']->getFlashBag()->add(
+                            'message',
                             array(
-                            'id' => $id,
+                            'type' => 'success',
+                            'content' => 'Zdjęcie zostało edytowane!'
                             )
-                        ),
-                        301
-                    );
+                        );
+
+                        return $app->redirect(
+                            $app['url_generator']->generate(
+                                'view',
+                                array(
+                                'id' => $id,
+                                )
+                            ),
+                            301
+                        );
+                    } catch (\Exception $e) {
+                        $errors[] = 'Wystąpił błąd. Spróbuj ponownie później';
+                    }
                 }
                 return $app['twig']->render(
                     'files/edit.twig',
@@ -609,17 +616,21 @@ class FilesController implements ControllerProviderInterface
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $data = $form->getData();
+            try {
+                $data = $form->getData();
 
-            return $app->redirect(
-                $app['url_generator']->generate(
-                    '/files/results',
-                    array(
-                    'data' => $data
-                    )
-                ),
-                301
-            );
+                return $app->redirect(
+                    $app['url_generator']->generate(
+                        '/files/results',
+                        array(
+                        'data' => $data
+                        )
+                    ),
+                    301
+                );
+            } catch (\Exception $e) {
+                    $errors[] = 'Wystąpił błąd. Spróbuj ponownie później';
+            }
         }
         return $app['twig']
         ->render(
@@ -640,18 +651,21 @@ class FilesController implements ControllerProviderInterface
 */
     public function results(Application $app)
     {
-        $data = $app['request']->get('data');
+        try {
+            $data = $app['request']->get('data');
 
-        $id_category = (string)$data['category'];
-
-
-        $filesModel = new FilesModel($app);
-        $files = $filesModel->searchFile($id_category);
-
-        $categoriesModel = new CategoriesModel($app);
-        $categoryName = $categoriesModel -> getCategoryName($id_category);
+            $id_category = (string)$data['category'];
 
 
+            $filesModel = new FilesModel($app);
+            $files = $filesModel->searchFile($id_category);
+
+            $categoriesModel = new CategoriesModel($app);
+            $categoryName = $categoriesModel -> getCategoryName($id_category);
+            
+        } catch (\Exception $e) {
+                $errors[] = 'Wystąpił błąd. Spróbuj ponownie później';
+        }
         return $app['twig']
         ->render(
             'files/results.twig',

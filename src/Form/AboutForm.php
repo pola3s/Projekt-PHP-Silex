@@ -87,12 +87,12 @@ class AboutForm extends AbstractType
             ->add(
                 'description',
                 'text',
-				array(
+                array(
                 'label' => 'Opis',
-				'attr' => array(
-					'cols' => '120', 
-					'rows' => '5'
-				),
+                'attr' => array(
+                    'cols' => '120',
+                    'rows' => '5'
+                ),
                 'constraints' => array(
                      new Assert\NotBlank(
                          array(
@@ -112,7 +112,7 @@ class AboutForm extends AbstractType
                 'text',
                 array(
                     'label' => 'Strona www',
-					'data' => 'http://',
+                    'data' => 'http://',
                     'constraints' => array(
                          new Assert\NotBlank(
                              array(

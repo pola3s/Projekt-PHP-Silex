@@ -105,24 +105,28 @@ class CommentsController implements ControllerProviderInterface
     */
     public function index(Application $app, Request $request)
     {
-        $id_file = (int)$request->get('id_file', 0);
-        
-        $filesModel = new FilesModel($app);
-        $commentsModel = new CommentsModel($app);
-        $comments = $commentsModel->getCommentsList($id_file);
-        
-        $usersModel = new UsersModel($app);
-        
-        if ($usersModel ->isLoggedIn($app)) {
-                $idLoggedUser = $usersModel ->getIdCurrentUser($app);
+    
+        try {
+            $id_file = (int)$request->get('id_file', 0);
+            
+            $filesModel = new FilesModel($app);
+            $commentsModel = new CommentsModel($app);
+            $comments = $commentsModel->getCommentsList($id_file);
+            
+            $usersModel = new UsersModel($app);
+            
+            if ($usersModel ->isLoggedIn($app)) {
+                    $idLoggedUser = $usersModel ->getIdCurrentUser($app);
+            }
+        } catch (\Exception $e) {
+                    $errors[] = 'Wystąpił błąd. Spróbuj ponownie później';
         }
-                        
         return $app['twig']->render(
             'comments/index.twig',
             array(
                 'comments' => $comments,
-				'id_file' => $id_file,
-				'idLoggedUser' => $idLoggedUser
+                'id_file' => $id_file,
+                'idLoggedUser' => $idLoggedUser
                 )
         );
     }
