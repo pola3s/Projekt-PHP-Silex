@@ -196,11 +196,14 @@ class GradesController implements ControllerProviderInterface
                 $form = $app['form.factory']->createBuilder('form', $data)
                 ->add(
                     'grade',
+					
                     'choice',
                     array(
-                    'choices' => $choiceGrade
+                    'choices' => $choiceGrade,
+					'label' => 'Ocena',
                     )
                 )
+				->add('Zapisz', 'submit', array('label' => 'Dodaj'))
                 ->getForm();
                 
                 $form->handleRequest($request);

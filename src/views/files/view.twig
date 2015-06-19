@@ -21,8 +21,11 @@
 							
 								<h4>Tytuł: {{ file.title }}</h4>
 								
-								
+							{% if user %}	
 								<h5>Zdjęcie dodal: <a href="{{ url('/users/view', {'id': file.id_user }) }}" >{{ user.login }}</a></h5>
+							{% else %}
+								<h5>Konto usunięte</h5>
+							{% endif %}
 								<h6>Opis: {{ file.description }}</h6>
 							
 						</div>

@@ -122,7 +122,7 @@ class UsersModel
         }
 
         $roles = $this->getUserRoles($data['id_user']);
-
+	
         if (!$roles) {
             throw new UsernameNotFoundException(
                 sprintf(
@@ -165,25 +165,25 @@ class UsersModel
      */
     public function getUserRoles($userId)
     {
-        $sql = '
-                SELECT
-                    roles.role
-                FROM
-                    users_roles
-                INNER JOIN
-                    roles
-                ON users_roles.id_role=roles.id_role
-                WHERE
-                    users_roles.id_user = ?
-                ';
-
+			 $sql = '
+			SELECT
+					roles.name
+			FROM
+					users_roles
+			INNER JOIN
+					roles
+			ON users_roles.id_role=roles.id_role
+			WHERE
+					users_roles.id_user = ?
+			';
+		
         $result = $this->_db->fetchAll($sql, array((string) $userId));
-
+		
         $roles = array();
         foreach ($result as $row) {
-            $roles[] = $row['role'];
+            $roles[] = $row['name'];
         }
-
+		
         return $roles;
     }
     
