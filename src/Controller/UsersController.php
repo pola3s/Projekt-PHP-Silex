@@ -308,7 +308,8 @@ class UsersController implements ControllerProviderInterface
                 $idRoleAdmin = 1;
                 
                 $adminUsers = $usersModel->checkAdminCount($idRoleAdmin);
-                var_dump($adminUsers);
+               
+			   
                 $rowsnumber = count($adminUsers);
                 
             if ($rowsnumber > 1) {
@@ -483,7 +484,7 @@ class UsersController implements ControllerProviderInterface
     public function view(Application $app, Request $request)
     {
         $id_user = (int) $request -> get('id', 0);  //id usera
-        var_dump($id_user);
+       
         $usersModel = new UsersModel($app);
         $user = $usersModel-> getUser($id_user);
 

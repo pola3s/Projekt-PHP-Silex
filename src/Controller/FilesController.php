@@ -291,7 +291,7 @@ class FilesController implements ControllerProviderInterface
                     $filesModel = new FilesModel($app);
 
                     $originalFilename = $files['file']->getClientOriginalName();
-                    var_dump($originalFilename);
+                   
                     $newFilename = $filesModel->createName($originalFilename);
                     $files['file']->move($path, $newFilename);
                     

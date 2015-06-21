@@ -18,39 +18,26 @@
 
     <table>
         <thead>
-        <tr>
-            <th>Id</th>
-            <th>Imię</th>
-            <th>Nazwisko</th>
-            <th>Login</th>
-			
-		
-            
-            <th colspan="7">&nbsp;</th>
-        </tr>
+			<tr>
+				<th>Id</th>
+				<th>Imię</th>
+				<th>Nazwisko</th>
+				<th>Login</th>
+			</tr>
         </thead>
-		
-        <tbody>
+		<tbody>
 			{% for user in users %}
-				<tr>
-					<td>{{ user.id_user|e }}</td>
-					<td>{{ user.firstname|e }}</td>
-					<td>{{ user.lastname|e }}</td>
-					<td>{{ user.login|e }}</td>
-				
-				{% if is_granted ('ROLE_ADMIN') %}		
-					<td>
-						<p><a href="{{ url('/users/view', {'id': user.id_user}) }}">
-						<button type="button" class="btn btn-success">Zobacz</button></a>
-						
-		
-					</td>
-				{% endif %}
-				</tr>
-				
-        {% endfor %}
-		
-        </tbody>
+			<tr>
+				<td>{{ user.id_user|e }}</td>
+				<td>{{ user.firstname|e }}</td>
+				<td>{{ user.lastname|e }}</td>
+				<td>{{ user.login|e }}</td>
+			{% if is_granted ('ROLE_ADMIN') %}		
+				<td><p><a href="{{ url('/users/view', {'id': user.id_user}) }}"><button type="button" class="btn btn-success">Zobacz</button></a></td>
+			{% endif %}
+			</tr>
+			{% endfor %}
+		</tbody>
     </table>
   
           
