@@ -119,7 +119,7 @@ class CommentsController implements ControllerProviderInterface
                     $idLoggedUser = $usersModel ->getIdCurrentUser($app);
             }
         } catch (\Exception $e) {
-                    $errors[] = 'Wystąpił błąd. Spróbuj ponownie później';
+            $app->abort(403, "Nie udało się wyświetlić komentarzy. Spróbuj ponownie później");
         }
         return $app['twig']->render(
             'comments/index.twig',
@@ -193,14 +193,8 @@ class CommentsController implements ControllerProviderInterface
                     ),
                     301
                 );
-            } catch (Exception $e) {
-                $app['session']->getFlashBag()->add(
-                    'message',
-                    array(
-                    'type' => 'error',
-                    'content' => 'Nie można dodać komentarza'
-                    )
-                );
+            } catch (\PDOException $e) {
+                $app->abort(500, "Nie udało się dodać komentarza. Spróbuj ponownie później");
             }
         }
         return $app['twig']->render(
@@ -278,8 +272,8 @@ class CommentsController implements ControllerProviderInterface
                             ),
                             301
                         );
-                    } catch (Exception $e) {
-                        $errors[] = 'Nie udało się edytować komentarza';
+                    } catch (\PDOException $e) {
+                        $app->abort(500, "Nie udało się edytować komentarza. Spróbuj ponownie później");
                     }
                 }
             }
@@ -372,8 +366,8 @@ class CommentsController implements ControllerProviderInterface
                                 ),
                                 301
                             );
-                        } catch (\Exception $e) {
-                            $errors[] = 'Nie udało się usunąć komentarza';
+                        } catch (\PDOException $e) {
+                            $app->abort(500, "Nie udało się usunąć komentarza. Spróbuj ponownie później");
                         }
                     } else {
                         return $app->redirect(

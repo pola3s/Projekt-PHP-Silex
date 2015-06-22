@@ -150,8 +150,8 @@ class FilesController implements ControllerProviderInterface
                     );
                 }
             );
-        } catch (\Exception $e) {
-                    $errors[] = 'Wystąpił błąd. Spróbuj ponownie później';
+        } catch (\PDOException $e) {
+            $app->abort(500, "Wystąpił błąd. Spróbuj ponownie później");
         }
         return $app['twig']->render(
             'files/index.twig',
@@ -212,8 +212,8 @@ class FilesController implements ControllerProviderInterface
                     'page' => $page
                     )
                 );
-            } catch (Exception $e) {
-                        $errors[] = 'Błąd';
+            } catch (\PDOException $e) {
+                $app->abort(500, "Nie udało się wyświetlić zdjęcia. Spróbuj ponownie później");
             }
         } else {
             $app['session']->getFlashBag()->add(
@@ -312,14 +312,8 @@ class FilesController implements ControllerProviderInterface
                         ),
                         301
                     );
-                } catch (Exception $e) {
-                    $app['session']->getFlashBag()->add(
-                        'message',
-                        array(
-                        'type' => 'error',
-                        'content' => 'Nie można dodać zdjęcia'
-                        )
-                    );
+                } catch (\PDOException $e) {
+                    $app->abort(500, "Nie udało się dodać zdjecia. Spróbuj ponownie później");
                 }
             } else {
                 $app['session']->getFlashBag()->add(
@@ -433,8 +427,8 @@ class FilesController implements ControllerProviderInterface
                             ),
                             301
                         );
-                    } catch (\Exception $e) {
-                        $errors[] = 'Wystąpił błąd. Spróbuj ponownie później';
+                    } catch (\PDOException $e) {
+                        $app->abort(500, "Nie udało się edytować zdjęcia. Spróbuj ponownie później");
                     }
                 }
                 return $app['twig']->render(
@@ -534,12 +528,11 @@ class FilesController implements ControllerProviderInterface
                                     ),
                                     301
                                 );
-                            } catch (\Exception $e) {
-                                $errors[] = 'Nie udało się usunąć komentarza';
+                            } catch (\PDOException $e) {
+                                $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
                             }
-                        } catch (\Exception $e) {
-                            $errors[] = 'Plik nie został usuniety';
-
+                        } catch (\PDOException $e) {
+                            $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
                         }
                     }
                 }
@@ -628,8 +621,8 @@ class FilesController implements ControllerProviderInterface
                     ),
                     301
                 );
-            } catch (\Exception $e) {
-                    $errors[] = 'Wystąpił błąd. Spróbuj ponownie później';
+            } catch (\PDOException $e) {
+                $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
             }
         }
         return $app['twig']
@@ -663,8 +656,8 @@ class FilesController implements ControllerProviderInterface
             $categoriesModel = new CategoriesModel($app);
             $categoryName = $categoriesModel -> getCategoryName($id_category);
             
-        } catch (\Exception $e) {
-                $errors[] = 'Wystąpił błąd. Spróbuj ponownie później';
+        } catch (\PDOException $e) {
+            $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
         }
         return $app['twig']
         ->render(

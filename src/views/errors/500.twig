@@ -1,0 +1,18 @@
+{% extends 'layout.twig' %}
+
+{% block title %}Forbbiden{% endblock %}
+
+{% block content %}
+
+    {% for flashMessage in app.session.getFlashBag.get('message') %}
+        <div class="alert alert-{{ flashMessage.type }}">
+            {{ flashMessage.content }}
+        </div>
+    {% endfor %}
+
+	<p>Wystapił błąd!</p>
+    <p><a href="{{ url('files') }}" title="Home">Wróć na stronę główną</a></p>
+
+
+
+{% endblock %}

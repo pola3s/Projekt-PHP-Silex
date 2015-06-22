@@ -103,8 +103,8 @@ class UsersController implements ControllerProviderInterface
             $usersModel = new UsersModel($app);
             $users = $usersModel->getUserList();
             
-        } catch (\Exception $e) {
-            $errors[] = 'Wystąpił błąd. Spróbuj ponownie później';
+        } catch (\PDOException $e) {
+            $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
         }
         
         return $app['twig']->render(
@@ -222,8 +222,8 @@ class UsersController implements ControllerProviderInterface
                                     ),
                                 301
                             );
-                        } catch (\Exception $e) {
-                            $errors[] = 'Edycja konta nie powiodła się';
+                        } catch (\PDOException $e) {
+                            $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
                         }
 
                     } else {
@@ -309,7 +309,7 @@ class UsersController implements ControllerProviderInterface
                 
                 $adminUsers = $usersModel->checkAdminCount($idRoleAdmin);
                
-			   
+               
                 $rowsnumber = count($adminUsers);
                 
             if ($rowsnumber > 1) {
@@ -376,8 +376,8 @@ class UsersController implements ControllerProviderInterface
                         'role' => $role
                         )
                     );
-                } catch (\Exception $e) {
-                    $errors[] = 'Nie udało się zmienić roli';
+                } catch (\PDOException $e) {
+                    $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
                 }
             }
                            
@@ -446,14 +446,8 @@ class UsersController implements ControllerProviderInterface
                         'role' => $role
                     )
                 );
-            } catch (Exception $e) {
-                    $app['session']->getFlashBag()->add(
-                        'message',
-                        array(
-                        'type' => 'error',
-                        'content' => 'Nie znaleziono użytkownika'
-                        )
-                    );
+            } catch (\PDOException $e) {
+                $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
             }
         } else {
             $app['session']->getFlashBag()->add(
@@ -533,7 +527,7 @@ class UsersController implements ControllerProviderInterface
                         'message',
                         array(
                             'type' => 'danger',
-                            'content' => 'Nie znaleziono użytkownika'
+                            'content' => 'Nie znaleziono użytkownikaa'
                         )
                     );
                     return $app->redirect(

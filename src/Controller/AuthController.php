@@ -69,36 +69,39 @@ class AuthController implements ControllerProviderInterface
     {
         $data = array();
 
-        $form = $app['form.factory']->createBuilder('form')
-            ->add(
-                'username',
-                'text',
+        try {
+            $form = $app['form.factory']->createBuilder('form')
+                ->add(
+                    'username',
+                    'text',
+                    array(
+                        'label' => 'Login',
+                        'data' => $app['session']
+                                ->get(
+                                    '_security.last_username'
+                                )
+                    )
+                )
+                ->add(
+                    'password',
+                    'password',
+                    array(
+                        'label' => 'Haslo'
+                    )
+                )
+                ->add('Zaloguj', 'submit')
+                ->getForm();
+        } catch (\UsernameNotFoundException $e) {
+            $app->abort(404, "Błąd logowania");
+        }
+            return $app['twig']->render(
+                'auth/login.twig',
                 array(
-                    'label' => 'Login',
-                    'data' => $app['session']
-                            ->get(
-                                '_security.last_username'
-                            )
-                )
-            )
-            ->add(
-                'password',
-                'password',
-                array(
-                    'label' => 'Haslo'
-                )
-            )
-            ->add('Zaloguj', 'submit')
-            ->getForm();
-          
-        return $app['twig']->render(
-            'auth/login.twig',
-            array(
-                'form' =>$form->createView(),
-                'error' =>$app['security.last_error']($request)
-                )
-        );
-            
+                    'form' =>$form->createView(),
+                    'error' =>$app['security.last_error']($request)
+                    )
+            );
+                
     }
 
     /**

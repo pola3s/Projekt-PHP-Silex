@@ -111,7 +111,7 @@ class CategoriesController implements ControllerProviderInterface
             $categoriesModel = new CategoriesModel($app);
             $categories = $categoriesModel->getCategories();
         } catch (\Exception $e) {
-                    $errors[] = 'Wystąpił błąd. Spróbuj ponownie później';
+            $app->abort(403, "Wystąpił błąd, spróbuj ponownie później");
         }
         return $app['twig']->render(
             'categories/index.twig',
@@ -160,8 +160,8 @@ class CategoriesController implements ControllerProviderInterface
                     ),
                     301
                 );
-            } catch (\Exception $e) {
-                    $errors[] = 'Nie udało się dodać kategorii';
+            } catch (\PDOException $e) {
+                $app->abort(500, "Nie udało się dodać kategorii. Spróbuj ponownie później");
             }
         }
             return $app['twig']
@@ -218,8 +218,8 @@ class CategoriesController implements ControllerProviderInterface
                             ),
                             301
                         );
-                    } catch (\Exception $e) {
-                        $errors[] = 'Nie udało się dodać kategorii';
+                    } catch (\PDOException $e) {
+                        $app->abort(500, "Nie udało się edytować kategorii. Spróbuj ponownie później");
                     }
                 }
                    
@@ -318,8 +318,8 @@ class CategoriesController implements ControllerProviderInterface
                                     ),
                                     301
                                 );
-                            } catch (\Exception $e) {
-                                $errors[] = 'Nie udało się usunąć kategorii';
+                            } catch (\PDOException $e) {
+                                $app->abort(500, "Nie udało się usunąć kategorii. Spróbuj ponownie później");
                             }
                         } else {
                             return $app->redirect(

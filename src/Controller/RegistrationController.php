@@ -116,9 +116,8 @@ class RegistrationController implements ControllerProviderInterface
                             ),
                             301
                         );
-                    } catch (\Exception $e) {
-                        $errors[] = 'Rejestracja się nie powiodła,
-                        spróbuj jeszcze raz';
+                    } catch (\PDOException $e) {
+                        $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
                     }
                 } else {
                     $app['session']->getFlashBag()->add(

@@ -126,8 +126,8 @@ class GradesController implements ControllerProviderInterface
             }
         
             $gradeAdded = $gradesModel->checkGradeAdded($id, $id_current_user);
-        } catch (\Exception $e) {
-            $errors[] = 'Wystąpił błąd. Spróbuj ponownie później';
+        } catch (\PDOException $e) {
+            $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
         }
         return $app['twig']->render(
             'grades/index.twig',
@@ -252,8 +252,8 @@ class GradesController implements ControllerProviderInterface
                             ),
                             301
                         );
-                    } catch (Exception $e) {
-                        $errors[] = 'Nie udało się dodać oceny';
+                    } catch (\PDOException $e) {
+                        $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
                     }
                 }
                 return $app['twig']

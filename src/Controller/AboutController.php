@@ -145,14 +145,8 @@ class AboutController implements ControllerProviderInterface
                             ),
                             301
                         );
-                    } catch (Exception $e) {
-                        $app['session']->getFlashBag()->add(
-                            'message',
-                            array(
-                            'type' => 'danger',
-                            'content' => 'Nie można dodać "o mnie".'
-                            )
-                        );
+                    } catch (\PDOException $e) {
+                        $app->abort(500, "Nie udało się dodać `o mnie`. Spróbuj ponownie później");
                     }
                 } else {
                     $app['session']->getFlashBag()->add(
@@ -241,8 +235,8 @@ class AboutController implements ControllerProviderInterface
                                 ),
                                 301
                             );
-                        } catch (\Exception $e) {
-                            $errors[] = 'Nie udało się dodać "o mnie".';
+                        } catch (\PDOException $e) {
+                            $app->abort(404, "Nie udało się edytować 'o mnie'. Spróbuj ponownie później");
                         }
                     }
                     return $app['twig']->render(
