@@ -89,10 +89,11 @@ class AuthController implements ControllerProviderInterface
                         'label' => 'Haslo'
                     )
                 )
-                ->add('Zaloguj', 'submit')
+                ->add($app['translator']->trans('Login'), 'submit')
                 ->getForm();
+                
         } catch (\UsernameNotFoundException $e) {
-            $app->abort(404, "Błąd logowania");
+            $app->abort(404, $app['translator']->trans('User not found'));
         }
             return $app['twig']->render(
                 'auth/login.twig',
@@ -121,7 +122,7 @@ class AuthController implements ControllerProviderInterface
             'message',
             array(
             'type' => 'success',
-            'content' => 'Zostałeś wylogowany!'
+            'content' => $app['translator']->trans('Logged out!')
             )
         );
         return $app['twig']->render('auth/logout.twig', $this->view);

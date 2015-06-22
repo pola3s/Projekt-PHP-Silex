@@ -103,8 +103,8 @@ class UsersController implements ControllerProviderInterface
             $usersModel = new UsersModel($app);
             $users = $usersModel->getUserList();
             
-        } catch (\PDOException $e) {
-            $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
+        } catch (\Exception $e) {
+            $app->abort(404, $app['translator']->trans('Users not found'));
         }
         
         return $app['twig']->render(
@@ -211,8 +211,7 @@ class UsersController implements ControllerProviderInterface
                                 'message',
                                 array(
                                     'type' => 'success',
-                                    'content' => 'Edycja konta udała się,
-                                    możesz się teraz ponownie zalogować'
+                                    'content' => $app['translator']->trans('Data has been changed')
                                 )
                             );
                             return $app->redirect(
@@ -223,7 +222,7 @@ class UsersController implements ControllerProviderInterface
                                 301
                             );
                         } catch (\PDOException $e) {
-                            $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
+                            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
                         }
 
                     } else {
@@ -231,7 +230,7 @@ class UsersController implements ControllerProviderInterface
                             'message',
                             array(
                                 'type' => 'warning',
-                                'content' => 'Login zajęty'
+                                'content' => $app['translator']->trans('Login has been taken')
                             )
                         );
                         return $app['twig']->render(
@@ -247,7 +246,7 @@ class UsersController implements ControllerProviderInterface
                         'message',
                         array(
                             'type' => 'warning',
-                            'content' => 'Hasła różnią się'
+                            'content' =>  $app['translator']->trans('Password does not match the confirm password')
                         )
                     );
                     return $app['twig']->render(
@@ -362,7 +361,7 @@ class UsersController implements ControllerProviderInterface
                         'message',
                         array(
                             'type' => 'success',
-                            'content' => 'Rola została edytowana'
+                            'content' => $app['translator']->trans('Role has been changed')
                         )
                     );
                                     
@@ -377,7 +376,7 @@ class UsersController implements ControllerProviderInterface
                         )
                     );
                 } catch (\PDOException $e) {
-                    $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
+                    $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
                 }
             }
                            
@@ -396,7 +395,7 @@ class UsersController implements ControllerProviderInterface
             'message',
             array(
                             'type' => 'danger',
-                            'content' => 'Nie możesz zmienić swojej roli!'
+                            'content' => $app['translator']->trans('You cant change your role')
                         )
         );
                     return $app->redirect(
@@ -447,14 +446,14 @@ class UsersController implements ControllerProviderInterface
                     )
                 );
             } catch (\PDOException $e) {
-                $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
+                $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
             }
         } else {
             $app['session']->getFlashBag()->add(
                 'message',
                 array(
                     'type' => 'danger',
-                    'content' => 'Nie znaleziono użytkownika'
+                    'content' =>  $app['translator']->trans('User not found')
                 )
             );
             return $app->redirect(
@@ -502,14 +501,8 @@ class UsersController implements ControllerProviderInterface
                         'role' => $role
                     )
                 );
-            } catch (Exception $e) {
-                    $app['session']->getFlashBag()->add(
-                        'message',
-                        array(
-                        'type' => 'error',
-                        'content' => 'Nie znaleziono użytkownika'
-                        )
-                    );
+            } catch (\Exception $e) {
+                $app->abort(404, $app['translator']->trans('User not found'));
             }
                     return $app['twig']->render(
                         'users/view.twig',
@@ -527,7 +520,7 @@ class UsersController implements ControllerProviderInterface
                         'message',
                         array(
                             'type' => 'danger',
-                            'content' => 'Nie znaleziono użytkownikaa'
+                            'content' =>  $app['translator']->trans('User not found')
                         )
                     );
                     return $app->redirect(

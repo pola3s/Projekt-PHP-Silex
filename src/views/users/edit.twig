@@ -8,7 +8,7 @@
 
         <h2>Edytuj dane</h2>
     {% for flashMessage in app.session.getFlashBag.get('message') %}
-        {{ flashMessage.content }}
+        {{ flashMessage.content|trans }}
     {% endfor %}
     <form action="" method="post" >
         {{ form_widget(form) }}

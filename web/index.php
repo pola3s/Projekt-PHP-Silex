@@ -29,7 +29,6 @@ $app->register(
     new Silex\Provider\TranslationServiceProvider(), array(
         'locale' => 'pl',
         'locale_fallbacks' => array('pl'),
-		
     )
 );
 
@@ -38,6 +37,7 @@ $app['translator'] = $app->share($app->extend('translator', function($translator
     $translator->addResource('yaml', dirname(dirname(__FILE__)) . '/config/locales/pl.yml', 'pl');
     return $translator;
 }));
+
 
 
 $app->register(new Silex\Provider\SessionServiceProvider());
@@ -114,16 +114,13 @@ $app->error(
             $code = (string)$e->getStatusCode();
         }
 		//var_dump($code);
-		//if ($app['debug']) {
-		//	return;
-        //}
+		if ($app['debug']) {
+			return;
+        }
 
         // 404.html, or 40x.html, or 4xx.html, or error.html
         $templates = array(
             'errors/'.$code.'.twig',
-			'errors/'.substr($code, 0, 2).'x.twig',
-            'errors/'.substr($code, 0, 1).'xx.twig',
-            'errors/default.twig',
         );
 
         return new Response(
@@ -145,16 +142,13 @@ $app->error(
             $code = (string)$e->getStatusCode();
         }
 		//var_dump($code);
-        //if ($app['debug']) {
-        //   return;
-        //}
+        if ($app['debug']) {
+           return;
+        }
 
         // 404.html, or 40x.html, or 4xx.html, or error.html
         $templates = array(
             'errors/'.$code.'.twig',
-			'errors/'.substr($code, 0, 2).'x.twig',
-            'errors/'.substr($code, 0, 1).'xx.twig',
-            'errors/default.twig',
         );
 
         return new Response(

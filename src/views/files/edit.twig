@@ -8,7 +8,7 @@
     </h1>
     {% for flashMessage in app.session.getFlashBag.get('message') %}
         <div class="alert alert-{{ flashMessage.type }}">
-            {{ flashMessage.content }}
+            {{ flashMessage.content|trans }}
         </div>
     {% endfor %}
     <form action="{{ url('edit', {'id': file.id_file})  }}" {{ form_enctype(form) }} method="post">

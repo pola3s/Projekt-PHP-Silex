@@ -150,8 +150,8 @@ class FilesController implements ControllerProviderInterface
                     );
                 }
             );
-        } catch (\PDOException $e) {
-            $app->abort(500, "Wystąpił błąd. Spróbuj ponownie później");
+        } catch (\Exception $e) {
+            $app->abort(404, $app['translator']->trans('Files not found'));
         }
         return $app['twig']->render(
             'files/index.twig',
@@ -213,14 +213,14 @@ class FilesController implements ControllerProviderInterface
                     )
                 );
             } catch (\PDOException $e) {
-                $app->abort(500, "Nie udało się wyświetlić zdjęcia. Spróbuj ponownie później");
+                $app->abort(500, $app['translator']->trans('File not found'));
             }
         } else {
             $app['session']->getFlashBag()->add(
                 'message',
                 array(
                 'type' => 'danger',
-                'content' => 'Nie znaleziono zdjęcia'
+                'content' => $app['translator']->trans('File not found')
                 )
             );
             return $app->redirect(
@@ -276,7 +276,8 @@ class FilesController implements ControllerProviderInterface
             array('categories' => $categories,
             'id_user' => $id_user
             )
-        )->getForm();
+        )
+        ->getForm();
         $form->remove('id_file');
 
         if ($request->isMethod('POST')) {
@@ -301,7 +302,7 @@ class FilesController implements ControllerProviderInterface
                         'message',
                         array(
                         'type' => 'success',
-                        'content' => 'Zdjęcie zostało dodane!'
+                        'content' => $app['translator']->trans('File has been added')
                         )
                     );
 
@@ -313,14 +314,14 @@ class FilesController implements ControllerProviderInterface
                         301
                     );
                 } catch (\PDOException $e) {
-                    $app->abort(500, "Nie udało się dodać zdjecia. Spróbuj ponownie później");
+                    $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
                 }
             } else {
                 $app['session']->getFlashBag()->add(
                     'message',
                     array(
                     'type' => 'error',
-                    'content' => 'Fromularz został niepoprawnie wypełniony'
+                    'content' => $app['translator']->trans('You filled out the form incorrectly')
                     )
                 );
             }
@@ -398,7 +399,7 @@ class FilesController implements ControllerProviderInterface
                     )
                     )
                 )
-                ->add('save', 'submit')
+                ->add($app['translator']->trans('Save'), 'submit')
                 ->getForm();
 
                 $form->handleRequest($request);
@@ -414,7 +415,7 @@ class FilesController implements ControllerProviderInterface
                             'message',
                             array(
                             'type' => 'success',
-                            'content' => 'Zdjęcie zostało edytowane!'
+                            'content' => $app['translator']->trans('File has been changed')
                             )
                         );
 
@@ -428,7 +429,7 @@ class FilesController implements ControllerProviderInterface
                             301
                         );
                     } catch (\PDOException $e) {
-                        $app->abort(500, "Nie udało się edytować zdjęcia. Spróbuj ponownie później");
+                        $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
                     }
                 }
                 return $app['twig']->render(
@@ -452,7 +453,7 @@ class FilesController implements ControllerProviderInterface
                 'message',
                 array(
                 'type' => 'danger',
-                'content' => 'Nie znaleziono zdjęcia'
+                'content' => $app['translator']->trans('File not found')
                 )
             );
             return $app->redirect(
@@ -497,8 +498,8 @@ class FilesController implements ControllerProviderInterface
                     'data' => $name,
                     )
                 )
-                ->add('Tak', 'submit')
-                ->add('Nie', 'submit')
+                ->add($app['translator']->trans('Yes'), 'submit')
+                ->add($app['translator']->trans('No'), 'submit')
                 ->getForm();
 
                 $form->handleRequest($request);
@@ -518,7 +519,7 @@ class FilesController implements ControllerProviderInterface
                                     'message',
                                     array(
                                     'type' => 'success',
-                                    'content' => 'Usunięto zdjęcie'
+                                    'content' => $app['translator']->trans('File has been deleted')
 
                                     )
                                 );
@@ -529,10 +530,13 @@ class FilesController implements ControllerProviderInterface
                                     301
                                 );
                             } catch (\PDOException $e) {
-                                $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
+                                $app->abort(
+                                    500,
+                                    $app['translator']->trans('An error occurred, please try again later')
+                                );
                             }
                         } catch (\PDOException $e) {
-                            $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
+                            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
                         }
                     }
                 }
@@ -549,7 +553,7 @@ class FilesController implements ControllerProviderInterface
                     'message',
                     array(
                     'type' => 'danger',
-                    'content' => 'Nie znaleziono zdjęcia'
+                    'content' => $app['translator']->trans('File not found')
                     )
                 );
                 return $app->redirect(
@@ -564,7 +568,7 @@ class FilesController implements ControllerProviderInterface
                 'message',
                 array(
                 'type' => 'danger',
-                'content' => 'Nie znaleziono zdjęcia'
+                'content' => $app['translator']->trans('File not found')
                 )
             );
             return $app->redirect(
@@ -603,7 +607,7 @@ class FilesController implements ControllerProviderInterface
 
             )
         )
-        ->add('Szukaj', 'submit')
+        ->add($app['translator']->trans('Search'), 'submit')
         ->getForm();
 
         $form->handleRequest($request);
@@ -622,7 +626,7 @@ class FilesController implements ControllerProviderInterface
                     301
                 );
             } catch (\PDOException $e) {
-                $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
+                $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
             }
         }
         return $app['twig']
@@ -657,7 +661,7 @@ class FilesController implements ControllerProviderInterface
             $categoryName = $categoriesModel -> getCategoryName($id_category);
             
         } catch (\PDOException $e) {
-            $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
+            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
         }
         return $app['twig']
         ->render(

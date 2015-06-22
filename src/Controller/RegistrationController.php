@@ -117,14 +117,14 @@ class RegistrationController implements ControllerProviderInterface
                             301
                         );
                     } catch (\PDOException $e) {
-                        $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
+                        $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
                     }
                 } else {
                     $app['session']->getFlashBag()->add(
                         'message',
                         array(
                             'type' => 'warning',
-                        'content' => 'Login zajęty'
+                            'content' => $app['translator']->trans('Login has been taken')
                         )
                     );
                     return $app['twig']->render(
@@ -139,7 +139,7 @@ class RegistrationController implements ControllerProviderInterface
                     'message',
                     array(
                         'type' => 'warning',
-                        'content' => 'Hasła różnią się między sobą!'
+                        'content' => $app['translator']->trans('Password does not match the confirm password')
                     )
                 );
                 return $app['twig']->render(

@@ -119,7 +119,7 @@ class CommentsController implements ControllerProviderInterface
                     $idLoggedUser = $usersModel ->getIdCurrentUser($app);
             }
         } catch (\Exception $e) {
-            $app->abort(403, "Nie udało się wyświetlić komentarzy. Spróbuj ponownie później");
+            $app->abort(404, $app['translator']->trans('Comments not found'));
         }
         return $app['twig']->render(
             'comments/index.twig',
@@ -181,7 +181,7 @@ class CommentsController implements ControllerProviderInterface
                     'message',
                     array(
                       'type' => 'success',
-                      'content' => 'Komentarz został dodany'
+                      'content' => $app['translator']->trans('Comment has been added')
                     )
                 );
                 return $app->redirect(
@@ -194,7 +194,7 @@ class CommentsController implements ControllerProviderInterface
                     301
                 );
             } catch (\PDOException $e) {
-                $app->abort(500, "Nie udało się dodać komentarza. Spróbuj ponownie później");
+                $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
             }
         }
         return $app['twig']->render(
@@ -231,7 +231,7 @@ class CommentsController implements ControllerProviderInterface
                 'message',
                 array(
                 'type' => 'danger',
-                'content' => 'Nie znaleziono komentarza'
+                'content' => $app['translator']->trans('Comment not found')
                 )
             );
             return $app->redirect(
@@ -260,7 +260,7 @@ class CommentsController implements ControllerProviderInterface
                             'message',
                             array(
                                 'type' => 'success',
-                                'content' => 'Komanetarz został zmieniony'
+                                'content' => $app['translator']->trans('Comment has been changed')
                             )
                         );
                         return $app->redirect(
@@ -273,7 +273,7 @@ class CommentsController implements ControllerProviderInterface
                             301
                         );
                     } catch (\PDOException $e) {
-                        $app->abort(500, "Nie udało się edytować komentarza. Spróbuj ponownie później");
+                        $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
                     }
                 }
             }
@@ -309,7 +309,7 @@ class CommentsController implements ControllerProviderInterface
                 'message',
                 array(
                     'type' => 'danger',
-                    'content' => 'Nie znaleziono komentarza'
+                    'content' => $app['translator']->trans('Comment not found')
                 )
             );
             return $app->redirect(
@@ -336,8 +336,8 @@ class CommentsController implements ControllerProviderInterface
                     'data' => $id_comment,
                     )
                 )
-                ->add('Tak', 'submit')
-                ->add('Nie', 'submit')
+                ->add($app['translator']->trans('Yes'), 'submit')
+                ->add($app['translator']->trans('No'), 'submit')
                 ->getForm();
 
                 $form->handleRequest($request);
@@ -354,7 +354,7 @@ class CommentsController implements ControllerProviderInterface
                                 'message',
                                 array(
                                 'type' => 'success',
-                                'content' => 'Komantarz został usunięty'
+                                'content' => $app['translator']->trans('Comment has been deleted')
                                 )
                             );
                             return $app->redirect(
@@ -367,7 +367,7 @@ class CommentsController implements ControllerProviderInterface
                                 301
                             );
                         } catch (\PDOException $e) {
-                            $app->abort(500, "Nie udało się usunąć komentarza. Spróbuj ponownie później");
+                            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
                         }
                     } else {
                         return $app->redirect(
@@ -392,7 +392,7 @@ class CommentsController implements ControllerProviderInterface
                     'message',
                     array(
                     'type' => 'danger',
-                    'content' => 'Nie znaleziono komentarza'
+                    'content' => $app['translator']->trans('Comment not found')
                     )
                 );
                 return $app->redirect(
@@ -410,7 +410,7 @@ class CommentsController implements ControllerProviderInterface
                 'message',
                 array(
                     'type' => 'danger',
-                    'content' => 'Nie znaleziono komentarza'
+                    'content' => $app['translator']->trans('Comment not found')
                 )
             );
             return $app->redirect(

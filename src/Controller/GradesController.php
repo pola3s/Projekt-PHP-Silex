@@ -126,8 +126,8 @@ class GradesController implements ControllerProviderInterface
             }
         
             $gradeAdded = $gradesModel->checkGradeAdded($id, $id_current_user);
-        } catch (\PDOException $e) {
-            $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
+        } catch (\Exception $e) {
+            $app->abort(404, $app['translator']->trans('Grades not found'));
         }
         return $app['twig']->render(
             'grades/index.twig',
@@ -178,7 +178,7 @@ class GradesController implements ControllerProviderInterface
                 'message',
                 array(
                             'type' => 'warning',
-                            'content' => 'Nie możesz ocenić własnego zdjęcia!'
+                            'content' => $app['translator']->trans('Its your photo!')
                         )
             );
             return $app->redirect(
@@ -203,7 +203,7 @@ class GradesController implements ControllerProviderInterface
                     'message',
                     array(
                     'type' => 'warning',
-                    'content' => 'Dodałeś już ocenę do tego zdjęcia!'
+                    'content' => $app['translator']->trans('Grade has been already added')
                     )
                 );
                 return $app->redirect(
@@ -225,7 +225,7 @@ class GradesController implements ControllerProviderInterface
                     'label' => 'Ocena',
                     )
                 )
-                ->add('Zapisz', 'submit', array('label' => 'Dodaj'))
+                ->add($app['translator']->trans('Add'), 'submit')
                 ->getForm();
                 
                 $form->handleRequest($request);
@@ -240,7 +240,7 @@ class GradesController implements ControllerProviderInterface
                             'message',
                             array(
                             'type' => 'success',
-                            'content' => 'Ocena została dodana'
+                            'content' =>  $app['translator']->trans('Grade has been added')
                             )
                         );
                         return $app->redirect(
@@ -253,7 +253,7 @@ class GradesController implements ControllerProviderInterface
                             301
                         );
                     } catch (\PDOException $e) {
-                        $app->abort(500, "Wystąpił błąd, spróbuj ponownie później");
+                        $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
                     }
                 }
                 return $app['twig']

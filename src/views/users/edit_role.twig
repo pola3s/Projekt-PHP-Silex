@@ -7,7 +7,7 @@
     {% if is_granted('ROLE_ADMIN') %}
 
     {% for flashMessage in app.session.getFlashBag.get('message') %}
-        {{ flashMessage.content }}
+        {{ flashMessage.content|trans }}
     {% endfor %}
     <form action="" method="post" >
         {{ form_widget(form) }}

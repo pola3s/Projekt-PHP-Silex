@@ -111,7 +111,7 @@ class CategoriesController implements ControllerProviderInterface
             $categoriesModel = new CategoriesModel($app);
             $categories = $categoriesModel->getCategories();
         } catch (\Exception $e) {
-            $app->abort(403, "Wystąpił błąd, spróbuj ponownie później");
+            $app->abort(404, $app['translator']->trans('Categories not found'));
         }
         return $app['twig']->render(
             'categories/index.twig',
@@ -151,7 +151,7 @@ class CategoriesController implements ControllerProviderInterface
                     'message',
                     array(
                           'type' => 'success',
-                          'content' => 'Kategoria została dodana'
+                          'content' => $app['translator']->trans('Category has been added')
                       )
                 );
                 return $app->redirect(
@@ -161,7 +161,7 @@ class CategoriesController implements ControllerProviderInterface
                     301
                 );
             } catch (\PDOException $e) {
-                $app->abort(500, "Nie udało się dodać kategorii. Spróbuj ponownie później");
+                $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
             }
         }
             return $app['twig']
@@ -208,7 +208,7 @@ class CategoriesController implements ControllerProviderInterface
                             'message',
                             array(
                                 'type' => 'success',
-                                'content' => 'Kategoria została zmieniona'
+                                'content' => $app['translator']->trans('Category has been changed')
                             )
                         );
                             
@@ -219,7 +219,7 @@ class CategoriesController implements ControllerProviderInterface
                             301
                         );
                     } catch (\PDOException $e) {
-                        $app->abort(500, "Nie udało się edytować kategorii. Spróbuj ponownie później");
+                        $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
                     }
                 }
                    
@@ -244,7 +244,7 @@ class CategoriesController implements ControllerProviderInterface
                         'message',
                         array(
                             'type' => 'danger',
-                            'content' => 'Nie znaleziono kategorii!'
+                            'content' => $app['translator']->trans('Category not found')
                         )
                     );
                     return $app->redirect(
@@ -292,8 +292,8 @@ class CategoriesController implements ControllerProviderInterface
                             'data' => $id,
                             )
                         )
-                        ->add('Tak', 'submit')
-                        ->add('Nie', 'submit')
+                        ->add($app['translator']->trans('Yes'), 'submit')
+                        ->add($app['translator']->trans('No'), 'submit')
                         ->getForm();
 
                     $form->handleRequest($request);
@@ -308,8 +308,7 @@ class CategoriesController implements ControllerProviderInterface
                                     'message',
                                     array(
                                         'type' => 'success',
-                                        'content' =>
-                                            'Kategoria została usunięta'
+                                        'content' => $app['translator']->trans('Category has been deleted')
                                     )
                                 );
                                 return $app->redirect(
@@ -319,7 +318,10 @@ class CategoriesController implements ControllerProviderInterface
                                     301
                                 );
                             } catch (\PDOException $e) {
-                                $app->abort(500, "Nie udało się usunąć kategorii. Spróbuj ponownie później");
+                                $app->abort(
+                                    500,
+                                    $app['translator']->trans('An error occurred, please try again later')
+                                );
                             }
                         } else {
                             return $app->redirect(
@@ -341,7 +343,7 @@ class CategoriesController implements ControllerProviderInterface
                         'message',
                         array(
                             'type' => 'danger',
-                            'content' => 'Nie znaleziono kategorii'
+                            'content' => $app['translator']->trans('Category not found')
                         )
                     );
                     return $app->redirect(
@@ -356,7 +358,7 @@ class CategoriesController implements ControllerProviderInterface
                     'message',
                     array(
                         'type' => 'danger',
-                        'content' => 'Nie można usunąć niepustej kategorii'
+                        'content' =>  $app['translator']->trans('Category is not empty')
                     )
                 );
                 return $app->redirect(
@@ -371,7 +373,7 @@ class CategoriesController implements ControllerProviderInterface
                 'message',
                 array(
                     'type' => 'danger',
-                    'content' => 'Nie znaleziono kategorii'
+                    'content' =>  $app['translator']->trans('Category not found')
                 )
             );
             return $app->redirect(

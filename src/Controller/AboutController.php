@@ -133,7 +133,7 @@ class AboutController implements ControllerProviderInterface
                             'message',
                             array(
                             'type' => 'success',
-                            'content' => 'Dodano "o mnie".'
+                            'content' => $app['translator']->trans('About has been added')
                             )
                         );
                         return $app->redirect(
@@ -146,14 +146,14 @@ class AboutController implements ControllerProviderInterface
                             301
                         );
                     } catch (\PDOException $e) {
-                        $app->abort(500, "Nie udało się dodać `o mnie`. Spróbuj ponownie później");
+                        $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
                     }
                 } else {
                     $app['session']->getFlashBag()->add(
                         'message',
                         array(
                         'type' => 'danger',
-                        'content' => 'Niepoprawne dane.'
+                        'content' => $app['translator']->trans('You filled out the form incorrectly')
                         )
                     );
                 }
@@ -168,7 +168,7 @@ class AboutController implements ControllerProviderInterface
         }
             
             return $app['twig']->render(
-                '403.twig'
+                'errors/403.twig'
             );
     }
         
@@ -223,7 +223,7 @@ class AboutController implements ControllerProviderInterface
                                 'message',
                                 array(
                                 'type' => 'success',
-                                'content' => 'Edytowano "o mnie".'
+                                'content' => $app['translator']->trans('About has been changed')
                                 )
                             );
                             return $app->redirect(
@@ -236,7 +236,7 @@ class AboutController implements ControllerProviderInterface
                                 301
                             );
                         } catch (\PDOException $e) {
-                            $app->abort(404, "Nie udało się edytować 'o mnie'. Spróbuj ponownie później");
+                            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
                         }
                     }
                     return $app['twig']->render(
@@ -258,14 +258,14 @@ class AboutController implements ControllerProviderInterface
         
 
             }return $app['twig']->render(
-                '403.twig'
+                'errors/403.twig'
             );
         } else {
                     $app['session']->getFlashBag()->add(
                         'message',
                         array(
                             'type' => 'danger',
-                            'content' => 'Nie znaleziono "o mnie"!'
+                            'content' => $app['translator']->trans('About not found')
                         )
                     );
                     return $app->redirect(
