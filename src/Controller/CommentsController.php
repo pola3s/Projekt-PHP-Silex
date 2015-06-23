@@ -142,64 +142,64 @@ class CommentsController implements ControllerProviderInterface
     */
     public function add(Application $app, Request $request)
     {
-        try{
-			$usersModel = new UsersModel($app);
-			$id_file = (int)$request->get('id_file', 0);
-		
+        try {
+            $usersModel = new UsersModel($app);
+            $id_file = (int)$request->get('id_file', 0);
+        
 
-			if ($usersModel ->isLoggedIn($app)) {
-				$id_user = $usersModel -> getIdCurrentUser($app);
-					
-			} else {
-				return $app->redirect(
-					$app['url_generator']->generate(
-						'auth_login'
-					),
-					301
-				);
-			}
-				
-			$data = array(
-					'published_date' => date('Y-m-d'),
-					'id_file' => $id_file,
-					'id_user' => $id_user,
-			);
+            if ($usersModel ->isLoggedIn($app)) {
+                $id_user = $usersModel -> getIdCurrentUser($app);
+                    
+            } else {
+                return $app->redirect(
+                    $app['url_generator']->generate(
+                        'auth_login'
+                    ),
+                    301
+                );
+            }
+                
+            $data = array(
+                    'published_date' => date('Y-m-d'),
+                    'id_file' => $id_file,
+                    'id_user' => $id_user,
+            );
 
-			$form = $app['form.factory']
-			->createBuilder(new CommentsForm(), $data)->getForm();
-			$form->remove('id_comment');
-			
-					
-			$form->handleRequest($request);
-			if ($form->isValid()) {
-				try {
-					$data = $form->getData();
-						
-					$model = $this->_model->addComment($data);
-						
-					$app['session']->getFlashBag()->add(
-						'message',
-						array(
-						  'type' => 'success',
-						  'content' => $app['translator']->trans('Comment has been added')
-						)
-					);
-					return $app->redirect(
-						$app['url_generator']->generate(
-							'view',
-							array(
-							'id' => $id_file,
-							)
-						),
-						301
-					);
-				} catch (\PDOException $e) {
-					$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-				}
-			}
-		} catch (\Exception $e) {
-			$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-		}
+            $form = $app['form.factory']
+            ->createBuilder(new CommentsForm(), $data)->getForm();
+            $form->remove('id_comment');
+            
+                    
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                try {
+                    $data = $form->getData();
+                        
+                    $model = $this->_model->addComment($data);
+                        
+                    $app['session']->getFlashBag()->add(
+                        'message',
+                        array(
+                          'type' => 'success',
+                          'content' => $app['translator']->trans('Comment has been added')
+                        )
+                    );
+                    return $app->redirect(
+                        $app['url_generator']->generate(
+                            'view',
+                            array(
+                            'id' => $id_file,
+                            )
+                        ),
+                        301
+                    );
+                } catch (\PDOException $e) {
+                    $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+                }
+            }
+        } catch (\Exception $e) {
+            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+        }
         return $app['twig']->render(
             'comments/add.twig',
             array(
@@ -223,68 +223,68 @@ class CommentsController implements ControllerProviderInterface
     public function edit(Application $app, Request $request)
     {
     
-		try{
-			$id_comment = (int) $request->get('id', 0);
-			$commentsModel = new CommentsModel($app);
-			$comment = $commentsModel->getComment($id_comment);
+        try {
+            $id_comment = (int) $request->get('id', 0);
+            $commentsModel = new CommentsModel($app);
+            $comment = $commentsModel->getComment($id_comment);
 
-			$id_file = $comment['id_file'];
+            $id_file = $comment['id_file'];
 
-			if (!$comment || !isset($comment) || !count($comment)) {
-				$app['session']->getFlashBag()->add(
-					'message',
-					array(
-					'type' => 'danger',
-					'content' => $app['translator']->trans('Comment not found')
-					)
-				);
-				return $app->redirect(
-					$app['url_generator']->generate(
-						'files',
-						array()
-					),
-					301
-				);
-			} else {
-				$user = new UsersModel($app);
-				$idLoggedUser = $user->getIdCurrentUser($app);
+            if (!$comment || !isset($comment) || !count($comment)) {
+                $app['session']->getFlashBag()->add(
+                    'message',
+                    array(
+                    'type' => 'danger',
+                    'content' => $app['translator']->trans('Comment not found')
+                    )
+                );
+                return $app->redirect(
+                    $app['url_generator']->generate(
+                        'files',
+                        array()
+                    ),
+                    301
+                );
+            } else {
+                $user = new UsersModel($app);
+                $idLoggedUser = $user->getIdCurrentUser($app);
 
-				if ($idLoggedUser == $comment['id_user'] || $app['security']->isGranted('ROLE_ADMIN')) {
-					$form = $app['form.factory']
-					->createBuilder(new CommentsForm(), $comment)->getForm();
-					$form->handleRequest($request);
-					
-					if ($form->isValid()) {
-						try {
-							$data = $form->getData();
-								
-							$model = $this->_model->editComment($data, $id_comment);
+                if ($idLoggedUser == $comment['id_user'] || $app['security']->isGranted('ROLE_ADMIN')) {
+                    $form = $app['form.factory']
+                    ->createBuilder(new CommentsForm(), $comment)->getForm();
+                    $form->handleRequest($request);
+                    
+                    if ($form->isValid()) {
+                        try {
+                            $data = $form->getData();
+                                
+                            $model = $this->_model->editComment($data, $id_comment);
 
-							$app['session']->getFlashBag()->add(
-								'message',
-								array(
-									'type' => 'success',
-									'content' => $app['translator']->trans('Comment has been changed')
-								)
-							);
-							return $app->redirect(
-								$app['url_generator']->generate(
-									'view',
-									array(
-									'id' => $id_file,
-									)
-								),
-								301
-							);
-						} catch (\PDOException $e) {
-							$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-						}
-					}
-				}
-			}
-		} catch (\Exception $e) {
-			$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-		}
+                            $app['session']->getFlashBag()->add(
+                                'message',
+                                array(
+                                    'type' => 'success',
+                                    'content' => $app['translator']->trans('Comment has been changed')
+                                )
+                            );
+                            return $app->redirect(
+                                $app['url_generator']->generate(
+                                    'view',
+                                    array(
+                                    'id' => $id_file,
+                                    )
+                                ),
+                                301
+                            );
+                        } catch (\PDOException $e) {
+                            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+                        }
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+        }
         return $app['twig']->render(
             'comments/edit.twig',
             array(
@@ -304,126 +304,129 @@ class CommentsController implements ControllerProviderInterface
     */
     public function delete(Application $app, Request $request)
     {
-        try{
-			$id_comment = (int) $request->get('id', 0);
-	 
-			$commentsModel = new CommentsModel($app);
-			$comment = $commentsModel->getComment($id_comment);
-			$id_file = $comment['id_file'];
+        try {
+            $id_comment = (int) $request->get('id', 0);
+     
+            $commentsModel = new CommentsModel($app);
+            $comment = $commentsModel->getComment($id_comment);
+            $id_file = $comment['id_file'];
 
-			if (!$comment || !isset($comment) || !count($comment)) {
-				$app['session']->getFlashBag()->add(
-					'message',
-					array(
-						'type' => 'danger',
-						'content' => $app['translator']->trans('Comment not found')
-					)
-				);
-				return $app->redirect(
-					$app['url_generator']->generate(
-						'files',
-						array()
-					),
-					301
-				);
-			}
+            if (!$comment || !isset($comment) || !count($comment)) {
+                $app['session']->getFlashBag()->add(
+                    'message',
+                    array(
+                        'type' => 'danger',
+                        'content' => $app['translator']->trans('Comment not found')
+                    )
+                );
+                return $app->redirect(
+                    $app['url_generator']->generate(
+                        'files',
+                        array()
+                    ),
+                    301
+                );
+            }
 
-			if (count($comment)) {
-					$usersModel = new UsersModel($app);
-					$idLoggedUser = $usersModel->getIdCurrentUser($app);
-							
-				if ($idLoggedUser == $comment['id_user']
-					|| $app['security']->isGranted('ROLE_ADMIN')
-				) {
-					$form = $app['form.factory']->createBuilder('form', $data)
-					->add(
-						'id_comment',
-						'hidden',
-						array(
-						'data' => $id_comment,
-						)
-					)
-					->add($app['translator']->trans('Yes'), 'submit')
-					->add($app['translator']->trans('No'), 'submit')
-					->getForm();
+            if (count($comment)) {
+                    $usersModel = new UsersModel($app);
+                    $idLoggedUser = $usersModel->getIdCurrentUser($app);
+                            
+                if ($idLoggedUser == $comment['id_user']
+                    || $app['security']->isGranted('ROLE_ADMIN')
+                ) {
+                    $form = $app['form.factory']->createBuilder('form', $data)
+                    ->add(
+                        'id_comment',
+                        'hidden',
+                        array(
+                        'data' => $id_comment,
+                        )
+                    )
+                    ->add($app['translator']->trans('Yes'), 'submit')
+                    ->add($app['translator']->trans('No'), 'submit')
+                    ->getForm();
 
-					$form->handleRequest($request);
+                    $form->handleRequest($request);
 
-					if ($form->isValid()) {
-						if ($form->get('Tak')->isClicked()) {
-							$data = $form->getData();
-								
-							try {
-								$model = $this->_model->deleteComment($data);
-									
+                    if ($form->isValid()) {
+                        if ($form->get('Tak')->isClicked()) {
+                            $data = $form->getData();
+                                
+                            try {
+                                $model = $this->_model->deleteComment($data);
+                                    
 
-								$app['session']->getFlashBag()->add(
-									'message',
-									array(
-									'type' => 'success',
-									'content' => $app['translator']->trans('Comment has been deleted')
-									)
-								);
-								return $app->redirect(
-									$app['url_generator']->generate(
-										'view',
-										array(
-										'id' => $id_file,
-										)
-									),
-									301
-								);
-							} catch (\PDOException $e) {
-								$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-							}
-						} else {
-							return $app->redirect(
-								$app['url_generator']->generate(
-									'files',
-									array(
-									'id' => $id_file,
-									)
-								),
-								301
-							);
-						}
-					}
-					return $app['twig']->render(
-						'comments/delete.twig',
-						array(
-						'form' => $form->createView()
-						)
-					);
-				} else {
-					$app['session']->getFlashBag()->add(
-						'message',
-						array(
-						'type' => 'danger',
-						'content' => $app['translator']->trans('Comment not found')
-						)
-					);
-					return $app->redirect(
-						$app['url_generator']->generate(
-							'files',
-							array(
-							'id' => $id_file,
-							)
-						),
-						301
-					);
-				}
-			} else {
-				$app['session']->getFlashBag()->add(
-					'message',
-					array(
-						'type' => 'danger',
-						'content' => $app['translator']->trans('Comment not found')
-					)
-				);
-			}
-		} catch (\Exception $e) {
-			$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-		}
+                                $app['session']->getFlashBag()->add(
+                                    'message',
+                                    array(
+                                    'type' => 'success',
+                                    'content' => $app['translator']->trans('Comment has been deleted')
+                                    )
+                                );
+                                return $app->redirect(
+                                    $app['url_generator']->generate(
+                                        'view',
+                                        array(
+                                        'id' => $id_file,
+                                        )
+                                    ),
+                                    301
+                                );
+                            } catch (\PDOException $e) {
+                                $app->abort(
+                                    500,
+                                    $app['translator']->trans('An error occurred, please try again later')
+                                );
+                            }
+                        } else {
+                            return $app->redirect(
+                                $app['url_generator']->generate(
+                                    'files',
+                                    array(
+                                    'id' => $id_file,
+                                    )
+                                ),
+                                301
+                            );
+                        }
+                    }
+                    return $app['twig']->render(
+                        'comments/delete.twig',
+                        array(
+                        'form' => $form->createView()
+                        )
+                    );
+                } else {
+                    $app['session']->getFlashBag()->add(
+                        'message',
+                        array(
+                        'type' => 'danger',
+                        'content' => $app['translator']->trans('Comment not found')
+                        )
+                    );
+                    return $app->redirect(
+                        $app['url_generator']->generate(
+                            'files',
+                            array(
+                            'id' => $id_file,
+                            )
+                        ),
+                        301
+                    );
+                }
+            } else {
+                $app['session']->getFlashBag()->add(
+                    'message',
+                    array(
+                        'type' => 'danger',
+                        'content' => $app['translator']->trans('Comment not found')
+                    )
+                );
+            }
+        } catch (\Exception $e) {
+            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+        }
             return $app->redirect(
                 $app['url_generator']->generate(
                     'files',
@@ -435,5 +438,4 @@ class CommentsController implements ControllerProviderInterface
             );
 
     }
-    
 }

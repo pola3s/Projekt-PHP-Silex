@@ -70,91 +70,91 @@ class RegistrationController implements ControllerProviderInterface
     */
     public function register(Application $app, Request $request)
     {
-        try{
-			$data = array();
-			
-			$form = $app['form.factory']
-			->createBuilder(new RegistrationForm(), $data)->getForm();
-			$form->remove('id_user');
+        try {
+            $data = array();
+            
+            $form = $app['form.factory']
+            ->createBuilder(new RegistrationForm(), $data)->getForm();
+            $form->remove('id_user');
 
 
-			$form->handleRequest($request);
+            $form->handleRequest($request);
 
-			if ($form->isValid()) {
-				$data = $form->getData();
+            if ($form->isValid()) {
+                $data = $form->getData();
 
-				$data['login'] = $app
-					->escape($data['login']);
-				$data['email'] = $app
-					->escape($data['email']);
-				$data['firstname'] = $app
-					->escape($data['firstname']);
-				$data['lastname'] = $app
-					->escape($data['lastname']);
-				$data['password'] = $app
-					->escape($data['password']);
-				$data['confirm_password'] = $app
-					->escape($data['confirm_password']);
+                $data['login'] = $app
+                    ->escape($data['login']);
+                $data['email'] = $app
+                    ->escape($data['email']);
+                $data['firstname'] = $app
+                    ->escape($data['firstname']);
+                $data['lastname'] = $app
+                    ->escape($data['lastname']);
+                $data['password'] = $app
+                    ->escape($data['password']);
+                $data['confirm_password'] = $app
+                    ->escape($data['confirm_password']);
 
-				if ($data['password'] === $data['confirm_password']) {
-					$password = $app['security.encoder.digest']
-						->encodePassword($data['password'], '');
+                if ($data['password'] === $data['confirm_password']) {
+                    $password = $app['security.encoder.digest']
+                        ->encodePassword($data['password'], '');
 
-					$checkLogin = $this->_model->getUserByLogin(
-						$data['login']
-					);
-					
-					if (!$checkLogin) {
-						try {
-							$this->_model->register(
-								$form->getData(),
-								$password
-							);
-							
-							return $app->redirect(
-								$app['url_generator']->generate(
-									'/register/success'
-								),
-								301
-							);
-						} catch (\PDOException $e) {
-							$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-						}
-					} else {
-						$app['session']->getFlashBag()->add(
-							'message',
-							array(
-								'type' => 'warning',
-								'content' => $app['translator']->trans('Login has been taken')
-							)
-						);
-						return $app['twig']->render(
-							'users/register.twig',
-							array(
-								'form' => $form->createView()
-							)
-						);
-					}
-				} else {
-					$app['session']->getFlashBag()->add(
-						'message',
-						array(
-							'type' => 'warning',
-							'content' => $app['translator']->trans('Password does not match the confirm password')
-						)
-					);
-					return $app['twig']->render(
-						'users/register.twig',
-						array(
-							'form' => $form->createView()
-						)
-					);
-				}
-			}
-		} catch (\PDOException $e) {
-			$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-		}
-		return $app['twig']->render(
+                    $checkLogin = $this->_model->getUserByLogin(
+                        $data['login']
+                    );
+                    
+                    if (!$checkLogin) {
+                        try {
+                            $this->_model->register(
+                                $form->getData(),
+                                $password
+                            );
+                            
+                            return $app->redirect(
+                                $app['url_generator']->generate(
+                                    '/register/success'
+                                ),
+                                301
+                            );
+                        } catch (\PDOException $e) {
+                            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+                        }
+                    } else {
+                        $app['session']->getFlashBag()->add(
+                            'message',
+                            array(
+                                'type' => 'warning',
+                                'content' => $app['translator']->trans('Login has been taken')
+                            )
+                        );
+                        return $app['twig']->render(
+                            'users/register.twig',
+                            array(
+                                'form' => $form->createView()
+                            )
+                        );
+                    }
+                } else {
+                    $app['session']->getFlashBag()->add(
+                        'message',
+                        array(
+                            'type' => 'warning',
+                            'content' => $app['translator']->trans('Password does not match the confirm password')
+                        )
+                    );
+                    return $app['twig']->render(
+                        'users/register.twig',
+                        array(
+                            'form' => $form->createView()
+                        )
+                    );
+                }
+            }
+        } catch (\PDOException $e) {
+            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+        }
+        return $app['twig']->render(
             'users/register.twig',
             array(
                 'form' => $form->createView()
@@ -173,13 +173,13 @@ class RegistrationController implements ControllerProviderInterface
     public function success(Application $app)
     {
         
-		try{
-			$link = $app['url_generator']->generate(
-				'auth_login'
-			);
-		} catch (\PDOException $e) {
-			$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-		}
+        try {
+            $link = $app['url_generator']->generate(
+                'auth_login'
+            );
+        } catch (\PDOException $e) {
+            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+        }
         return $app['twig']->render(
             'users/successfulRegistration.twig',
             array(

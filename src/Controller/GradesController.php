@@ -151,132 +151,131 @@ class GradesController implements ControllerProviderInterface
     */
     public function add(Application $app, Request $request)
     {
-		try{
-			$id_file = (int)$request->get('id_file');
-			
-			$gradesModel = new GradesModel($app);
-			$choiceGrade = $gradesModel->getGradesDict();
+        try {
+            $id_file = (int)$request->get('id_file');
+            
+            $gradesModel = new GradesModel($app);
+            $choiceGrade = $gradesModel->getGradesDict();
 
-			$filesModel = new FilesModel($app);
-			$file = $filesModel -> getFile($id_file);
-			
-			$usersModel = new UsersModel($app);
-			
-			if ($usersModel ->isLoggedIn($app)) {
-				$id_current_user = $usersModel -> getIdCurrentUser($app);
-					
-			} else {
-				 return $app->redirect(
-					 $app['url_generator']->generate(
-						 'auth_login'
-					 ),
-					 301
-				 );
-			}
-		  
-			if ($file['id_user'] == $id_current_user) {
-				$app['session']->getFlashBag()->add(
-					'message',
-					array(
-								'type' => 'warning',
-								'content' => $app['translator']->trans('Its your photo!')
-							)
-				);
-				return $app->redirect(
-					$app['url_generator']->generate(
-						'view',
-						array(
-										'id' => $id_file,
-									)
-					),
-					301
-				);
-			} else {
-				$data = array(
-				'id_file' => $id_file,
-				'id_user' => $id_current_user
-				);
-					
-				$grade = $gradesModel->checkGrade($id_file, $id_current_user);
-				
-				if ($grade) {
-					$app['session']->getFlashBag()->add(
-						'message',
-						array(
-						'type' => 'warning',
-						'content' => $app['translator']->trans('Grade has been already added')
-						)
-					);
-					return $app->redirect(
-						$app['url_generator']->generate(
-							'view',
-							array(
-											'id' => $id_file,
-										)
-						),
-						301
-					);
-				} else {
-					$form = $app['form.factory']->createBuilder('form', $data)
-					->add(
-						'grade',
-						'choice',
-						array(
-						'choices' => $choiceGrade,
-						'label' => 'Ocena',
-						)
-					)
-					->add($app['translator']->trans('Add'), 'submit')
-					->getForm();
-					
-					$form->handleRequest($request);
+            $filesModel = new FilesModel($app);
+            $file = $filesModel -> getFile($id_file);
+            
+            $usersModel = new UsersModel($app);
+            
+            if ($usersModel ->isLoggedIn($app)) {
+                $id_current_user = $usersModel -> getIdCurrentUser($app);
+                    
+            } else {
+                 return $app->redirect(
+                     $app['url_generator']->generate(
+                         'auth_login'
+                     ),
+                     301
+                 );
+            }
+          
+            if ($file['id_user'] == $id_current_user) {
+                $app['session']->getFlashBag()->add(
+                    'message',
+                    array(
+                                'type' => 'warning',
+                                'content' => $app['translator']->trans('Its your photo!')
+                            )
+                );
+                return $app->redirect(
+                    $app['url_generator']->generate(
+                        'view',
+                        array(
+                                        'id' => $id_file,
+                                    )
+                    ),
+                    301
+                );
+            } else {
+                $data = array(
+                'id_file' => $id_file,
+                'id_user' => $id_current_user
+                );
+                    
+                $grade = $gradesModel->checkGrade($id_file, $id_current_user);
+                
+                if ($grade) {
+                    $app['session']->getFlashBag()->add(
+                        'message',
+                        array(
+                        'type' => 'warning',
+                        'content' => $app['translator']->trans('Grade has been already added')
+                        )
+                    );
+                    return $app->redirect(
+                        $app['url_generator']->generate(
+                            'view',
+                            array(
+                                            'id' => $id_file,
+                                        )
+                        ),
+                        301
+                    );
+                } else {
+                    $form = $app['form.factory']->createBuilder('form', $data)
+                    ->add(
+                        'grade',
+                        'choice',
+                        array(
+                        'choices' => $choiceGrade,
+                        'label' => 'Ocena',
+                        )
+                    )
+                    ->add($app['translator']->trans('Add'), 'submit')
+                    ->getForm();
+                    
+                    $form->handleRequest($request);
 
-					if ($form->isValid()) {
-						try {
-							$gradesModel = new GradesModel($app);
-							$data = $form->getData();
-						  
-							$gradesModel->addGrade($data);
-							$app['session']->getFlashBag()->add(
-								'message',
-								array(
-								'type' => 'success',
-								'content' =>  $app['translator']->trans('Grade has been added')
-								)
-							);
-							return $app->redirect(
-								$app['url_generator']->generate(
-									'view',
-									array(
-									'id' => $id_file,
-									)
-								),
-								301
-							);
-						} catch (\PDOException $e) {
-							$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-						}
-					}
-					return $app['twig']
-					->render(
-						'grades/add.twig',
-						array(
-						'form' => $form->createView(), 'file' => $file
-						)
-					);
-				}
-		
+                    if ($form->isValid()) {
+                        try {
+                            $gradesModel = new GradesModel($app);
+                            $data = $form->getData();
+                          
+                            $gradesModel->addGrade($data);
+                            $app['session']->getFlashBag()->add(
+                                'message',
+                                array(
+                                'type' => 'success',
+                                'content' =>  $app['translator']->trans('Grade has been added')
+                                )
+                            );
+                            return $app->redirect(
+                                $app['url_generator']->generate(
+                                    'view',
+                                    array(
+                                    'id' => $id_file,
+                                    )
+                                ),
+                                301
+                            );
+                        } catch (\PDOException $e) {
+                            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+                        }
+                    }
+                    return $app['twig']
+                    ->render(
+                        'grades/add.twig',
+                        array(
+                        'form' => $form->createView(), 'file' => $file
+                        )
+                    );
+                }
+        
     
-			}
-		} catch (\PDOException $e) {
-			$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-		}
-		return $app->redirect(
-			$app['url_generator']->generate(
-				'fles'
-			),
-			301
-		);
-	}
-		
+            }
+        } catch (\PDOException $e) {
+            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+        }
+        return $app->redirect(
+            $app['url_generator']->generate(
+                'fles'
+            ),
+            301
+        );
+    }
 }

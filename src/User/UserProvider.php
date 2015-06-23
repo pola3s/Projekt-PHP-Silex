@@ -5,7 +5,6 @@
  * PHP version 5
  *
  * @category UserProvider
- * @package  UserProvider
  * @author   Paulina Serwińska <paulina.serwinska@gmail.com>
  * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
  * @link     wierzba.wzks.uj.edu.pl/~12_serwinska

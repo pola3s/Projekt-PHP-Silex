@@ -95,80 +95,80 @@ class AboutController implements ControllerProviderInterface
         */
     public function add(Application $app, Request $request)
     {
-        try{
-			$id_user = (int)$request->get('id', 0);
-			
+        try {
+            $id_user = (int)$request->get('id', 0);
+            
 
-			$usersModel = new UsersModel($app);
-			
-			if ($usersModel ->isLoggedIn($app)) {
-				$id_current_user = $usersModel -> getIdCurrentUser($app);
-					
-			} else {
-				return $app->redirect(
-					$app['url_generator']->generate(
-						'auth_login'
-					),
-					301
-				);
-			}
-				
-			  
-			if ($id_user == $id_current_user) {
-				$form = $app['form.factory']
-				->createBuilder(new AboutForm(), $data)->getForm();
-				$form->remove('id_about');
-					
-				if ($request->isMethod('POST')) {
-					$form->bind($request);
-				
-					if ($form->isValid()) {
-						try {
-							$data = $form->getData();
-				
-							$aboutModel = new AboutModel($app);
-							$aboutModel->saveAbout($data, $id_user);
-				
-							$app['session']->getFlashBag()->add(
-								'message',
-								array(
-								'type' => 'success',
-								'content' => $app['translator']->trans('About has been added')
-								)
-							);
-							return $app->redirect(
-								$app['url_generator']->generate(
-									'/users/panel',
-									array(
-										'id' => $id_user,
-									)
-								),
-								301
-							);
-						} catch (\PDOException $e) {
-							$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-						}
-					} else {
-						$app['session']->getFlashBag()->add(
-							'message',
-							array(
-							'type' => 'danger',
-							'content' => $app['translator']->trans('You filled out the form incorrectly')
-							)
-						);
-					}
-				}
-				
-				return $app['twig']->render(
-					'about/add.twig',
-					array(
-						'form' => $form->createView()
-					)
-				);
-			}
-		} catch (\Exception $e) {
-			$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-		}
+            $usersModel = new UsersModel($app);
+            
+            if ($usersModel ->isLoggedIn($app)) {
+                $id_current_user = $usersModel -> getIdCurrentUser($app);
+                    
+            } else {
+                return $app->redirect(
+                    $app['url_generator']->generate(
+                        'auth_login'
+                    ),
+                    301
+                );
+            }
+                
+              
+            if ($id_user == $id_current_user) {
+                $form = $app['form.factory']
+                ->createBuilder(new AboutForm(), $data)->getForm();
+                $form->remove('id_about');
+                    
+                if ($request->isMethod('POST')) {
+                    $form->bind($request);
+                
+                    if ($form->isValid()) {
+                        try {
+                            $data = $form->getData();
+                
+                            $aboutModel = new AboutModel($app);
+                            $aboutModel->saveAbout($data, $id_user);
+                
+                            $app['session']->getFlashBag()->add(
+                                'message',
+                                array(
+                                'type' => 'success',
+                                'content' => $app['translator']->trans('About has been added')
+                                )
+                            );
+                            return $app->redirect(
+                                $app['url_generator']->generate(
+                                    '/users/panel',
+                                    array(
+                                        'id' => $id_user,
+                                    )
+                                ),
+                                301
+                            );
+                        } catch (\PDOException $e) {
+                            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+                        }
+                    } else {
+                        $app['session']->getFlashBag()->add(
+                            'message',
+                            array(
+                            'type' => 'danger',
+                            'content' => $app['translator']->trans('You filled out the form incorrectly')
+                            )
+                        );
+                    }
+                }
+                
+                return $app['twig']->render(
+                    'about/add.twig',
+                    array(
+                        'form' => $form->createView()
+                    )
+                );
+            }
+        } catch (\Exception $e) {
+            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+        }
             
             return $app['twig']->render(
                 'errors/403.twig'
@@ -186,104 +186,106 @@ class AboutController implements ControllerProviderInterface
         */
         public function edit(Application $app, Request $request)
         {
-			try{
-				$aboutModel = new AboutModel($app);
-				$id_user = (int) $request->get('id', 0);
-				
-				$about = $aboutModel->getAbout($id_user);
-				$id_about = $about['id_about'];
-				
-				$check = $aboutModel->checkAboutId($id_about);
-			
-				if ($check) {
-					$usersModel = new UsersModel($app);
-					if ($usersModel ->isLoggedIn($app)) {
-						$id_current_user = $usersModel -> getIdCurrentUser($app);
-								
-					} else {
-						return $app->redirect(
-							$app['url_generator']->generate(
-								'auth_login'
-							),
-							301
-						);
-					}
-					
-					
-					if ($id_user == $id_current_user) {
-						if (count($about)) {
-							$form = $app['form.factory']
-							->createBuilder(new AboutForm(), $about)->getForm();
-							
-							$form->handleRequest($request);
-					
-							if ($form->isValid()) {
-								try {
-									$aboutModel = new AboutModel($app);
-									$data = $form->getData();
-									$aboutModel->editAbout($data, $id_user);
-								
-									$app['session']->getFlashBag()->add(
-										'message',
-										array(
-										'type' => 'success',
-										'content' => $app['translator']->trans('About has been changed')
-										)
-									);
-									return $app->redirect(
-										$app['url_generator']->generate(
-											'/users/panel',
-											array(
-											'id' => $id_user,
-											)
-										),
-										301
-									);
-								} catch (\PDOException $e) {
-									$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-								}
-							}
-							return $app['twig']->render(
-								'about/edit.twig',
-								array(
-								'form' => $form->createView(),
-								'about' => $about)
-							);
-						} else {
-						return $app->redirect(
-							$app['url_generator']->generate(
-								'/about/add'
-							),
-							301
-						);
-					}
-				
-			
+        try {
+            $aboutModel = new AboutModel($app);
+            $id_user = (int) $request->get('id', 0);
+                
+            $about = $aboutModel->getAbout($id_user);
+            $id_about = $about['id_about'];
+                
+            $check = $aboutModel->checkAboutId($id_about);
+            
+            if ($check) {
+                $usersModel = new UsersModel($app);
+                if ($usersModel ->isLoggedIn($app)) {
+                    $id_current_user = $usersModel -> getIdCurrentUser($app);
+                                
+                } else {
+                    return $app->redirect(
+                        $app['url_generator']->generate(
+                            'auth_login'
+                        ),
+                        301
+                    );
+                }
+                    
+                    
+                if ($id_user == $id_current_user) {
+                    if (count($about)) {
+                        $form = $app['form.factory']
+                        ->createBuilder(new AboutForm(), $about)->getForm();
+                            
+                        $form->handleRequest($request);
+                    
+                        if ($form->isValid()) {
+                            try {
+                                $aboutModel = new AboutModel($app);
+                                $data = $form->getData();
+                                $aboutModel->editAbout($data, $id_user);
+                                
+                                $app['session']->getFlashBag()->add(
+                                    'message',
+                                    array(
+                                    'type' => 'success',
+                                    'content' => $app['translator']->trans('About has been changed')
+                                    )
+                                );
+                                return $app->redirect(
+                                    $app['url_generator']->generate(
+                                        '/users/panel',
+                                        array(
+                                        'id' => $id_user,
+                                        )
+                                    ),
+                                    301
+                                );
+                            } catch (\PDOException $e) {
+                                $app->abort(
+                                    500,
+                                    $app['translator']->trans('An error occurred, please try again later')
+                                );
+                            }
+                        }
+                        return $app['twig']->render(
+                            'about/edit.twig',
+                            array(
+                            'form' => $form->createView(),
+                            'about' => $about)
+                        );
+                    } else {
+                        return $app->redirect(
+                            $app['url_generator']->generate(
+                                '/about/add'
+                            ),
+                            301
+                        );
+                    }
+                
+            
 
-				}return $app['twig']->render(
-					'errors/403.twig'
-				);
-			} else {
-						$app['session']->getFlashBag()->add(
-							'message',
-							array(
-								'type' => 'danger',
-								'content' => $app['translator']->trans('About not found')
-							)
-						);
-						return $app->redirect(
-							$app['url_generator']->generate(
-								'/users/panel',
-								array(
-								'id' => $id_user,
-								)
-							),
-							301
-						);
-			}
+                }return $app['twig']->render(
+                    'errors/403.twig'
+                );
+            } else {
+                    $app['session']->getFlashBag()->add(
+                        'message',
+                        array(
+                            'type' => 'danger',
+                            'content' => $app['translator']->trans('About not found')
+                        )
+                    );
+                    return $app->redirect(
+                        $app['url_generator']->generate(
+                            '/users/panel',
+                            array(
+                            'id' => $id_user,
+                            )
+                        ),
+                        301
+                    );
+            }
         } catch (\Exception $e) {
-			$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-		}
-	}
-
+            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+        }
+        }
 }

@@ -176,58 +176,58 @@ class FilesController implements ControllerProviderInterface
     public function view(Application $app, Request $request)
     {
 
-		try{
-			$id = (int) $request -> get('id', 0); //id zdjęcia
-			$page = (int) $request -> get('page', 0);
+        try {
+            $id = (int) $request -> get('id', 0); //id zdjęcia
+            $page = (int) $request -> get('page', 0);
 
 
-			$filesModel = new FilesModel($app);
-			$check = $filesModel->checkFileId($id);
+            $filesModel = new FilesModel($app);
+            $check = $filesModel->checkFileId($id);
 
-			if ($check) {
-				try {
-					$FilesModel = new FilesModel($app);
-					$file = $FilesModel -> getFile($id);
+            if ($check) {
+                try {
+                    $FilesModel = new FilesModel($app);
+                    $file = $FilesModel -> getFile($id);
 
-					$id_category = $FilesModel -> checkCategoryId($id);
-					$category = $FilesModel -> getCategory($id_category);
+                    $id_category = $FilesModel -> checkCategoryId($id);
+                    $category = $FilesModel -> getCategory($id_category);
 
-					$id_user = $FilesModel-> checkUserId($id);
-					$user = $FilesModel -> getFileUploaderName($id_user['id_user']);
+                    $id_user = $FilesModel-> checkUserId($id);
+                    $user = $FilesModel -> getFileUploaderName($id_user['id_user']);
 
-					// $app['breadcrumbs']->addItem('A complex route',array(
-					// 'route' => 'complex_named_route',
-					// 'params' => array(
-					// 'name' => "John",
-					// 'id' => 3
-					// )
-					// ));
+                    // $app['breadcrumbs']->addItem('A complex route',array(
+                    // 'route' => 'complex_named_route',
+                    // 'params' => array(
+                    // 'name' => "John",
+                    // 'id' => 3
+                    // )
+                    // ));
 
-					return $app['twig']->render(
-						'files/view.twig',
-						array(
-						'file' => $file,
-						'user' => $user,
-						'id_user' => $id_user,
-						'id_category' => $id_category,
-						'page' => $page
-						)
-					);
-				} catch (\PDOException $e) {
-					$app->abort(500, $app['translator']->trans('File not found'));
-				}
-			} else {
-				$app['session']->getFlashBag()->add(
-					'message',
-					array(
-					'type' => 'danger',
-					'content' => $app['translator']->trans('File not found')
-					)
-				);
-			}
-		} catch (\Exception $e) {
-			$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-		}
+                    return $app['twig']->render(
+                        'files/view.twig',
+                        array(
+                        'file' => $file,
+                        'user' => $user,
+                        'id_user' => $id_user,
+                        'id_category' => $id_category,
+                        'page' => $page
+                        )
+                    );
+                } catch (\PDOException $e) {
+                    $app->abort(500, $app['translator']->trans('File not found'));
+                }
+            } else {
+                $app['session']->getFlashBag()->add(
+                    'message',
+                    array(
+                    'type' => 'danger',
+                    'content' => $app['translator']->trans('File not found')
+                    )
+                );
+            }
+        } catch (\Exception $e) {
+            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+        }
            
             return $app->redirect(
                 $app['url_generator']->generate(
@@ -252,89 +252,89 @@ class FilesController implements ControllerProviderInterface
 */
     public function upload(Application $app, Request $request)
     {
-		try{
-			$usersModel = new UsersModel($app);
-			//$idLoggedUser = $usersModel->getIdCurrentUser($app);
+        try {
+            $usersModel = new UsersModel($app);
+            //$idLoggedUser = $usersModel->getIdCurrentUser($app);
 
-			if ($usersModel ->isLoggedIn($app)) {
-				$id_user = $usersModel -> getIdCurrentUser($app);
+            if ($usersModel ->isLoggedIn($app)) {
+                $id_user = $usersModel -> getIdCurrentUser($app);
 
-			} else {
-				return $app->redirect(
-					$app['url_generator']->generate(
-						'auth_login'
-					),
-					301
-				);
-			}
-			$data = array(
-			'id_user' => $id_user,
-			);
+            } else {
+                return $app->redirect(
+                    $app['url_generator']->generate(
+                        'auth_login'
+                    ),
+                    301
+                );
+            }
+            $data = array(
+            'id_user' => $id_user,
+            );
 
-			$categories = $this->categories->getCategoriesList();
-
-
+            $categories = $this->categories->getCategoriesList();
 
 
-			$form = $app['form.factory']
-			->createBuilder(
-				new FilesForm($app),
-				array('categories' => $categories,
-				'id_user' => $id_user
-				)
-			)
-			->getForm();
-			$form->remove('id_file');
-
-			if ($request->isMethod('POST')) {
-				$form->bind($request);
-
-				if ($form->isValid()) {
-					try {
-						$files = $request->files->get($form->getName());
-						$data = $form->getData();
-
-						$path = dirname(dirname(dirname(__FILE__))).'/web/media';
-						$filesModel = new FilesModel($app);
-
-						$originalFilename = $files['file']->getClientOriginalName();
-					   
-						$newFilename = $filesModel->createName($originalFilename);
-						$files['file']->move($path, $newFilename);
-						
-						$filesModel->saveFile($newFilename, $data);
-
-						$app['session']->getFlashBag()->add(
-							'message',
-							array(
-							'type' => 'success',
-							'content' => $app['translator']->trans('File has been added')
-							)
-						);
 
 
-						return $app->redirect(
-							$app['url_generator']->generate(
-								'files'
-							),
-							301
-						);
-					} catch (\PDOException $e) {
-						$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-					}
-				} else {
-					$app['session']->getFlashBag()->add(
-						'message',
-						array(
-						'type' => 'error',
-						'content' => $app['translator']->trans('You filled out the form incorrectly')
-						)
-					);
-				}
-			}
-		} catch (\Exception $e) {
-			$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-		}
+            $form = $app['form.factory']
+            ->createBuilder(
+                new FilesForm($app),
+                array('categories' => $categories,
+                'id_user' => $id_user
+                )
+            )
+            ->getForm();
+            $form->remove('id_file');
+
+            if ($request->isMethod('POST')) {
+                $form->bind($request);
+
+                if ($form->isValid()) {
+                    try {
+                        $files = $request->files->get($form->getName());
+                        $data = $form->getData();
+
+                        $path = dirname(dirname(dirname(__FILE__))).'/web/media';
+                        $filesModel = new FilesModel($app);
+
+                        $originalFilename = $files['file']->getClientOriginalName();
+                       
+                        $newFilename = $filesModel->createName($originalFilename);
+                        $files['file']->move($path, $newFilename);
+                        
+                        $filesModel->saveFile($newFilename, $data);
+
+                        $app['session']->getFlashBag()->add(
+                            'message',
+                            array(
+                            'type' => 'success',
+                            'content' => $app['translator']->trans('File has been added')
+                            )
+                        );
+
+
+                        return $app->redirect(
+                            $app['url_generator']->generate(
+                                'files'
+                            ),
+                            301
+                        );
+                    } catch (\PDOException $e) {
+                        $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+                    }
+                } else {
+                    $app['session']->getFlashBag()->add(
+                        'message',
+                        array(
+                        'type' => 'error',
+                        'content' => $app['translator']->trans('You filled out the form incorrectly')
+                        )
+                    );
+                }
+            }
+        } catch (\Exception $e) {
+            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+        }
         return $app['twig']->render(
             'files/upload.twig',
             array(
@@ -355,121 +355,121 @@ class FilesController implements ControllerProviderInterface
 */
     public function edit(Application $app, Request $request)
     {
-		try{
-			$filesModel = new FilesModel($app);
-			$id = (int) $request->get('id', 0);
+        try {
+            $filesModel = new FilesModel($app);
+            $id = (int) $request->get('id', 0);
 
-			$check = $filesModel->checkFileId($id);
+            $check = $filesModel->checkFileId($id);
 
-			if ($check) {
-				$file = $filesModel->getFile($id);
-				$filename = $filesModel -> getFile($id);
+            if ($check) {
+                $file = $filesModel->getFile($id);
+                $filename = $filesModel -> getFile($id);
 
 
-				$CategoriesModel = new CategoriesModel($app);
-				$categories = $CategoriesModel->getCategoriesDict();
+                $CategoriesModel = new CategoriesModel($app);
+                $categories = $CategoriesModel->getCategoriesDict();
 
-				if (count($file)) {
-					$form = $app['form.factory']->createBuilder('form', $file)
-					->add(
-						'id_file',
-						'hidden',
-						array(
-						'constraints' => array(new Assert\NotBlank())
-						)
-					)
-					->add(
-						'title',
-						'text',
-						array(
-						'constraints' => array(
-						new Assert\NotBlank(),
-						new Assert\Length(
-							array('min' => 2)
-						)
-						)
-						)
-					)
-					->add(
-						'category',
-						'choice',
-						array(
-						'choices' => $categories,
-						)
-					)
-					->add(
-						'description',
-						'textarea',
-						array(
-						'constraints' => array(
-						new Assert\NotBlank(),
-						new Assert\Length(
-							array('min' => 5)
-						)
-						)
-						)
-					)
-					->add($app['translator']->trans('Save'), 'submit')
-					->getForm();
+                if (count($file)) {
+                    $form = $app['form.factory']->createBuilder('form', $file)
+                    ->add(
+                        'id_file',
+                        'hidden',
+                        array(
+                        'constraints' => array(new Assert\NotBlank())
+                        )
+                    )
+                    ->add(
+                        'title',
+                        'text',
+                        array(
+                        'constraints' => array(
+                        new Assert\NotBlank(),
+                        new Assert\Length(
+                            array('min' => 2)
+                        )
+                        )
+                        )
+                    )
+                    ->add(
+                        'category',
+                        'choice',
+                        array(
+                        'choices' => $categories,
+                        )
+                    )
+                    ->add(
+                        'description',
+                        'textarea',
+                        array(
+                        'constraints' => array(
+                        new Assert\NotBlank(),
+                        new Assert\Length(
+                            array('min' => 5)
+                        )
+                        )
+                        )
+                    )
+                    ->add($app['translator']->trans('Save'), 'submit')
+                    ->getForm();
 
-					$form->handleRequest($request);
+                    $form->handleRequest($request);
 
-					if ($form->isValid()) {
-						try {
-							$data = $form->getData();
+                    if ($form->isValid()) {
+                        try {
+                            $data = $form->getData();
 
-							$filesModel = new FilesModel($app);
-							$filesModel->editFile($filename, $data);
+                            $filesModel = new FilesModel($app);
+                            $filesModel->editFile($filename, $data);
 
-							$app['session']->getFlashBag()->add(
-								'message',
-								array(
-								'type' => 'success',
-								'content' => $app['translator']->trans('File has been changed')
-								)
-							);
+                            $app['session']->getFlashBag()->add(
+                                'message',
+                                array(
+                                'type' => 'success',
+                                'content' => $app['translator']->trans('File has been changed')
+                                )
+                            );
 
-							return $app->redirect(
-								$app['url_generator']->generate(
-									'view',
-									array(
-									'id' => $id,
-									)
-								),
-								301
-							);
-						} catch (\PDOException $e) {
-							$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-						}
-					}
-					return $app['twig']->render(
-						'files/edit.twig',
-						array(
-						'form' => $form->createView(),
-						'file' => $file
-						)
-					);
+                            return $app->redirect(
+                                $app['url_generator']->generate(
+                                    'view',
+                                    array(
+                                    'id' => $id,
+                                    )
+                                ),
+                                301
+                            );
+                        } catch (\PDOException $e) {
+                            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+                        }
+                    }
+                    return $app['twig']->render(
+                        'files/edit.twig',
+                        array(
+                        'form' => $form->createView(),
+                        'file' => $file
+                        )
+                    );
 
-				} else {
-					return $app->redirect(
-						$app['url_generator']->generate(
-							'/files/add'
-						),
-						301
-					);
-				}
-			} else {
-				$app['session']->getFlashBag()->add(
-					'message',
-					array(
-					'type' => 'danger',
-					'content' => $app['translator']->trans('File not found')
-					)
-				);
-			}
-		} catch (\Exception $e) {
-			$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-		}
+                } else {
+                    return $app->redirect(
+                        $app['url_generator']->generate(
+                            '/files/add'
+                        ),
+                        301
+                    );
+                }
+            } else {
+                $app['session']->getFlashBag()->add(
+                    'message',
+                    array(
+                    'type' => 'danger',
+                    'content' => $app['translator']->trans('File not found')
+                    )
+                );
+            }
+        } catch (\Exception $e) {
+            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+        }
            
             return $app->redirect(
                 $app['url_generator']->generate(
@@ -478,7 +478,7 @@ class FilesController implements ControllerProviderInterface
                 301
             );
     }
-	
+    
 
 
 
@@ -493,101 +493,104 @@ class FilesController implements ControllerProviderInterface
 */
     public function delete(Application $app, Request $request)
     {
-		try{
-			$name = (string)$request->get('name', 0);
-			$check = $this->_model->checkFileName($name);
+        try {
+            $name = (string)$request->get('name', 0);
+            $check = $this->_model->checkFileName($name);
 
-			if ($check) {
-				$file = $this->_model->getFileByName($name);
-				$path = dirname(dirname(dirname(__FILE__))) . '/web/media/' . $name;
+            if ($check) {
+                $file = $this->_model->getFileByName($name);
+                $path = dirname(dirname(dirname(__FILE__))) . '/web/media/' . $name;
 
-				if (count($file)) {
-					$data = array();
-					$form = $app['form.factory']->createBuilder('form', $data)
-					->add(
-						'name',
-						'hidden',
-						array(
-						'data' => $name,
-						)
-					)
-					->add($app['translator']->trans('Yes'), 'submit')
-					->add($app['translator']->trans('No'), 'submit')
-					->getForm();
+                if (count($file)) {
+                    $data = array();
+                    $form = $app['form.factory']->createBuilder('form', $data)
+                    ->add(
+                        'name',
+                        'hidden',
+                        array(
+                        'data' => $name,
+                        )
+                    )
+                    ->add($app['translator']->trans('Yes'), 'submit')
+                    ->add($app['translator']->trans('No'), 'submit')
+                    ->getForm();
 
-					$form->handleRequest($request);
+                    $form->handleRequest($request);
 
-					if ($form->isValid()) {
-						if ($form->get('Tak')->isClicked()) {
-							$data = $form->getData();
+                    if ($form->isValid()) {
+                        if ($form->get('Tak')->isClicked()) {
+                            $data = $form->getData();
 
-							try {
-								$model = unlink($path);
+                            try {
+                                $model = unlink($path);
 
 
-								try {
-									$link = $this->_model->removeFile($name);
+                                try {
+                                    $link = $this->_model->removeFile($name);
 
-									$app['session']->getFlashBag()->add(
-										'message',
-										array(
-										'type' => 'success',
-										'content' => $app['translator']->trans('File has been deleted')
+                                    $app['session']->getFlashBag()->add(
+                                        'message',
+                                        array(
+                                        'type' => 'success',
+                                        'content' => $app['translator']->trans('File has been deleted')
 
-										)
-									);
-									return $app->redirect(
-										$app['url_generator']->generate(
-											'files'
-										),
-										301
-									);
-								} catch (\PDOException $e) {
-									$app->abort(
-										500,
-										$app['translator']->trans('An error occurred, please try again later')
-									);
-								}
-							} catch (\PDOException $e) {
-								$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-							}
-						}
-					}
+                                        )
+                                    );
+                                    return $app->redirect(
+                                        $app['url_generator']->generate(
+                                            'files'
+                                        ),
+                                        301
+                                    );
+                                } catch (\PDOException $e) {
+                                    $app->abort(
+                                        500,
+                                        $app['translator']->trans('An error occurred, please try again later')
+                                    );
+                                }
+                            } catch (\PDOException $e) {
+                                $app->abort(
+                                    500,
+                                    $app['translator']->trans('An error occurred, please try again later')
+                                );
+                            }
+                        }
+                    }
 
-					return $app['twig']->render(
-						'files/delete.twig',
-						array(
-						'form' => $form->createView()
-						)
-					);
+                    return $app['twig']->render(
+                        'files/delete.twig',
+                        array(
+                        'form' => $form->createView()
+                        )
+                    );
 
-				} else {
-					$app['session']->getFlashBag()->add(
-						'message',
-						array(
-						'type' => 'danger',
-						'content' => $app['translator']->trans('File not found')
-						)
-					);
-					return $app->redirect(
-						$app['url_generator']->generate(
-							'files'
-						),
-						301
-					);
-				}
-			} else {
-				$app['session']->getFlashBag()->add(
-					'message',
-					array(
-					'type' => 'danger',
-					'content' => $app['translator']->trans('File not found')
-					)
-				);
-			}
-		} catch (\Exception $e) {
-			$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-		}
+                } else {
+                    $app['session']->getFlashBag()->add(
+                        'message',
+                        array(
+                        'type' => 'danger',
+                        'content' => $app['translator']->trans('File not found')
+                        )
+                    );
+                    return $app->redirect(
+                        $app['url_generator']->generate(
+                            'files'
+                        ),
+                        301
+                    );
+                }
+            } else {
+                $app['session']->getFlashBag()->add(
+                    'message',
+                    array(
+                    'type' => 'danger',
+                    'content' => $app['translator']->trans('File not found')
+                    )
+                );
+            }
+        } catch (\Exception $e) {
+            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+        }
            
             return $app->redirect(
                 $app['url_generator']->generate(
@@ -611,46 +614,46 @@ class FilesController implements ControllerProviderInterface
 */
     public function search(Application $app, Request $request)
     {
-		try{
-			$data = array();
-			$categoriesModel = new CategoriesModel($app);
-			$choiceCategories = $categoriesModel->getCategoriesDict2();
+        try {
+            $data = array();
+            $categoriesModel = new CategoriesModel($app);
+            $choiceCategories = $categoriesModel->getCategoriesDict2();
 
-			$form = $app['form.factory']->createBuilder('form', $data)
-			->add(
-				'category',
-				'choice',
-				array(
-				'choices' => $choiceCategories,
-				'multiple' => false
+            $form = $app['form.factory']->createBuilder('form', $data)
+            ->add(
+                'category',
+                'choice',
+                array(
+                'choices' => $choiceCategories,
+                'multiple' => false
 
-				)
-			)
-			->add($app['translator']->trans('Search'), 'submit')
-			->getForm();
+                )
+            )
+            ->add($app['translator']->trans('Search'), 'submit')
+            ->getForm();
 
-			$form->handleRequest($request);
+            $form->handleRequest($request);
 
-			if ($form->isValid()) {
-				try {
-					$data = $form->getData();
+            if ($form->isValid()) {
+                try {
+                    $data = $form->getData();
 
-					return $app->redirect(
-						$app['url_generator']->generate(
-							'/files/results',
-							array(
-							'data' => $data
-							)
-						),
-						301
-					);
-				} catch (\PDOException $e) {
-					$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-				}
-			}
-		} catch (\Exception $e) {
-			$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-		}
+                    return $app->redirect(
+                        $app['url_generator']->generate(
+                            '/files/results',
+                            array(
+                            'data' => $data
+                            )
+                        ),
+                        301
+                    );
+                } catch (\PDOException $e) {
+                    $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+                }
+            }
+        } catch (\Exception $e) {
+            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+        }
            
         return $app['twig']
         ->render(

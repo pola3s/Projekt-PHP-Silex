@@ -4,8 +4,6 @@
  *
  * PHP version 5
  *
- * @category Model
- * @package  Model
  * @author   Paulina Serwińska <paulina.serwinska@gmail.com>
  * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
  * @link     wierzba.wzks.uj.edu.pl/~12_serwinska
@@ -129,7 +127,8 @@ class CommentsModel
     /**
      * Updates one comment.
      *
-     * @param Array $data Integer $id_comment
+     * @param Array $data
+     * @patam Integer $id_comment
      *
      * @access public
      * @return Void
