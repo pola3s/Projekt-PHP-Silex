@@ -133,37 +133,41 @@ class CategoriesController implements ControllerProviderInterface
     public function add(Application $app, Request $request)
     {
 
-        $form = $app['form.factory']
-            ->createBuilder(new CategoriesForm(), $data)->getForm();
-        $form->remove('id_category');
+		try{
+			$form = $app['form.factory']
+				->createBuilder(new CategoriesForm(), $data)->getForm();
+			$form->remove('id_category');
 
-       
-        $form->handleRequest($request);
+		   
+			$form->handleRequest($request);
 
-        if ($form->isValid()) {
-            try {
-                $categoriesModel = new CategoriesModel($app);
-                $data = $form->getData();
-                    
-                $categoriesModel->addCategory($data);
-                      
-                $app['session']->getFlashBag()->add(
-                    'message',
-                    array(
-                          'type' => 'success',
-                          'content' => $app['translator']->trans('Category has been added')
-                      )
-                );
-                return $app->redirect(
-                    $app['url_generator']->generate(
-                        'categories'
-                    ),
-                    301
-                );
-            } catch (\PDOException $e) {
-                $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-            }
-        }
+			if ($form->isValid()) {
+				try {
+					$categoriesModel = new CategoriesModel($app);
+					$data = $form->getData();
+						
+					$categoriesModel->addCategory($data);
+						  
+					$app['session']->getFlashBag()->add(
+						'message',
+						array(
+							  'type' => 'success',
+							  'content' => $app['translator']->trans('Category has been added')
+						  )
+					);
+					return $app->redirect(
+						$app['url_generator']->generate(
+							'categories'
+						),
+						301
+					);
+				} catch (\PDOException $e) {
+					$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+				}
+			}
+		} catch (\Exception $e) {
+			$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+		}
             return $app['twig']
                  ->render(
                      '/categories/add.twig',
@@ -185,77 +189,82 @@ class CategoriesController implements ControllerProviderInterface
     */
     public function edit(Application $app, Request $request)
     {
-        $categoriesModel = new CategoriesModel($app);
-        $id_category = (int) $request->get('id', 0);
-            
-        $category = $categoriesModel->getCategory($id_category);
-        $check = $categoriesModel->checkCategoryId($id_category);
-    
-        if ($check) {
-            if (count($category)) {
-                $form = $app['form.factory']
-                    ->createBuilder(new CategoriesForm(), $category)->getForm();
-                            
-                $form->handleRequest($request);
-                    
-                if ($form->isValid()) {
-                    try {
-                        $categoriesModel = new CategoriesModel($app);
-                        $data = $form->getData();
-                        $categoriesModel->editCategory($data, $id_category);
-                            
-                        $app['session']->getFlashBag()->add(
-                            'message',
-                            array(
-                                'type' => 'success',
-                                'content' => $app['translator']->trans('Category has been changed')
-                            )
-                        );
-                            
-                        return $app->redirect(
-                            $app['url_generator']->generate(
-                                'categories'
-                            ),
-                            301
-                        );
-                    } catch (\PDOException $e) {
-                        $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-                    }
-                }
-                   
-                    return $app['twig']->render(
-                        'categories/edit.twig',
-                        array(
-                        'form' => $form->createView(),
-                        'category' => $category
-                        )
-                    );
-                            
-            } else {
-                    return $app->redirect(
-                        $app['url_generator']->generate(
-                            '/categories/add'
-                        ),
-                        301
-                    );
-            }
-        } else {
-                    $app['session']->getFlashBag()->add(
-                        'message',
-                        array(
-                            'type' => 'danger',
-                            'content' => $app['translator']->trans('Category not found')
-                        )
-                    );
+		try{
+			$categoriesModel = new CategoriesModel($app);
+			$id_category = (int) $request->get('id', 0);
+				
+			$category = $categoriesModel->getCategory($id_category);
+			$check = $categoriesModel->checkCategoryId($id_category);
+		
+			if ($check) {
+				if (count($category)) {
+					$form = $app['form.factory']
+						->createBuilder(new CategoriesForm(), $category)->getForm();
+								
+					$form->handleRequest($request);
+						
+					if ($form->isValid()) {
+						try {
+							$categoriesModel = new CategoriesModel($app);
+							$data = $form->getData();
+							$categoriesModel->editCategory($data, $id_category);
+								
+							$app['session']->getFlashBag()->add(
+								'message',
+								array(
+									'type' => 'success',
+									'content' => $app['translator']->trans('Category has been changed')
+								)
+							);
+								
+							return $app->redirect(
+								$app['url_generator']->generate(
+									'categories'
+								),
+								301
+							);
+						} catch (\PDOException $e) {
+							$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+						}
+					}
+					   
+						return $app['twig']->render(
+							'categories/edit.twig',
+							array(
+							'form' => $form->createView(),
+							'category' => $category
+							)
+						);
+								
+				} else {
+						return $app->redirect(
+							$app['url_generator']->generate(
+								'/categories/add'
+							),
+							301
+						);
+				}
+			} else {
+						$app['session']->getFlashBag()->add(
+							'message',
+							array(
+								'type' => 'danger',
+								'content' => $app['translator']->trans('Category not found')
+							)
+						);
+			}
+		} catch (\Exception $e) {
+			$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+		}
                     return $app->redirect(
                         $app['url_generator']->generate(
                             'categories'
                         ),
                         301
                     );
-        }
-
     }
+
+    
     
     /**
     * Delete category
@@ -268,120 +277,125 @@ class CategoriesController implements ControllerProviderInterface
     */
     public function delete(Application $app, Request $request)
     {
-        $id_category = (int) $request -> get('id', 0);
-   
-        $categoriesModel = new CategoriesModel($app);
-        $check = $categoriesModel->checkCategoryId($id_category);
- 
-        if ($check) {
-             $files = $categoriesModel->getFilesByCategory($id_category);
-            
-             
-            if (!$files) {
-                $category = $categoriesModel->getCategory($id_category);
-        
+		try{
+			$id_category = (int) $request -> get('id', 0);
+	   
+			$categoriesModel = new CategoriesModel($app);
+			$check = $categoriesModel->checkCategoryId($id_category);
+	 
+			if ($check) {
+				 $files = $categoriesModel->getFilesByCategory($id_category);
+				
+				 
+				if (!$files) {
+					$category = $categoriesModel->getCategory($id_category);
+			
 
-                $data = array();
+					$data = array();
 
-                if (count($category)) {
-                    $form = $app['form.factory']->createBuilder('form', $data)
-                        ->add(
-                            'id_category',
-                            'hidden',
-                            array(
-                            'data' => $id,
-                            )
-                        )
-                        ->add($app['translator']->trans('Yes'), 'submit')
-                        ->add($app['translator']->trans('No'), 'submit')
-                        ->getForm();
+					if (count($category)) {
+						$form = $app['form.factory']->createBuilder('form', $data)
+							->add(
+								'id_category',
+								'hidden',
+								array(
+								'data' => $id,
+								)
+							)
+							->add($app['translator']->trans('Yes'), 'submit')
+							->add($app['translator']->trans('No'), 'submit')
+							->getForm();
 
-                    $form->handleRequest($request);
+						$form->handleRequest($request);
 
-                    if ($form->isValid()) {
-                        if ($form->get('Tak')->isClicked()) {
-                            $data = $form->getData();
-                            try {
-                                $model = $this->_model->deleteCategory($id_category);
+						if ($form->isValid()) {
+							if ($form->get('Tak')->isClicked()) {
+								$data = $form->getData();
+								try {
+									$model = $this->_model->deleteCategory($id_category);
 
-                                $app['session']->getFlashBag()->add(
-                                    'message',
-                                    array(
-                                        'type' => 'success',
-                                        'content' => $app['translator']->trans('Category has been deleted')
-                                    )
-                                );
-                                return $app->redirect(
-                                    $app['url_generator']->generate(
-                                        'categories'
-                                    ),
-                                    301
-                                );
-                            } catch (\PDOException $e) {
-                                $app->abort(
-                                    500,
-                                    $app['translator']->trans('An error occurred, please try again later')
-                                );
-                            }
-                        } else {
-                            return $app->redirect(
-                                $app['url_generator']->generate(
-                                    'categories'
-                                ),
-                                301
-                            );
-                        }
-                    }
-                    return $app['twig']->render(
-                        'categories/delete.twig',
-                        array(
-                            'form' => $form->createView()
-                        )
-                    );
-                } else {
-                    $app['session']->getFlashBag()->add(
-                        'message',
-                        array(
-                            'type' => 'danger',
-                            'content' => $app['translator']->trans('Category not found')
-                        )
-                    );
-                    return $app->redirect(
-                        $app['url_generator']->generate(
-                            'categories'
-                        ),
-                        301
-                    );
-                }
-            } else {
-                $app['session']->getFlashBag()->add(
-                    'message',
-                    array(
-                        'type' => 'danger',
-                        'content' =>  $app['translator']->trans('Category is not empty')
-                    )
-                );
-                return $app->redirect(
-                    $app['url_generator']->generate(
-                        'categories'
-                    ),
-                    301
-                );
-            }
-        } else {
-            $app['session']->getFlashBag()->add(
-                'message',
-                array(
-                    'type' => 'danger',
-                    'content' =>  $app['translator']->trans('Category not found')
-                )
-            );
+									$app['session']->getFlashBag()->add(
+										'message',
+										array(
+											'type' => 'success',
+											'content' => $app['translator']->trans('Category has been deleted')
+										)
+									);
+									return $app->redirect(
+										$app['url_generator']->generate(
+											'categories'
+										),
+										301
+									);
+								} catch (\PDOException $e) {
+									$app->abort(
+										500,
+										$app['translator']->trans('An error occurred, please try again later')
+									);
+								}
+							} else {
+								return $app->redirect(
+									$app['url_generator']->generate(
+										'categories'
+									),
+									301
+								);
+							}
+						}
+						return $app['twig']->render(
+							'categories/delete.twig',
+							array(
+								'form' => $form->createView()
+							)
+						);
+					} else {
+						$app['session']->getFlashBag()->add(
+							'message',
+							array(
+								'type' => 'danger',
+								'content' => $app['translator']->trans('Category not found')
+							)
+						);
+						return $app->redirect(
+							$app['url_generator']->generate(
+								'categories'
+							),
+							301
+						);
+					}
+				} else {
+					$app['session']->getFlashBag()->add(
+						'message',
+						array(
+							'type' => 'danger',
+							'content' =>  $app['translator']->trans('Category is not empty')
+						)
+					);
+					return $app->redirect(
+						$app['url_generator']->generate(
+							'categories'
+						),
+						301
+					);
+				}
+			} else {
+				$app['session']->getFlashBag()->add(
+					'message',
+					array(
+						'type' => 'danger',
+						'content' =>  $app['translator']->trans('Category not found')
+					)
+				);
+			}
+		} catch (\Exception $e) {
+			$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+		}
             return $app->redirect(
                 $app['url_generator']->generate(
                     'categories'
                 ),
                 301
             );
-        }
     }
+    
 }

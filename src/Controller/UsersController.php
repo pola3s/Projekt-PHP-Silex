@@ -130,135 +130,139 @@ class UsersController implements ControllerProviderInterface
     */
     public function edit(Application $app, Request $request)
     {
-        $usersModel = new UsersModel($app);
-            
-            
-        if ($usersModel ->isLoggedIn($app)) {
-            $id_user = $usersModel -> getIdCurrentUser($app);
-                
-        } else {
-            return $app->redirect(
-                $app['url_generator']->generate(
-                    'auth_login'
-                ),
-                301
-            );
-        }
-            
-            
-            $currentUserInfo = $usersModel -> getUser($id_user);
-           
-            
+		try{
+			$usersModel = new UsersModel($app);
+				
+				
+			if ($usersModel ->isLoggedIn($app)) {
+				$id_user = $usersModel -> getIdCurrentUser($app);
+					
+			} else {
+				return $app->redirect(
+					$app['url_generator']->generate(
+						'auth_login'
+					),
+					301
+				);
+			}
+				
+				
+				$currentUserInfo = $usersModel -> getUser($id_user);
+			   
+				
 
-            $data = array(
-                'login' => $currentUserInfo['login'],
-                'email' => $currentUserInfo['email'],
-                'firstname' => $currentUserInfo['firstname'],
-                'lastname' => $currentUserInfo['lastname'],
-                'password' => '',
-                'confirm_password' => ''
-            );
-            
-            $form = $app['form.factory']
-            ->createBuilder(new UsersForm(), $data)->getForm();
-
-
-            $form->handleRequest($request);
-
-            if ($form->isValid()) {
-                $data = $form->getData();
-                
-
-                $data['login'] = $app
-                    ->escape($data['login']);
-                $data['email'] = $app
-                    ->escape($data['email']);
-                $data['firstname'] = $app
-                    ->escape($data['firstname']);
-                $data['lastname'] = $app
-                    ->escape($data['lastname']);
-                $data['password'] = $app
-                    ->escape($data['password']);
-                $data['confirm_password'] = $app
-                    ->escape($data['confirm_password']);
-
-                if ($data['password'] === $data['confirm_password']) {
-                    $password = $app['security.encoder.digest']
-                        ->encodePassword(
-                            $data['password'],
-                            ''
-                        );
+				$data = array(
+					'login' => $currentUserInfo['login'],
+					'email' => $currentUserInfo['email'],
+					'firstname' => $currentUserInfo['firstname'],
+					'lastname' => $currentUserInfo['lastname'],
+					'password' => '',
+					'confirm_password' => ''
+				);
+				
+				$form = $app['form.factory']
+				->createBuilder(new UsersForm(), $data)->getForm();
 
 
-                    $checkLogin = $usersModel
-                        ->getUserByLogin(
-                            $data['login']
-                        );
+				$form->handleRequest($request);
 
-                    if ($data['login'] === $checkLogin
-                        || !$checkLogin
-                        || (int)$currentUserInfo['id_user']===(int)$checkLogin['id_user']
-                    ) {
-                        try {
-                            $usersModel->updateUser(
-                                $currentUserInfo['id_user'],
-                                $form->getData(),
-                                $password
-                            );
-                            
-                            
-                            $app['session']->getFlashBag()->add(
-                                'message',
-                                array(
-                                    'type' => 'success',
-                                    'content' => $app['translator']->trans('Data has been changed')
-                                )
-                            );
-                            return $app->redirect(
-                                $app['url_generator']
-                                    ->generate(
-                                        'files'
-                                    ),
-                                301
-                            );
-                        } catch (\PDOException $e) {
-                            $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-                        }
+				if ($form->isValid()) {
+					$data = $form->getData();
+					
 
-                    } else {
-                        $app['session']->getFlashBag()->add(
-                            'message',
-                            array(
-                                'type' => 'warning',
-                                'content' => $app['translator']->trans('Login has been taken')
-                            )
-                        );
-                        return $app['twig']->render(
-                            'users/edit.twig',
-                            array(
-                                'form' => $form->createView(),
-                                'login' => $currentUser
-                            )
-                        );
-                    }
-                } else {
-                    $app['session']->getFlashBag()->add(
-                        'message',
-                        array(
-                            'type' => 'warning',
-                            'content' =>  $app['translator']->trans('Password does not match the confirm password')
-                        )
-                    );
-                    return $app['twig']->render(
-                        'users/edit.twig',
-                        array(
-                            'form' => $form->createView(),
-                            'login' => $currentUser
-                        )
-                    );
+					$data['login'] = $app
+						->escape($data['login']);
+					$data['email'] = $app
+						->escape($data['email']);
+					$data['firstname'] = $app
+						->escape($data['firstname']);
+					$data['lastname'] = $app
+						->escape($data['lastname']);
+					$data['password'] = $app
+						->escape($data['password']);
+					$data['confirm_password'] = $app
+						->escape($data['confirm_password']);
 
-                }
-            }
+					if ($data['password'] === $data['confirm_password']) {
+						$password = $app['security.encoder.digest']
+							->encodePassword(
+								$data['password'],
+								''
+							);
+
+
+						$checkLogin = $usersModel
+							->getUserByLogin(
+								$data['login']
+							);
+
+						if ($data['login'] === $checkLogin
+							|| !$checkLogin
+							|| (int)$currentUserInfo['id_user']===(int)$checkLogin['id_user']
+						) {
+							try {
+								$usersModel->updateUser(
+									$currentUserInfo['id_user'],
+									$form->getData(),
+									$password
+								);
+								
+								
+								$app['session']->getFlashBag()->add(
+									'message',
+									array(
+										'type' => 'success',
+										'content' => $app['translator']->trans('Data has been changed')
+									)
+								);
+								return $app->redirect(
+									$app['url_generator']
+										->generate(
+											'files'
+										),
+									301
+								);
+							} catch (\PDOException $e) {
+								$app->abort(500,  $app['translator']->trans('An error occurred, please try again later'));
+							}
+
+						} else {
+							$app['session']->getFlashBag()->add(
+								'message',
+								array(
+									'type' => 'warning',
+									'content' => $app['translator']->trans('Login has been taken')
+								)
+							);
+							return $app['twig']->render(
+								'users/edit.twig',
+								array(
+									'form' => $form->createView(),
+									'login' => $currentUser
+								)
+							);
+						}
+					} else {
+						$app['session']->getFlashBag()->add(
+							'message',
+							array(
+								'type' => 'warning',
+								'content' =>  $app['translator']->trans('Password does not match the confirm password')
+							)
+						);
+						return $app['twig']->render(
+							'users/edit.twig',
+							array(
+								'form' => $form->createView(),
+								'login' => $currentUser
+							)
+						);
+
+					}
+				}
+		} catch (\PDOException $e) {
+			$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+		}
             return $app['twig']->render(
                 'users/edit.twig',
                 array(
@@ -280,124 +284,128 @@ class UsersController implements ControllerProviderInterface
     */
     public function editRole(Application $app, Request $request)
     {
-        $id_user = (int)$request->get('id');
-         
-        $usersModel = new UsersModel($app);
-    
-        $user = $usersModel-> getUser($id_user);
-        
-        $files = $usersModel -> getFileByUser($id_user);
-        $about = $usersModel -> getAboutByUser($id_user);
+        try{
+			$id_user = (int)$request->get('id');
+			 
+			$usersModel = new UsersModel($app);
+		
+			$user = $usersModel-> getUser($id_user);
+			
+			$files = $usersModel -> getFileByUser($id_user);
+			$about = $usersModel -> getAboutByUser($id_user);
 
-        $user_role = $usersModel -> getUserRole($id_user);
-        
-        $user_role = $usersModel -> getUserRole($id_user);
+			$user_role = $usersModel -> getUserRole($id_user);
+			
+			$user_role = $usersModel -> getUserRole($id_user);
 
 
-        $currentUserInfo = $usersModel -> getUser($id_user);
-        
-        if ($usersModel ->isLoggedIn($app)) {
-                $idLoggedUser = $usersModel ->getIdCurrentUser($app);
-        }
-    
-        
-        if ($idLoggedUser != $id_user) {
-                $check = $usersModel->checkUserId($id);
-             
-                $idRoleAdmin = 1;
-                
-                $adminUsers = $usersModel->checkAdminCount($idRoleAdmin);
-               
-               
-                $rowsnumber = count($adminUsers);
-                
-            if ($rowsnumber > 1) {
-                 $form = $app['form.factory']->createBuilder('form', $user_role)
-                    ->add(
-                        'id_role',
-                        'choice',
-                        array(
-                         'label' => 'Rola',
-                         'choices' => array(
-                            '1'   => 'Administrator',
-                            '2' => 'Użytkownik',
-                            )
-                        )
-                    )
-                    
-                    ->getForm();
-            } else {
-                 $form = $app['form.factory']->createBuilder('form', $user_role)
-                    ->add(
-                        'id_role',
-                        'choice',
-                        array(
-                         'label' => 'Rola',
-                         'choices' => array(
-                            '1'   => 'Administrator'
-                            )
-                        )
-                    )
-                    
-                    ->getForm();
-            }
-                
-                    
-                        
-                    $form->handleRequest($request);
+			$currentUserInfo = $usersModel -> getUser($id_user);
+			
+			if ($usersModel ->isLoggedIn($app)) {
+					$idLoggedUser = $usersModel ->getIdCurrentUser($app);
+			}
+		
+			
+			if ($idLoggedUser != $id_user) {
+					$check = $usersModel->checkUserId($id);
+				 
+					$idRoleAdmin = 1;
+					
+					$adminUsers = $usersModel->checkAdminCount($idRoleAdmin);
+				   
+				   
+					$rowsnumber = count($adminUsers);
+					
+				if ($rowsnumber > 1) {
+					 $form = $app['form.factory']->createBuilder('form', $user_role)
+						->add(
+							'id_role',
+							'choice',
+							array(
+							 'label' => 'Rola',
+							 'choices' => array(
+								'1'   => 'Administrator',
+								'2' => 'Użytkownik',
+								)
+							)
+						)
+						
+						->getForm();
+				} else {
+					 $form = $app['form.factory']->createBuilder('form', $user_role)
+						->add(
+							'id_role',
+							'choice',
+							array(
+							 'label' => 'Rola',
+							 'choices' => array(
+								'1'   => 'Administrator'
+								)
+							)
+						)
+						
+						->getForm();
+				}
+					
+						
+							
+						$form->handleRequest($request);
 
-            if ($form->isValid()) {
-                try {
-                    $categoriesModel = new usersModel($app);
-                    $user_role = $form->getData();
-                    $id_role =  $user_role['id_role'];
-                            
-                    $usersModel->editRole($id_role, $id_user);
-                            
-                    $role = $usersModel -> getRoleName($id_role);
-                                
-                                
-                    $app['session']->getFlashBag()->add(
-                        'message',
-                        array(
-                            'type' => 'success',
-                            'content' => $app['translator']->trans('Role has been changed')
-                        )
-                    );
-                                    
-                    return $app['twig']->render(
-                        'users/view.twig',
-                        array(
-                        'files' => $files,
-                        'user' => $user,
-                        'about' => $about,
-                        'id_user' => $id_user,
-                        'role' => $role
-                        )
-                    );
-                } catch (\PDOException $e) {
-                    $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-                }
-            }
-                           
-                        return $app['twig']->render(
-                            'users/edit_role.twig',
-                            array(
-                                'form' => $form->createView(),
-                                'role' => $role
-                                )
-                        );
-                                    
-                           
-        
-        }
-        $app['session']->getFlashBag()->add(
-            'message',
-            array(
-                            'type' => 'danger',
-                            'content' => $app['translator']->trans('You cant change your role')
-                        )
-        );
+				if ($form->isValid()) {
+					try {
+						$categoriesModel = new usersModel($app);
+						$user_role = $form->getData();
+						$id_role =  $user_role['id_role'];
+								
+						$usersModel->editRole($id_role, $id_user);
+								
+						$role = $usersModel -> getRoleName($id_role);
+									
+									
+						$app['session']->getFlashBag()->add(
+							'message',
+							array(
+								'type' => 'success',
+								'content' => $app['translator']->trans('Role has been changed')
+							)
+						);
+										
+						return $app['twig']->render(
+							'users/view.twig',
+							array(
+							'files' => $files,
+							'user' => $user,
+							'about' => $about,
+							'id_user' => $id_user,
+							'role' => $role
+							)
+						);
+					} catch (\PDOException $e) {
+						$app->abort(500,  $app['translator']->trans('An error occurred, please try again later'));
+					}
+				}
+							   
+							return $app['twig']->render(
+								'users/edit_role.twig',
+								array(
+									'form' => $form->createView(),
+									'role' => $role
+									)
+							);
+										
+							   
+			
+			}
+			$app['session']->getFlashBag()->add(
+				'message',
+				array(
+								'type' => 'danger',
+								'content' => $app['translator']->trans('You cant change your role')
+							)
+			);
+		} catch (\Exception $e) {
+			$app->abort(500,  $app['translator']->trans('An error occurred, please try again later'));
+		}
                     return $app->redirect(
                         $app['url_generator']->generate(
                             '/users/'
@@ -420,50 +428,55 @@ class UsersController implements ControllerProviderInterface
     */
     public function panel(Application $app, Request $request)
     {
-        $usersModel = new UsersModel($app);
-        
-        $id_user = $usersModel->getIdCurrentUser($app);
-        $user = $usersModel-> getUser($id_user);
-        
-        $files = $usersModel -> getFileByUser($id_user);
-        $about = $usersModel -> getAboutByUser($id_user);
+        try{
+			$usersModel = new UsersModel($app);
+			
+			$id_user = $usersModel->getIdCurrentUser($app);
+			$user = $usersModel-> getUser($id_user);
+			
+			$files = $usersModel -> getFileByUser($id_user);
+			$about = $usersModel -> getAboutByUser($id_user);
 
-        $user_role = $usersModel -> getUserRole($id_user);
-        $role = $usersModel -> getRoleName($user_role['id_role']);
-        
-        
-        
-        if (count($id_user)) {
-            try {
-                return $app['twig']->render(
-                    'users/info.twig',
-                    array(
-                        'user' => $user,
-                        'files' => $files,
-                        'about' => $about,
-                        'id_user' => $id_user,
-                        'role' => $role
-                    )
-                );
-            } catch (\PDOException $e) {
-                $app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
-            }
-        } else {
-            $app['session']->getFlashBag()->add(
-                'message',
-                array(
-                    'type' => 'danger',
-                    'content' =>  $app['translator']->trans('User not found')
-                )
-            );
-            return $app->redirect(
-                $app['url_generator']->generate(
-                    '/files'
-                ),
-                301
-            );
-        }
+			$user_role = $usersModel -> getUserRole($id_user);
+			$role = $usersModel -> getRoleName($user_role['id_role']);
+			
+			
+			
+			if (count($id_user)) {
+				try {
+					return $app['twig']->render(
+						'users/info.twig',
+						array(
+							'user' => $user,
+							'files' => $files,
+							'about' => $about,
+							'id_user' => $id_user,
+							'role' => $role
+						)
+					);
+				} catch (\PDOException $e) {
+					$app->abort(500,  $app['translator']->trans('An error occurred, please try again later'));
+				}
+			} else {
+				$app['session']->getFlashBag()->add(
+					'message',
+					array(
+						'type' => 'danger',
+						'content' =>  $app['translator']->trans('User not found')
+					)
+				);
+			}
+		} catch (\Exception $e) {
+			$app->abort(500,  $app['translator']->trans('An error occurred, please try again later'));
+		}
+        return $app->redirect(
+            $app['url_generator']->generate(
+                '/files'
+            ),
+            301
+        );
     }
+    
     
     /**
     * Show information about user
@@ -476,60 +489,65 @@ class UsersController implements ControllerProviderInterface
     */
     public function view(Application $app, Request $request)
     {
-        $id_user = (int) $request -> get('id', 0);  //id usera
-       
-        $usersModel = new UsersModel($app);
-        $user = $usersModel-> getUser($id_user);
+        try{
+			$id_user = (int) $request -> get('id', 0);  //id usera
+		   
+			$usersModel = new UsersModel($app);
+			$user = $usersModel-> getUser($id_user);
 
-        $files = $usersModel -> getFileByUser($id_user);
-        $about = $usersModel -> getAboutByUser($id_user);
-        
-        $user_role = $usersModel -> getUserRole($id_user);
-        $role = $usersModel -> getRoleName($user_role['id_role']);
-        
-        $check = $usersModel->checkUserId($id_user);
+			$files = $usersModel -> getFileByUser($id_user);
+			$about = $usersModel -> getAboutByUser($id_user);
+			
+			$user_role = $usersModel -> getUserRole($id_user);
+			$role = $usersModel -> getRoleName($user_role['id_role']);
+			
+			$check = $usersModel->checkUserId($id_user);
 
-        if ($check) {
-            try {
-                return $app['twig']->render(
-                    'users/info.twig',
-                    array(
-                        'user' => $user,
-                        'files' => $files,
-                        'about' => $about,
-                        'id_user' => $id_user,
-                        'role' => $role
-                    )
-                );
-            } catch (\Exception $e) {
-                $app->abort(404, $app['translator']->trans('User not found'));
-            }
-                    return $app['twig']->render(
-                        'users/view.twig',
-                        array(
-                        'files' => $files,
-                        'user' => $user,
-                        'about' => $about,
-                        'id_user' => $id_user,
-                        'role' => $role
-                        
-                        )
-                    );
-        } else {
-                    $app['session']->getFlashBag()->add(
-                        'message',
-                        array(
-                            'type' => 'danger',
-                            'content' =>  $app['translator']->trans('User not found')
-                        )
-                    );
-                    return $app->redirect(
-                        $app['url_generator']->generate(
-                            '/users/'
-                        ),
-                        301
-                    );
-        }
-    
+			if ($check) {
+				try {
+					return $app['twig']->render(
+						'users/info.twig',
+						array(
+							'user' => $user,
+							'files' => $files,
+							'about' => $about,
+							'id_user' => $id_user,
+							'role' => $role
+						)
+					);
+				} catch (\Exception $e) {
+					$app->abort(404,  $app['translator']->trans('User not found'));
+				}
+						return $app['twig']->render(
+							'users/view.twig',
+							array(
+							'files' => $files,
+							'user' => $user,
+							'about' => $about,
+							'id_user' => $id_user,
+							'role' => $role
+							
+							)
+						);
+			} else {
+						$app['session']->getFlashBag()->add(
+							'message',
+							array(
+								'type' => 'danger',
+								'content' =>  $app['translator']->trans('User not found')
+							)
+						);
+			}
+		} catch (\Exception $e) {
+			$app->abort(500,  $app['translator']->trans('An error occurred, please try again later'));
+		}
+        return $app->redirect(
+            $app['url_generator']->generate(
+                '/users/'
+            ),
+            301
+        );
     }
+    
+    
 }

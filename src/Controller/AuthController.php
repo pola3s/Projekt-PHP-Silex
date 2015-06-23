@@ -116,16 +116,18 @@ class AuthController implements ControllerProviderInterface
      */
     public function logout(Application $app, Request $request)
     {
-        
-        $app['session']->clear();
-        $app['session']->getFlashBag()->add(
-            'message',
-            array(
-            'type' => 'success',
-            'content' => $app['translator']->trans('Logged out!')
-            )
-        );
-        return $app['twig']->render('auth/logout.twig', $this->view);
-        
+        try{
+			$app['session']->clear();
+			$app['session']->getFlashBag()->add(
+				'message',
+				array(
+				'type' => 'success',
+				'content' => $app['translator']->trans('Logged out!')
+				)
+			);
+			return $app['twig']->render('auth/logout.twig', $this->view);
+        } catch (\Exception $e) {
+			$app->abort(500, $app['translator']->trans('An error occurred, please try again later'));
+		}
     }
 }
